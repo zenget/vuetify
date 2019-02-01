@@ -19,6 +19,7 @@
         </span>
       </v-toolbar-title>
       <v-spacer />
+      <theme-generator />
       <codepen />
       <v-btn
         icon
@@ -83,7 +84,8 @@
 
   export default {
     components: {
-      Codepen: () => import('@/components/Codepen')
+      Codepen: () => import('@/components/Codepen'),
+      ThemeGenerator: () => import('@/components/ThemeGenerator')
     },
     filters: {
       capitalize (value) {
