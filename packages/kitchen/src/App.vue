@@ -97,7 +97,6 @@
     data: () => ({
       items: [
         { title: 'Home', to: '/' },
-        { title: 'Custom theme config', to: '/theme' },
         ...items
       ],
       drawer: false

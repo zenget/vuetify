@@ -8,11 +8,6 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/theme',
-      name: 'Theme',
-      component: () => import('@/views/Theme')
-    },
-    {
       path: '/:component',
       name: 'Bootstrapper',
       component: () => import('@/views/Bootstrapper')
