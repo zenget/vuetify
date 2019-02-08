@@ -4,6 +4,7 @@
     fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
+    class="pa-0"
   >
     <v-btn
       slot="activator"
@@ -13,15 +14,30 @@
       <v-icon>mdi-format-paint</v-icon>
     </v-btn>
     <v-card>
-      <v-toolbar
-        app
-        clipped-right
-      >
+      <v-toolbar>
         <v-toolbar-title>
           <span class="font-weight-black blue--text">VUETIFY</span>
           <span class="font-weight-light">THEME GENERATOR</span>
         </v-toolbar-title>
         <v-spacer />
+        <v-btn
+          icon
+          title="Import / Export"
+          @click="importExport"
+        >
+          <v-icon>
+            mdi-swap-vertical
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          title="Change theme"
+          @click="$vuetify.dark = !$vuetify.dark"
+        >
+          <v-icon>
+            mdi-invert-colors
+          </v-icon>
+        </v-btn>
         <v-btn
           icon
           title="Close theme generator"
@@ -51,6 +67,10 @@
 
     computed: {},
 
-    methods: {}
+    methods: {
+      importExport () {
+        console.log('Import/Export')
+      }
+    }
   }
 </script>

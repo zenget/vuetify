@@ -1,285 +1,175 @@
 <template>
-  <v-content>
-    <v-container
-      fluid
-      pa-0
-    >
-      <v-layout>
-        <v-item-group
-          v-model="selections"
-          class="xs12 sm10 md8 lg6 layout wrap flex pl-3 pt-3"
-          multiple
-        >
-          <v-item
-            v-for="palette in palettes"
-            :key="palette"
-          >
-            <v-hover slot-scope="{ active, toggle }">
-              <v-card
-                slot-scope="{ hover }"
-                :color="palette"
-                :style="getStyle(active, hover)"
-                :value="palette"
-                :class="`elevation-${active || hover ? '12' : '0'}`"
-                class="pa-2 d-flex"
-                tile
-                height="125"
-                max-width="125"
-                width="125"
-                @click.native="toggle"
+  <v-content class="pa-1">
+    <v-layout row wrap>
+      <v-flex sm6 xs12>
+        <v-layout column>
+          <v-flex px-5 pt-5 pb-0>
+            <v-flex
+              v-for=" (color, tkey) in themeDefaults"
+              :key="tkey"
+              pa-0
+            >
+              <v-text-field
+                v-model="$vuetify.theme[tkey]"
+                solo
+                :color="$vuetify.theme[tkey]"
+                :label="tkey"
+                class="colorField"
               >
-                <v-layout
-                  column
-                  justify-space-between
-                  align-space-between
+                <v-icon
+                  slot="prepend-inner"
+                  :color="$vuetify.theme[tkey]"
                 >
-                  <span
-                    tag="strong"
-                    v-text="palette.toUpperCase()"
+                  mdi-format-color-fill
+                </v-icon>
+                <v-menu
+                  slot="append-outer"
+                  transition="slide-y-transition"
+                  bottom
+                >
+                  <v-card
+                    slot="activator"
+                    :color="$vuetify.theme[tkey]"
+                    class="pa-2 d-flex"
+                    tile
+                    height="48"
+                    max-width="48"
+                    width="48"
                   />
-                  <v-slide-x-transition
-                    class="text-xs-right"
-                    hide-on-leave
-                    group
+                  <v-item-group
+                    v-model="themeSelects[tkey]"
+                    class="hiddenScroll"
                   >
-                    <v-icon key="icon">mdi-check</v-icon>
-                    <span v-if="primary === palette" key="primary">Primary</span>
-                    <span v-if="secondary === palette" key="secondary">Secondary</span>
-                    <span v-if="accent === palette" key="accent">Accent</span>
-                    <span v-if="error === palette" key="error">Error</span>
-                    <span v-if="warning === palette" key="warning">Warning</span>
-                    <span v-if="info === palette" key="info">Info</span>
-                    <span v-if="success === palette" key="success">Success</span>
-                  </v-slide-x-transition>
-                </v-layout>
-              </v-card>
-            </v-hover>
-          </v-item>
-        </v-item-group>
-        <v-flex
-          xs12
-          sm10
-          md8
-          lg6
-          pa-5
-        >
-          <v-card
-            class="elevation-16 mx-auto"
-            color="white"
-            dark
-            height="500"
-            max-width="500"
-            tile
-          >
-            <v-card
-              :color="primary"
-              flat
-              height="275"
-              tile
-            >
-              <v-system-bar
-                :class="primary"
-                class="darken-2"
-                status
-              />
-              <v-toolbar
-                color="transparent"
-                flat
-              >
-                <v-btn icon>
-                  <v-icon>mdi-arrow-left</v-icon>
-                </v-btn>
-                <v-spacer />
-                <v-btn icon>
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <div
-                class="pl-5 py-4"
-              >
-                <span class="pl-5 font-weight-light">Theme Preview</span>
-                <span class="pl-5 font-weight-light">Export your theme below</span>
-              </div>
-              <v-btn
-                :color="secondary"
-                absolute
-                bottom
-                fab
-                right
-              >
-                <v-icon>mdi-share-variant</v-icon>
-              </v-btn>
-            </v-card>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-container>
-
-    <v-footer app>
-      <span slot="header">Palette Options</span>
-      <v-card>
-        <v-layout wrap align-content-center>
-          <v-btn
-            :key="`primary-${primary}`"
-            :color="primary"
-            depressed
-          >
-            Primary
-            {{ colors[primary] ? colors[primary].base : '' }}
-          </v-btn>
-
-          <v-btn
-            :key="`secondary-${secondary}`"
-            :color="secondary"
-            depressed
-          >
-            Secondary
-            {{ colors[secondary] ? colors[secondary].base : '' }}
-          </v-btn>
-
-          <v-btn
-            :key="`accent-${accent}`"
-            :color="accent"
-            depressed
-          >
-            Accent
-            {{ colors[accent] ? colors[accent].base : '' }}
-          </v-btn>
-
-          <v-btn
-            :key="`error-${error}`"
-            :color="error"
-            depressed
-          >
-            Error
-            {{ colors[error] ? colors[error].base : '' }}
-          </v-btn>
-
-          <v-btn
-            :key="`warning-${warning}`"
-            :color="warning"
-            depressed
-          >
-            Warning
-            {{ colors[warning] ? colors[warning].base : '' }}
-          </v-btn>
-
-          <v-btn
-            :key="`info-${info}`"
-            :color="info"
-            depressed
-          >
-            Info
-            {{ colors[info] ? colors[info].base : '' }}
-          </v-btn>
-
-          <v-btn
-            :key="`success-${success}`"
-            :color="success"
-            depressed
-          >
-            Success
-            {{ colors[success] ? colors[success].base : '' }}
-          </v-btn>
-
-          <v-flex xs12>
-            <v-divider />
-          </v-flex>
-
-          <v-flex xs12 class="text-xs-right">
-            <v-dialog
-              v-model="exportModal"
-              max-width="360"
-              lazy
-            >
-              <v-btn
-                slot="activator"
-                dark
-                color="primary"
-              >
-                Export
-              </v-btn>
-
-              <export-modal
-                :colors="colors"
-                :selections="selections"
-                :palettes="palettes"
-                @close="exportModal = false"
-              />
-            </v-dialog>
+                    <v-item
+                      v-for="palette in palettes"
+                      :key="palette"
+                    >
+                      <v-hover slot-scope="{ active, toggle }">
+                        <v-card
+                          slot-scope="{ hover }"
+                          :color="palette"
+                          :style="getStyle(active, hover)"
+                          :value="palette"
+                          :class="`elevation-${active || hover ? '12' : '0'}`"
+                          class="pa-2 d-flex"
+                          tile
+                          height="48"
+                          max-width="48"
+                          width="48"
+                          @click.native="toggle(); setColor(tkey);"
+                        />
+                      </v-hover>
+                    </v-item>
+                  </v-item-group>
+                </v-menu>
+              </v-text-field>
+            </v-flex>
           </v-flex>
         </v-layout>
-      </v-card>
-    </v-footer>
+      </v-flex>
+      <v-flex sm6 xs12 pa-0>
+        <v-layout>
+          <v-flex pa-5>
+            <v-card
+              class="elevation-16 mx-auto"
+              color="secondary"
+              dark
+              height="500"
+              max-width="500"
+              tile
+            >
+              <v-card
+                color="primary"
+                flat
+                height="275"
+                tile
+              >
+                <v-system-bar
+                  class="primary darken-2"
+                  status
+                />
+                <v-toolbar
+                  color="transparent"
+                  flat
+                >
+                  <v-btn icon>
+                    <v-icon>mdi-arrow-left</v-icon>
+                  </v-btn>
+                  <v-spacer />
+                  <v-btn icon>
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </v-toolbar>
+                <v-btn
+                  color="accent"
+                  absolute
+                  bottom
+                  fab
+                  right
+                >
+                  <v-icon>mdi-share-variant</v-icon>
+                </v-btn>
+              </v-card>
+              <v-layout row wrap class="pt-5">
+                <v-flex xs6 px-3>
+                  <v-alert type="success" dense />
+                </v-flex>
+                <v-flex xs6 px-3>
+                  <v-alert type="info" dense />
+                </v-flex>
+                <v-flex xs6 px-3>
+                  <v-alert type="warning" dense />
+                </v-flex>
+                <v-flex xs6 px-3>
+                  <v-alert type="error" dense />
+                </v-flex>
+              </v-layout>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
   </v-content>
 </template>
 
 <script>
   // Utilities
   import colors from 'vuetify/es5/util/colors'
-  import kebabCase from 'lodash/kebabCase'
+  import { kebabCase, camelCase } from 'lodash'
 
   export default {
     components: {
-      ExportModal: () => import('./ExportModal')
+      // ExportModal: () => import('./ExportModal')
     },
 
     data: () => ({
       colors,
-      selections: [],
-      exportModal: false
+      selections: '',
+      exportModal: false,
+      themeDefaults: {
+        primary: '#673ab7',
+        secondary: '#424242',
+        accent: '#82B1FF',
+        success: '#4CAF50',
+        info: '#2196F3',
+        warning: '#FB8C00',
+        error: '#FF5252'
+      },
+      themeSelects: {
+        primary: '',
+        secondary: '',
+        accent: '',
+        success: '',
+        info: '',
+        warning: '',
+        error: ''
+      }
     }),
 
     computed: {
       palettes () {
         const keys = Object.keys(this.colors)
-
         return keys.map(kebabCase).slice(0, keys.length - 2)
-      },
-      primary () {
-        if (!this.selections.length) return 'grey'
-
-        return this.palettes[this.selections[0]]
-      },
-      secondary () {
-        if (this.selections.length < 1) return 'grey'
-
-        return this.palettes[this.selections[1]]
-      },
-      accent () {
-        if (this.selections.length < 2) return 'grey'
-
-        return this.palettes[this.selections[2]]
-      },
-      error () {
-        if (this.selections.length < 3) return 'grey'
-
-        return this.palettes[this.selections[3]]
-      },
-      warning () {
-        if (this.selections.length < 4) return 'grey'
-
-        return this.palettes[this.selections[4]]
-      },
-      info () {
-        if (this.selections.length < 5) return 'grey'
-
-        return this.palettes[this.selections[5]]
-      },
-      success () {
-        if (this.selections.length < 6) return 'grey'
-
-        return this.palettes[this.selections[6]]
-      }
-    },
-
-    watch: {
-      selections (val) {
-        if (val.length > 8) {
-          this.$nextTick(() => {
-            this.selections.shift()
-          })
-        }
       }
     },
 
@@ -288,7 +178,27 @@
         return {
           transform: active || hover ? 'scale(.9, .85)' : 'none'
         }
+      },
+      setColor (themeProp) {
+        const selected = camelCase(this.palettes[this.themeSelects[themeProp]])
+        console.log(themeProp, this.themeSelects[themeProp], selected)
+        this.$vuetify.theme[themeProp] = this.colors[selected].base
       }
     }
   }
 </script>
+<style>
+  .hiddenScroll {
+    max-height: 300px;
+    overflow-y: scroll;
+    background: #fff;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+  }
+  .hiddenScroll::-webkit-scrollbar { /* WebKit */
+      width: 0px;
+  }
+  .colorField > .v-input__append-outer {
+    margin: 0px !important;
+  }
+</style>
