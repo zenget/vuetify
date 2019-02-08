@@ -78,28 +78,28 @@
               max-width="500"
               tile
             >
-              <v-card
+              <v-system-bar
+                class="primary darken-2"
+                status
+              />
+              <v-toolbar
                 color="primary"
                 flat
-                height="275"
-                tile
+                extended
               >
-                <v-system-bar
-                  class="primary darken-2"
-                  status
-                />
-                <v-toolbar
-                  color="transparent"
-                  flat
+                <v-btn icon>
+                  <v-icon>mdi-arrow-left</v-icon>
+                </v-btn>
+                <v-spacer />
+                <v-btn icon>
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+                <v-toolbar-title
+                  slot="extension"
+                  class="white--text"
                 >
-                  <v-btn icon>
-                    <v-icon>mdi-arrow-left</v-icon>
-                  </v-btn>
-                  <v-spacer />
-                  <v-btn icon>
-                    <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                </v-toolbar>
+                  Title
+                </v-toolbar-title>
                 <v-btn
                   color="accent"
                   absolute
@@ -109,7 +109,7 @@
                 >
                   <v-icon>mdi-share-variant</v-icon>
                 </v-btn>
-              </v-card>
+              </v-toolbar>
               <v-layout row wrap class="pt-5">
                 <v-flex xs6 px-3>
                   <v-alert type="success" dense />
