@@ -10,7 +10,7 @@
               pa-0
             >
               <v-text-field
-                v-model="$vuetify.theme[tkey]"
+                v-model="$vuetify.theme.currentTheme[tkey]"
                 solo
                 :color="$vuetify.theme[tkey]"
                 :label="tkey"
@@ -18,7 +18,7 @@
               >
                 <v-icon
                   slot="prepend-inner"
-                  :color="$vuetify.theme[tkey]"
+                  :color="$vuetify.theme.currentTheme[tkey]"
                 >
                   mdi-format-color-fill
                 </v-icon>
@@ -29,7 +29,7 @@
                 >
                   <v-card
                     slot="activator"
-                    :color="$vuetify.theme[tkey]"
+                    :color="$vuetify.theme.currentTheme[tkey]"
                     class="pa-2 d-flex"
                     tile
                     height="48"
@@ -181,8 +181,11 @@
       },
       setColor (themeProp) {
         const selected = camelCase(this.palettes[this.themeSelects[themeProp]])
+        const theme = (this.$vuetify.theme.dark) ? 'dark' : 'light'
         console.log(themeProp, this.themeSelects[themeProp], selected)
-        this.$vuetify.theme[themeProp] = this.colors[selected].base
+        // const curTheme = this.$vuetify.theme.currentTheme
+        // this.$vuetify.theme.themes[theme] = Object.assign(curTheme, { [themeProp]: this.colors[selected].base })
+        this.$vuetify.theme.themes[theme][themeProp] = this.colors[selected].base
       }
     }
   }
