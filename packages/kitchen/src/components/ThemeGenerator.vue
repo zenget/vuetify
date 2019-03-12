@@ -32,7 +32,7 @@
         <v-btn
           icon
           title="Change theme"
-          @click="$vuetify.dark = !$vuetify.dark"
+          @click="$vuetify.theme.dark = !$vuetify.theme.dark"
         >
           <v-icon>
             mdi-invert-colors
