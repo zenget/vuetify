@@ -31,6 +31,15 @@
         </v-btn>
         <v-btn
           icon
+          title="Reset theme defaults"
+          @click="resetThemes"
+        >
+          <v-icon>
+            mdi-undo
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
           title="Change theme"
           @click="$vuetify.theme.dark = !$vuetify.theme.dark"
         >
@@ -70,6 +79,9 @@
     methods: {
       importExport () {
         console.log('Import/Export')
+      },
+      resetThemes () {
+        this.$vuetify.theme.resetThemes()
       }
     }
   }
