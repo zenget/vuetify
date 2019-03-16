@@ -5,7 +5,7 @@
         <v-layout column>
           <v-flex px-5 pt-5 pb-0>
             <v-flex
-              v-for=" (color, tkey) in themeDefaults"
+              v-for=" (color, tkey) in themeSelects"
               :key="tkey"
               pa-0
             >
@@ -56,7 +56,7 @@
                           height="48"
                           max-width="48"
                           width="48"
-                          @click.native="toggle(); setColor(tkey);"
+                          @click.native="toggle(); setThemeColor(tkey);"
                         />
                       </v-hover>
                     </v-item>
@@ -146,15 +146,6 @@
       colors,
       selections: '',
       exportModal: false,
-      themeDefaults: {
-        primary: '#673ab7',
-        secondary: '#424242',
-        accent: '#82B1FF',
-        success: '#4CAF50',
-        info: '#2196F3',
-        warning: '#FB8C00',
-        error: '#FF5252'
-      },
       themeSelects: {
         primary: '',
         secondary: '',
@@ -179,13 +170,11 @@
           transform: active || hover ? 'scale(.9, .85)' : 'none'
         }
       },
-      setColor (themeProp) {
+      setThemeColor (themeProp) {
         const selected = camelCase(this.palettes[this.themeSelects[themeProp]])
         const theme = (this.$vuetify.theme.dark) ? 'dark' : 'light'
         console.log(themeProp, this.themeSelects[themeProp], selected)
-        // const curTheme = this.$vuetify.theme.currentTheme
-        // this.$vuetify.theme.themes[theme] = Object.assign(curTheme, { [themeProp]: this.colors[selected].base })
-        this.$vuetify.theme.themes[theme][themeProp] = this.colors[selected].base
+        this.$vuetify.theme.setTheme(theme, { [themeProp]: this.colors[selected].base })
       }
     }
   }
