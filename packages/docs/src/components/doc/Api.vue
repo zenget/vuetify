@@ -44,6 +44,7 @@
       </v-card-text>
 
       <v-tabs-items
+        :key="current"
         v-model="tab"
         touchless
         class="white"
@@ -52,7 +53,7 @@
           v-for="(tab, i) in computedTabs"
           :key="`tab-item-${i}`"
           :value="tab"
-          lazy
+          eager
         >
           <v-card flat>
             <doc-parameters
