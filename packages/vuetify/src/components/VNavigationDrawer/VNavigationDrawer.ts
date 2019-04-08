@@ -24,8 +24,10 @@ import { PropValidator } from 'vue/types/options'
 
 const baseMixins = mixins(
   Applicationable('left', [
+    'isActive',
     'miniVariant',
     'right',
+    'temporary',
     'width'
   ]),
   Colorable,
@@ -76,7 +78,9 @@ export default baseMixins.extend({
   },
 
   data: () => ({
+    clientWidth: 0,
     isActive: false,
+    panning: null as number | null,
     touchArea: {
       left: 0,
       right: 0
@@ -92,6 +96,7 @@ export default baseMixins.extend({
       return this.right ? 'right' : 'left'
     },
     calculatedTransform (): number {
+      if (this.panning != null) return this.panning
       if (this.isActive) return 0
 
       return this.right ? 100 : -100
@@ -192,7 +197,6 @@ export default baseMixins.extend({
     },
     isActive (val) {
       this.$emit('input', val)
-      this.callUpdate()
     },
     /**
      * When mobile changes, adjust the active state
@@ -212,6 +216,15 @@ export default baseMixins.extend({
       this.isActive = !val
       this.callUpdate()
     },
+    panning (val) {
+      const opacity = (100 - Math.abs(val)) / 100
+
+      if (parseInt(opacity)) (this.isActive = true)
+      else if (this.isActive) this.isActive = false
+      if (!this.overlay) this.genOverlay()
+
+      this.overlay.opacity = opacity * 0.46
+    },
     permanent (val) {
       // If enabling prop enable the drawer
       if (val) {
@@ -219,13 +232,10 @@ export default baseMixins.extend({
       }
       this.callUpdate()
     },
-    showOverlay (val) {
-      if (val) this.genOverlay()
-      else this.removeOverlay()
-    },
-    temporary () {
-      this.callUpdate()
-    },
+    // showOverlay (val) {
+    //   if (val) this.genOverlay()
+    //   else this.removeOverlay()
+    // },
     value (val) {
       if (this.permanent) return
 
@@ -258,7 +268,10 @@ export default baseMixins.extend({
     genDirectives () {
       const directives = [{
         name: 'click-outside',
-        value: () => (this.isActive = false),
+        value: () => {
+          this.isActive = false
+          this.panning = null
+        },
         args: {
           closeConditional: this.closeConditional,
           include: this.getOpenDependentElements
@@ -268,9 +281,12 @@ export default baseMixins.extend({
       !this.touchless && directives.push({
         name: 'touch',
         value: {
-          parent: true,
+          target: '[data-app]',
           left: this.swipeLeft,
-          right: this.swipeRight
+          move: this.touchmove,
+          right: this.swipeRight,
+          start: this.onTouchstart,
+          end: this.onTouchend
         }
       } as any)
 
@@ -320,7 +336,7 @@ export default baseMixins.extend({
       }
     },
     swipeRight (e: TouchWrapper) {
-      if (this.isActive && !this.right) return
+      if (this.panning || (this.isActive && !this.right)) return
       this.calculateTouchArea()
 
       if (Math.abs(e.touchendX - e.touchstartX) < 100) return
@@ -330,7 +346,7 @@ export default baseMixins.extend({
       else if (this.right && this.isActive) this.isActive = false
     },
     swipeLeft (e: TouchWrapper) {
-      if (this.isActive && this.right) return
+      if (this.panning || (this.isActive && this.right)) return
       this.calculateTouchArea()
 
       if (Math.abs(e.touchendX - e.touchstartX) < 100) return
@@ -338,6 +354,39 @@ export default baseMixins.extend({
         e.touchstartX >= this.touchArea.right
       ) this.isActive = true
       else if (!this.right && this.isActive) this.isActive = false
+    },
+    onTouchend () {
+      this.$el.style.transition = ''
+
+      this.$nextTick(() => {
+        window.requestAnimationFrame(() => {
+          if (!this.panning) return
+
+          const panning = 100 - Math.abs(this.panning)
+
+          // if inactive and panning is > 50 open
+          // if inactive and panning is < 50 close
+          // if active and panning is
+
+          if (panning < 50) {
+            this.panning = -100
+          } else (this.panning = 0)
+        })
+      })
+    },
+    onTouchstart (e: TouchWrapper) {
+      this.$el.style.transitionProperty = 'box-shadow'
+    },
+    touchmove (e: TouchWrapper) {
+      this.calculateTouchArea()
+      if (
+        !this.isActive &&
+        this.panning === -100 &&
+        e.touchstartX > 25
+      ) return
+
+      this.clientWidth = this.clientWidth || this.$el.clientWidth
+      this.panning = Math.min((1 - e.touchmoveX / this.clientWidth) * -100, 0)
     },
     /**
      * Update the application layout

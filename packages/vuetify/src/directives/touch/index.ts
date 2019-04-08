@@ -31,6 +31,7 @@ export interface TouchWrapper extends TouchHandlers {
 interface TouchVNodeDirective extends VNodeDirective {
   value?: TouchHandlers & {
     parent?: boolean
+    target?: string
     options?: AddEventListenerOptions
   }
 }
@@ -109,7 +110,12 @@ function createHandlers (value: TouchHandlers): TouchStoredHandlers {
 
 function inserted (el: HTMLElement, binding: TouchVNodeDirective, vnode: VNode) {
   const value = binding.value!
-  const target = value.parent ? el.parentElement : el
+  const query = value.target && document.querySelector(value.target) as HTMLElement
+  let target: HTMLElement | null = null
+
+  if (query) target = query
+  if (!target) target = value.parent ? el.parentElement : el
+
   const options = value.options || { passive: true }
 
   // Needed to pass unit tests
@@ -120,6 +126,7 @@ function inserted (el: HTMLElement, binding: TouchVNodeDirective, vnode: VNode) 
   target._touchHandlers![vnode.context!._uid] = handlers
 
   keys(handlers).forEach(eventName => {
+    if (!target) return
     target.addEventListener(eventName, handlers[eventName] as EventListener, options)
   })
 }
