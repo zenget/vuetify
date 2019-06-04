@@ -127,6 +127,7 @@ export default baseMixins.extend<options>().extend({
       selectedItems: [] as any[],
       keyboardLookupPrefix: '',
       keyboardLookupLastTime: 0,
+      role: 'list',
     }
   },
 
@@ -402,6 +403,10 @@ export default baseMixins.extend<options>().extend({
       input.data!.domProps!.value = null
       input.data!.attrs!.readonly = true
       input.data!.attrs!['aria-readonly'] = String(this.readonly)
+      input.data!.attrs!['aria-label'] = this.label
+      input.data!.attrs!.role = this.role
+      input.data!.attrs!['aria-haspopup'] = 'listbox'
+      input.data!.attrs!['aria-expanded'] = this.isMenuActive
       input.data!.on!.keypress = this.onKeyPress
 
       return input

@@ -33,11 +33,12 @@ exports[`VDataTable.ts should render 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -154,11 +155,12 @@ exports[`VDataTable.ts should render loading state 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -355,11 +357,12 @@ exports[`VDataTable.ts should render loading state 2`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -638,11 +641,12 @@ exports[`VDataTable.ts should render virtual table 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -823,11 +827,12 @@ exports[`VDataTable.ts should render with body slot 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -1107,11 +1112,12 @@ exports[`VDataTable.ts should render with data 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -1286,11 +1292,12 @@ exports[`VDataTable.ts should render with group scoped slot 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -1708,11 +1715,12 @@ exports[`VDataTable.ts should render with group.summary scoped slot 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -2076,11 +2084,12 @@ exports[`VDataTable.ts should render with grouped rows 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -2275,11 +2284,12 @@ exports[`VDataTable.ts should render with item scoped slot 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -2584,11 +2594,12 @@ exports[`VDataTable.ts should render with item.expanded scoped slot 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -2916,11 +2927,12 @@ exports[`VDataTable.ts should render with showExpand 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -3248,11 +3260,12 @@ exports[`VDataTable.ts should render with showExpand 2`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -3607,11 +3620,12 @@ exports[`VDataTable.ts should render with showSelect 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   5
                 </div>
-                <input aria-label="$vuetify.dataTable.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">

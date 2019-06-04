@@ -1,0 +1,104 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VSelect.ts should generate aria attrs 1`] = `
+
+<div role="combobox"
+     class="v-input theme--light v-text-field v-select"
+>
+  <div class="v-input__control">
+    <div class="v-input__slot">
+      <div class="v-select__slot">
+        <label aria-hidden="true"
+               class="v-label theme--light"
+               style="right: 0px; position: absolute;"
+        >
+          test
+        </label>
+        <div class="v-select__selections">
+          <input autocomplete="on"
+                 readonly="readonly"
+                 type="text"
+                 aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
+                 aria-label="test"
+          >
+        </div>
+        <div class="v-input__append-inner">
+          <div class="v-input__icon v-input__icon--append">
+            <i aria-hidden="true"
+               class="v-icon material-icons theme--light"
+            >
+              $vuetify.icons.dropdown
+            </i>
+          </div>
+        </div>
+      </div>
+      <div class="v-menu">
+      </div>
+    </div>
+    <div class="v-text-field__details">
+      <div class="v-messages theme--light">
+        <span name="message-transition"
+              tag="div"
+              class="v-messages__wrapper"
+        >
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+`;
+
+exports[`VSelect.ts should generate aria attrs 2`] = `
+
+<div role="combobox"
+     class="v-input v-input--is-disabled theme--light v-text-field v-select"
+>
+  <div class="v-input__control">
+    <div class="v-input__slot">
+      <div class="v-select__slot">
+        <label aria-hidden="true"
+               class="v-label v-label--is-disabled theme--light"
+               style="right: 0px; position: absolute;"
+        >
+          test
+        </label>
+        <div class="v-select__selections">
+          <input autocomplete="on"
+                 readonly="readonly"
+                 type="text"
+                 aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
+                 aria-label="test"
+                 disabled="disabled"
+          >
+        </div>
+        <div class="v-input__append-inner">
+          <div class="v-input__icon v-input__icon--append">
+            <i aria-hidden="true"
+               class="v-icon v-icon--disabled material-icons theme--light"
+            >
+              $vuetify.icons.dropdown
+            </i>
+          </div>
+        </div>
+      </div>
+      <div class="v-menu">
+      </div>
+    </div>
+    <div class="v-text-field__details">
+      <div class="v-messages theme--light">
+        <span name="message-transition"
+              tag="div"
+              class="v-messages__wrapper"
+        >
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+`;

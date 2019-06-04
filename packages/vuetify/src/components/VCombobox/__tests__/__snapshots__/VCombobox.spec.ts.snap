@@ -1,29 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`VSelect.ts should add color to selected index 1`] = `
+exports[`VCombobox.ts should generate aria attrs 1`] = `
 
-<div role="combobox"
-     class="v-input v-input--is-label-active v-input--is-dirty theme--light v-text-field v-select"
->
+<div class="v-input v-input--is-disabled theme--light v-text-field v-select v-autocomplete">
   <div class="v-input__control">
     <div class="v-input__slot">
       <div class="v-select__slot">
-        <div class="v-select__selections">
-          <div class="v-select__selection v-select__selection--comma primary--text">
-            foo
-          </div>
-          <input autocomplete="on"
-                 readonly="readonly"
-                 type="text"
-                 aria-readonly="false"
-                 role="list"
-                 aria-haspopup="listbox"
-          >
-        </div>
+        <label aria-hidden="true"
+               class="v-label v-label--is-disabled theme--light"
+               style="right: 0px; position: absolute;"
+        >
+          foo
+        </label>
+        <input aria-label="foo"
+               autocomplete="off"
+               disabled="disabled"
+               type="text"
+               role="combobox"
+        >
         <div class="v-input__append-inner">
           <div class="v-input__icon v-input__icon--append">
             <i aria-hidden="true"
-               class="v-icon material-icons theme--light"
+               class="v-icon v-icon--disabled material-icons theme--light"
             >
               $vuetify.icons.dropdown
             </i>

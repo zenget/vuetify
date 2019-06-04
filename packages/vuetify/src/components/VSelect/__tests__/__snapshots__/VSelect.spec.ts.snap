@@ -24,6 +24,8 @@ exports[`VSelect.ts should only show items if they are in items 1`] = `
                  readonly="readonly"
                  type="text"
                  aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
           >
         </div>
         <div class="v-input__append-inner">
@@ -66,6 +68,8 @@ exports[`VSelect.ts should only show items if they are in items 2`] = `
                  readonly="readonly"
                  type="text"
                  aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
           >
         </div>
         <div class="v-input__append-inner">
@@ -111,6 +115,8 @@ exports[`VSelect.ts should only show items if they are in items 3`] = `
                  readonly="readonly"
                  type="text"
                  aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
           >
         </div>
         <div class="v-input__append-inner">
@@ -159,6 +165,8 @@ exports[`VSelect.ts should only show items if they are in items 4`] = `
                  readonly="readonly"
                  type="text"
                  aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
           >
         </div>
         <div class="v-input__append-inner">
@@ -201,6 +209,8 @@ exports[`VSelect.ts should render v-select correctly when not using scope slot 1
                  readonly="readonly"
                  type="text"
                  aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
           >
         </div>
         <div class="v-input__append-inner">
@@ -243,6 +253,8 @@ exports[`VSelect.ts should render v-select correctly when not using v-list-item 
                  readonly="readonly"
                  type="text"
                  aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
           >
         </div>
         <div class="v-input__append-inner">
@@ -285,6 +297,8 @@ exports[`VSelect.ts should render v-select correctly when using v-list-item in i
                  readonly="readonly"
                  type="text"
                  aria-readonly="false"
+                 role="list"
+                 aria-haspopup="listbox"
           >
         </div>
         <div class="v-input__append-inner">

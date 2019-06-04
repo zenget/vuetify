@@ -29,11 +29,12 @@ exports[`VDataIterator.ts should render and match snapshot 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataFooter.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -115,11 +116,12 @@ exports[`VDataIterator.ts should render and match snapshot with data 1`] = `
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataFooter.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -192,11 +194,12 @@ exports[`VDataIterator.ts should render valid no-data, loading and no-results st
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataFooter.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -269,11 +272,12 @@ exports[`VDataIterator.ts should render valid no-data, loading and no-results st
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataFooter.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">
@@ -346,11 +350,12 @@ exports[`VDataIterator.ts should render valid no-data, loading and no-results st
                 <div class="v-select__selection v-select__selection--comma">
                   10
                 </div>
-                <input aria-label="$vuetify.dataFooter.itemsPerPageText"
-                       autocomplete="on"
+                <input autocomplete="on"
                        readonly="readonly"
                        type="text"
                        aria-readonly="false"
+                       role="list"
+                       aria-haspopup="listbox"
                 >
               </div>
               <div class="v-input__append-inner">

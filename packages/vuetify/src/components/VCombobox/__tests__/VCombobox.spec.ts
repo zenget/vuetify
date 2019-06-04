@@ -265,4 +265,15 @@ describe('VCombobox.ts', () => {
 
     expect(wrapper.vm.internalValue).toBe('foo')
   })
+
+  it('should generate aria attrs', async () => {
+    const wrapper = mountFunction({
+      propsData: {
+        label: 'foo',
+        disabled: true,
+      },
+    })
+
+    expect(wrapper.html()).toMatchSnapshot()
+  })
 })

@@ -28,6 +28,7 @@ export default VAutocomplete.extend({
 
   data: () => ({
     editingIndex: -1,
+    role: 'combobox',
   }),
 
   computed: {

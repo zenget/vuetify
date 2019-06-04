@@ -182,4 +182,20 @@ describe('VSelect.ts', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.internalValue).toEqual('faa')
   })
+
+  it('should generate aria attrs', async () => {
+    const wrapper = mountFunction()
+
+    wrapper.setProps({
+      label: 'test',
+    })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.html()).toMatchSnapshot()
+
+    wrapper.setProps({
+      disabled: true,
+    })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.html()).toMatchSnapshot()
+  })
 })
