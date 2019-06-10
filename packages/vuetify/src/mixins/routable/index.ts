@@ -17,6 +17,7 @@ export default Vue.extend({
   },
 
   props: {
+    active: Boolean,
     activeClass: String,
     append: Boolean,
     disabled: Boolean,
@@ -38,10 +39,12 @@ export default Vue.extend({
     target: String,
   },
 
-  data: () => ({
-    isActive: false,
-    proxyClass: '',
-  }),
+  data () {
+    return {
+      isActive: this.active,
+      proxyClass: '',
+    }
+  },
 
   computed: {
     classes (): object {
@@ -75,6 +78,9 @@ export default Vue.extend({
 
   watch: {
     $route: 'onRouteChange',
+    active (val: boolean) {
+      this.isActive = val
+    },
   },
 
   methods: {

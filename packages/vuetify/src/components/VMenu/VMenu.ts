@@ -191,6 +191,7 @@ export default baseMixins.extend({
           if (this.$refs.content) {
             this.calculatedTopAuto = this.calcTopAuto()
             this.auto && (this.$refs.content.scrollTop = this.calcScrollPosition())
+            this.$refs.content.focus()
           }
         })
       })
@@ -280,7 +281,10 @@ export default baseMixins.extend({
     },
     genContent (): VNode {
       const options = {
-        attrs: this.getScopeIdAttrs(),
+        attrs: {
+          ...this.getScopeIdAttrs(),
+          tabindex: '-1',
+        },
         staticClass: 'v-menu__content',
         'class': {
           ...this.rootThemeClasses,

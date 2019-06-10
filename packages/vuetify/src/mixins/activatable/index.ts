@@ -56,17 +56,17 @@ export default baseMixins.extend({
     getValueProxy (): object {
       const self = this
       return {
-        get value () {
+        get active () {
           return self.isActive
         },
-        set value (isActive: boolean) {
+        set active (isActive: boolean) {
           self.isActive = isActive
         },
       }
     },
     genActivator () {
       const node = getSlot(this, 'activator', Object.assign(this.getValueProxy(), {
-        on: this.genActivatorListeners(),
+        $on: this.genActivatorListeners(),
       })) || []
 
       this.activatorNode = node

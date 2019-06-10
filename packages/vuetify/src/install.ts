@@ -1,6 +1,7 @@
 import OurVue, { VueConstructor } from 'vue'
 import { VuetifyUseOptions } from 'types'
 import { consoleError } from './util/console'
+import mergeData from './util/mergeData'
 
 export function install (Vue: VueConstructor, args: VuetifyUseOptions = {}) {
   if ((install as any).installed) return
@@ -44,4 +45,25 @@ export function install (Vue: VueConstructor, args: VuetifyUseOptions = {}) {
       }
     },
   })
+
+  Vue.prototype._b = (function (bind) {
+    return function bindObjectProps (
+      this: any,
+      data: any,
+      tag: string,
+      value: any,
+      asProp: boolean,
+      isSync?: boolean
+    ) {
+      debugger
+      for (const key in value) {
+        if (key.startsWith('$')) {
+          const newKey = key.slice(1)
+          data = mergeData(data, { [newKey]: value[key] })
+          delete value[key]
+        }
+      }
+      return bind.call(this, data, tag, value, asProp, isSync)
+    }
+  })(Vue.prototype._b)
 }
