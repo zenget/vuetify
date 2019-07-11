@@ -39,6 +39,7 @@ export function getComponent (type) {
 }
 
 export function parseLink (match, text, link) {
+  const githubUrl = 'https://github.com/vuetifyjs/vuetify/blob/master'
   let attrs = ''
   let linkClass = 'markdown--link'
   let icon = ''
@@ -48,6 +49,11 @@ export function parseLink (match, text, link) {
     attrs = `target="_blank" rel="noopener"`
     icon = 'open-in-new'
     linkClass += ' markdown--external'
+
+    if (link.startsWith(githubUrl)) {
+      link = link.replace(githubUrl, githubUrl.replace('master', getBranch()))
+      icon = 'mdi-github'
+    }
   // Same page internal link
   } else if (link.charAt(0) === '#') {
     linkClass += ' markdown--same-internal'
@@ -83,7 +89,11 @@ export function genChip (item) {
   if (item.help) return 'help'
 }
 
+let branch
 export function getBranch () {
-  const branch = window ? window.location.hostname.split('.')[0] : 'master'
-  return ['master', 'dev', 'next'].includes(branch) ? branch : 'master'
+  if (!branch) {
+    branch = window ? window.location.hostname.split('.')[0] : 'foo'
+    branch = ['master', 'dev', 'next'].includes(branch) ? branch : 'foo'
+  }
+  return branch
 }
