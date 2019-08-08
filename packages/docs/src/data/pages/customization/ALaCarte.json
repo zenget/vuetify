@@ -125,18 +125,6 @@
         },
         {
           "type": "text",
-          "lang": "loaderText8a"
-        },
-        {
-          "type": "markup",
-          "value": "html_a_la_carte_string_tag"
-        },
-        {
-          "type": "markup",
-          "value": "js_a_la_carte_manual"
-        },
-        {
-          "type": "text",
           "lang": "loaderText8b"
         },
         {
