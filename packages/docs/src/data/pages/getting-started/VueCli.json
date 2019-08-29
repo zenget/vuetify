@@ -1,0 +1,95 @@
+{
+  "title": "header",
+  "titleText": "headerText",
+  "children": [
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "heading",
+          "lang": "newHeader"
+        },
+        {
+          "type": "text",
+          "lang": "vueCliText1"
+        },
+        {
+          "type": "markup",
+          "value": "bash_vue_cli_install"
+        },
+        {
+          "type": "alert",
+          "lang": "vueCliText2",
+          "value": "info"
+        },
+        {
+          "type": "text",
+          "lang": "vueCliText4"
+        },
+        {
+          "type": "markup",
+          "value": "bash_vue_cli_create_app"
+        },
+        {
+          "type": "text",
+          "lang": "vueCliText3"
+        },
+        {
+          "type": "text",
+          "lang": "vueCliText5"
+        },
+        {
+          "type": "markup",
+          "value": "bash_vue_add_vuetify"
+        },
+        {
+          "type": "text",
+          "lang": "vueCliText6"
+        },
+        {
+          "type": "markup",
+          "value": "bash_vuetify_cli_install"
+        },
+        {
+          "type": "text",
+          "lang": "vueCliText7"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "heading",
+          "lang": "uiHeader"
+        },
+        {
+          "type": "text",
+          "lang": "uiText1"
+        },
+        {
+          "type": "markup",
+          "value": "bash_vue_ui"
+        },
+        {
+          "type": "text",
+          "lang": "uiText2"
+        },
+        {
+          "type": "img",
+          "lang": "uiImg1",
+          "value": "quick-start/vue_ui.png"
+        },
+        {
+          "type": "text",
+          "lang": "uiText3"
+        },
+        {
+          "type": "img",
+          "lang": "uiImg2",
+          "value": "quick-start/vue_ui_vuetify_config.png"
+        }
+      ]
+    }
+  ]
+}

@@ -5,10 +5,20 @@
     "icon": "mdi-speedometer",
     "children": [
       { "text": "quickStart", "to": "quick-start" },
+      { "text": "vueCli", "to": "vue-cli" },
+      { "text": "webpack", "to": "webpack" },
+      { "text": "laravel", "to": "laravel" },
       { "text": "preMadeLayouts", "to": "pre-made-layouts" },
       { "new": true, "text": "testing", "to": "unit-testing" },
       { "text": "whyVuetify", "to": "why-vuetify" },
-      { "text": "faq", "to": "frequently-asked-questions" },
+      { "text": "faq", "to": "frequently-asked-questions" }
+    ]
+  },
+  {
+    "group": "something",
+    "text": "something",
+    "icon": "mdi-help",
+    "children": [
       { "text": "meetTheTeam", "to": "meet-the-team" },
       { "text": "sponsorsAndBackers", "to": "sponsors-and-backers" },
       { "new": true, "text": "lts", "to": "long-term-support" },

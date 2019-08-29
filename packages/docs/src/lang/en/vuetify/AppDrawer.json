@@ -119,5 +119,9 @@
   "treeview": "Treeview",
   "typography": "Typography",
   "whyVuetify": "Why Vuetify?",
-  "windows": "Windows"
+  "windows": "Windows",
+  "something": "Something",
+  "vueCli": "Vue CLI",
+  "webpack": "Webpack",
+  "laravel": "Laravel"
 }
