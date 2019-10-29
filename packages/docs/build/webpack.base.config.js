@@ -11,9 +11,9 @@ const resolve = file => path.resolve(__dirname, file)
 
 const plugins = [
   new webpack.DefinePlugin({
-    'process.env': JSON.stringify(process.env)
+    'process.env': JSON.stringify(process.env),
   }),
-  new VueLoaderPlugin()
+  new VueLoaderPlugin(),
 ]
 
 const devtool = isProd ? 'none' : 'source-map'
@@ -23,17 +23,18 @@ module.exports = {
   devtool,
   output: {
     path: resolve('../dist'),
+    pathinfo: isProd,
     publicPath: '/dist/',
     filename: isProd ? '[name].[chunkhash].js' : '[name].js',
-    chunkFilename: isProd ? '[name].[chunkhash].js' : '[name].js'
+    chunkFilename: isProd ? '[name].[chunkhash].js' : '[name].js',
   },
   resolve: {
     extensions: ['*', '.js', '.json', '.vue'],
     alias: {
       '@': path.resolve(__dirname, '../src'),
-      'vue$': 'vue/dist/vue.runtime.esm.js'
+      vue$: 'vue/dist/vue.runtime.esm.js',
     },
-    symlinks: false
+    symlinks: false,
   },
   module: {
     noParse: /es6-promise\.js$/, // avoid webpack shimming process
@@ -43,44 +44,57 @@ module.exports = {
         test: /\.(js|css)$/,
         loader: 'source-map-loader',
         include: /vuetify[\\/](dist|es5|lib|src)/,
-        enforce: 'pre'
+        enforce: 'pre',
       },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        options: vueConfig
+        include: [
+          resolve('../src/components'),
+          resolve('../src/examples'),
+          resolve('../src/layouts'),
+          resolve('../src/pages'),
+          resolve('../src/views'),
+          resolve('../src/usages'),
+          resolve('../src/App.vue'),
+        ],
+        options: vueConfig,
       },
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.pug$/,
-        loader: 'pug-plain-loader'
+        exclude: /node_modules/,
       },
       {
         test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)(\?.*)?$/,
         loader: 'url-loader',
+        include: [
+          resolve('../src/public'),
+          resolve('../src/themes'),
+        ],
         query: {
           limit: 10000,
-          name: 'img/[name].[hash:7].[ext]'
-        }
+          name: 'img/[name].[hash:7].[ext]',
+        },
       },
       {
         test: /\.txt$/,
-        use: ['raw-loader']
-      }
-    ]
+        use: [
+          'thread-loader',
+          'raw-loader',
+        ],
+        include: resolve('../src/snippets'),
+      },
+    ],
   },
   performance: {
-    hints: false
+    hints: false,
   },
   stats: {
     children: false,
-    assets: !isProd
+    assets: !isProd,
   },
-  plugins
+  plugins,
 }
 
 plugins.push(

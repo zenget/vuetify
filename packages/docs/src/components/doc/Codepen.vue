@@ -1,15 +1,16 @@
-<template lang="pug">
-  form(
+<template>
+  <form
+    ref="form"
     method="POST"
     action="https://codepen.io/pen/define/"
     target="_blank"
-    ref="form"
-  )
-    input(
+  >
+    <input
       type="hidden"
       name="data"
       :value="value"
-    )
+    >
+  </form>
 </template>
 
 <script>

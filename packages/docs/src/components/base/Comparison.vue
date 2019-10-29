@@ -6,7 +6,7 @@
   >
     <v-simple-table>
       <caption class="pa-4 title">
-        Vue Framework Comparison {{ (new Date()).getFullYear() }}
+        Vue Framework Comparisons {{ (new Date()).getFullYear() }}
       </caption>
 
       <thead>
