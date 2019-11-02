@@ -1,0 +1,26 @@
+{
+  "discord": {
+    "description": "Get help, provide feedback and interact with other Vuetifiers in one of the most active communities in the Vue ecosystem.",
+    "src": "https://discordapp.com/assets/f8389ca1a741a115313bede9ac02e2c0.svg",
+    "title": "Discord Community",
+    "url": "https://community.vuetifyjs.com"
+  },
+  "medium": {
+    "description": "Read articles and guides pertaining to the Vue / Vuetify ecosystem on our official Medium Publication.",
+    "src": "https://d15omoko64skxi.cloudfront.net/wp-content/uploads/2015/05/Medium-logo-dark500-300x300.png",
+    "title": "Medium Publication",
+    "url": "https://medium.com/vuetify"
+  },
+  "twitter": {
+    "description": "Follow us on Twitter for updates on releases, new features and more.",
+    "src": "https://www.freeiconspng.com/uploads/logo-twitter-circle-png-transparent-image-1.png",
+    "title": "Twitter",
+    "url": "https://twitter.com/vuetifyjs"
+  },
+  "status": {
+    "description": "Think the documentation is down? You can check anytime on our status page.",
+    "src": "https://ohdear.app/img/ohdear-logo-square-inverted.png",
+    "title": "Status Page",
+    "url": "https://twitter.com/vuetifyjs"
+  }
+}
