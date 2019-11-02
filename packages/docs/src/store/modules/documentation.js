@@ -3,63 +3,16 @@ import camelCase from 'lodash/camelCase'
 import upperFirst from 'lodash/upperFirst'
 import { make } from 'vuex-pathify'
 
-function addHeadingAndAd (children) {
-  children.splice(0, 0, {
-    type: 'section',
-    children: [
-      { type: 'heading', lang: 'heading' },
-      { type: 'base-text', lang: 'headingText' },
-      { type: 'ad-entry' },
-    ],
-  })
-}
-
-function getHeadings (children, toc = []) {
-  for (const child of children) {
-    if (child.children) {
-      getHeadings(child.children, toc)
-
-      continue
-    }
-
-    if (
-      ![
-        'accessibility',
-        'api',
-        'examples',
-        'heading',
-        'up-next',
-        'usage-new',
-      ].includes(child.type)
-    ) continue
-
-    if (child.type === 'heading') {
-      toc.push(child.lang)
-    } else {
-      toc.push(`Generic.Pages.${camelCase(child.type)}`)
-    }
-  }
-
-  return toc
-}
-
-function getNamespace (namespace) {
-  switch (namespace) {
-    case 'introduction': return 'introduction/why-vuetify'
-    case 'getting-started': return 'getting-started/quick-start'
-    case 'styles': return 'styles/colors'
-    case 'components': return 'components/api-explorer'
-    case 'directives': return 'components/api-explorer'
-    case 'professional-support': return 'professional-support/consulting'
-    default: return ''
-  }
-}
-
-function addFooterAd (children) {
-  if (!children.length) return
-
-  children[children.length - 1].children.push({ type: 'ad-exit' })
-}
+// Utilities
+import {
+  addContentAd,
+  addFooterAd,
+  addHeadingAndAd,
+} from '../../util/ads'
+import {
+  getHeadings,
+  getNamespace,
+} from '../../util/helpers'
 
 const state = {
   deprecatedIn: require('@/data/deprecated.json'),
@@ -69,7 +22,6 @@ const state = {
   page: null,
   structure: null,
   toc: [],
-  templates: require('@/data/templates.json'),
 }
 
 const mutations = make.mutations(state)
@@ -115,12 +67,10 @@ const getters = {
     if (!children.length) return children
 
     addHeadingAndAd(children)
+    addContentAd(rootState.route.params.namespace, children)
     addFooterAd(children)
 
     return children
-  },
-  themes (state) {
-    return Object.values(state.templates)
   },
 }
 

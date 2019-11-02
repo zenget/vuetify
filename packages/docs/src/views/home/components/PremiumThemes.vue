@@ -27,7 +27,7 @@
 <script>
   // Utilities
   import {
-    get,
+    sync,
   } from 'vuex-pathify'
 
   export default {
@@ -46,7 +46,7 @@
     }),
 
     computed: {
-      templates: get('documentation/themes'),
+      ads: sync('ads/themes'),
       themes () {
         return this.templates.slice(0, 4)
       },

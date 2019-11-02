@@ -1,3 +1,5 @@
+import { camelCase } from 'lodash'
+
 // Must be called in Vue context
 export function goTo (id) {
   this.$vuetify.goTo(id).then(() => {
@@ -91,4 +93,49 @@ export function genChip (item) {
 export function getBranch () {
   const branch = window ? window.location.hostname.split('.')[0] : 'master'
   return ['master', 'dev', 'next'].includes(branch) ? branch : 'master'
+}
+
+export function getHeadings (children, toc = []) {
+  for (const child of children) {
+    if (child.children) {
+      getHeadings(child.children, toc)
+
+      continue
+    }
+
+    if (
+      ![
+        'accessibility',
+        'api',
+        'examples',
+        'heading',
+        'up-next',
+        'usage-new',
+      ].includes(child.type)
+    ) continue
+
+    if (child.type === 'heading') {
+      toc.push(child.lang)
+    } else {
+      toc.push(`Generic.Pages.${camelCase(child.type)}`)
+    }
+  }
+
+  return toc
+}
+
+export function getNamespace (namespace) {
+  switch (namespace) {
+    case 'introduction': return 'introduction/why-vuetify'
+    case 'getting-started': return 'getting-started/quick-start'
+    case 'styles': return 'styles/colors'
+    case 'components': return 'components/api-explorer'
+    case 'directives': return 'components/api-explorer'
+    case 'professional-support': return 'professional-support/consulting'
+    default: return ''
+  }
+}
+
+export function random (max, min = 0) {
+  return Math.floor(Math.random() * max - min)
 }

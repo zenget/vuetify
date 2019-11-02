@@ -7,6 +7,19 @@
       "children": [
         { "type": "getting-started-team" }
       ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "up-next",
+          "value": [
+            "introduction/why-vuetify",
+            "introduction/long-term-support",
+            "introduction/roadmap"
+          ]
+        }
+      ]
     }
   ]
 }

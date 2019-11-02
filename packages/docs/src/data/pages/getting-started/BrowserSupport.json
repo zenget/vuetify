@@ -63,6 +63,19 @@
           "value": "html_ie11"
         }
       ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "up-next",
+          "value": [
+            "getting-started/quick-start",
+            "getting-started/unit-testing",
+            "getting-started/releases-and-migration"
+          ]
+        }
+      ]
     }
   ]
 }
