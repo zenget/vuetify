@@ -13,14 +13,26 @@
   },
   "twitter": {
     "description": "Follow us on Twitter for updates on releases, new features and more.",
-    "src": "https://www.freeiconspng.com/uploads/logo-twitter-circle-png-transparent-image-1.png",
+    "src": "http://pngimg.com/uploads/twitter/twitter_PNG9.png",
     "title": "Twitter",
     "url": "https://twitter.com/vuetifyjs"
   },
   "status": {
     "description": "Think the documentation is down? You can check anytime on our status page.",
     "src": "https://ohdear.app/img/ohdear-logo-square-inverted.png",
-    "title": "Status Page",
+    "title": "Documentation Status Page",
     "url": "https://twitter.com/vuetifyjs"
+  },
+  "issues": {
+    "description": "You can submit bugs and request new features for all Vuetify ecosystem libraries on our Issue Creator.",
+    "src": "https://cdn1.iconfinder.com/data/icons/web-development-and-programming/64/programming_development_bug_search-512.png",
+    "title": "Issue Creator",
+    "url": "https://issues.vuetifyjs.com"
+  },
+  "help": {
+    "description": "Want to help make the framework better? Check out some issues that we are currently looking for assistance on.",
+    "src": "https://github.githubassets.com/images/modules/logos_page/Octocat.png",
+    "title": "Contribute to OSS",
+    "url": "https://github.com/vuetifyjs/vuetify/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22"
   }
 }

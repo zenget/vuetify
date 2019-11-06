@@ -19,6 +19,7 @@ const routes = root([
       redirect: () => redirects[k].replace(/^\//, ''),
     })),
     route('', 'Home'),
+    route('about-vuetify-ads', 'AdsByVuetify'),
   ]),
   layout('examples/layouts/:page', 'Layouts'),
   layout(':namespace/:page/:section?', 'Documentation', [

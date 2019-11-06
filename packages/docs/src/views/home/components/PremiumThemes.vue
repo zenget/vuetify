@@ -48,7 +48,7 @@
     computed: {
       ads: sync('ads/themes'),
       themes () {
-        return this.templates.slice(0, 4)
+        return Object.values(this.ads).slice(0, 4)
       },
     },
 

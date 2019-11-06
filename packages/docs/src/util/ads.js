@@ -1,5 +1,21 @@
-export function addCustomizationAd (children = []) {
+export function addAd (value, index, children = []) {
+  const length = children.length
 
+  if (length < 5) return
+
+  const child = children[index]
+
+  if (!child) return
+
+  const section = child.children.find(c => c.type === 'section')
+  const item = { type: 'ad-card', value }
+
+  if (section) section.children.push(item)
+  else child.children.push(item)
+}
+
+export function addCustomizationAd (children = []) {
+  addGettingStartedAd(children)
 }
 
 export function addFooterAd (children) {
@@ -20,14 +36,9 @@ export function addHeadingAndAd (children) {
 }
 
 export function addGettingStartedAd (children = []) {
-  if (children.length < 5) return
+  const index = Math.ceil(children.length / 2 - 1)
 
-  const child = children[2]
-  const section = child.children.find(c => c.type === 'section')
-  const item = { type: 'ad-card', value: 'community' }
-
-  if (section) section.children.push(item)
-  else child.children.push(item)
+  addAd('community', index, children)
 }
 
 export function addContentAd (namespace, children = []) {

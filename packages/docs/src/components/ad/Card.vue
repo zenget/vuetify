@@ -11,6 +11,7 @@
     >
       <v-list-item
         :href="`${activeTemplate.url}?ref=vuetifyjs.com${activeTemplate.query || ''}`"
+        :title="activeTemplate.description"
         target="_blank"
         rel="noopener noreferrer"
         @click="$ga.event($route.path, 'click', 'theme-ad')"
@@ -31,6 +32,20 @@
 
           <v-list-item-subtitle v-text="activeTemplate.description" />
         </v-list-item-content>
+
+        <v-list-item-action>
+          <v-icon>mdi-open-in-new</v-icon>
+
+          <router-link
+            :to="{
+              name: 'AboutVuetifyAds',
+              params: { lang: $route.params.lang }
+            }"
+            class="caption text--secondary"
+          >
+            ads by Vuetify
+          </router-link>
+        </v-list-item-action>
       </v-list-item>
     </v-list>
   </v-card>
