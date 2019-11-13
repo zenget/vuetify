@@ -8,6 +8,7 @@ import VIcon from '../VIcon'
 import VInput from '../VInput'
 
 // Mixins
+import BindsAttrs from '../../mixins/binds-attrs'
 import Colorable from '../../mixins/colorable'
 import { factory as GroupableFactory } from '../../mixins/groupable'
 import Rippleable from '../../mixins/rippleable'
@@ -16,12 +17,13 @@ import Selectable from '../../mixins/selectable'
 
 // Utilities
 import { getSlot } from '../../util/helpers'
-import mixins from '../../util/mixins'
 
 // Types
-import { VNode } from 'vue'
+import { VNode, VNodeData } from 'vue'
+import mixins from '../../util/mixins'
 
 const baseMixins = mixins(
+  BindsAttrs,
   Colorable,
   Rippleable,
   GroupableFactory('radioGroup'),
@@ -39,30 +41,26 @@ export default baseMixins.extend<options>().extend({
   inheritAttrs: false,
 
   props: {
-    color: {
-      type: String,
-      default: 'accent'
-    },
     disabled: Boolean,
+    id: String,
     label: String,
     name: String,
-    id: String,
-    onIcon: {
-      type: String,
-      default: '$vuetify.icons.radioOn'
-    },
     offIcon: {
       type: String,
-      default: '$vuetify.icons.radioOff'
+      default: '$radioOff',
+    },
+    onIcon: {
+      type: String,
+      default: '$radioOn',
     },
     readonly: Boolean,
     value: {
-      default: null
-    }
+      default: null,
+    },
   },
 
   data: () => ({
-    isFocused: false
+    isFocused: false,
   }),
 
   computed: {
@@ -71,22 +69,21 @@ export default baseMixins.extend<options>().extend({
         'v-radio--is-disabled': this.isDisabled,
         'v-radio--is-focused': this.isFocused,
         ...this.themeClasses,
-        ...this.groupClasses
+        ...this.groupClasses,
       }
     },
-    computedColor (): string | false {
-      const color = (this.radioGroup || {}).validationState
-
-      return this.isActive ? this.color : (color || false)
+    computedColor (): string | undefined {
+      return Selectable.options.computed.computedColor.call(this)
     },
     computedIcon (): string {
       return this.isActive
         ? this.onIcon
         : this.offIcon
     },
-    hasLabel (): boolean {
-      return VInput.options.computed.hasLabel.call(this)
+    computedId (): string {
+      return VInput.options.computed.computedId.call(this)
     },
+    hasLabel: VInput.options.computed.hasLabel,
     hasState (): boolean {
       return (this.radioGroup || {}).hasState
     },
@@ -101,8 +98,11 @@ export default baseMixins.extend<options>().extend({
         return this.name
       }
 
-      return this.radioGroup.name || `'v-radio-'${this.radioGroup._uid}`
-    }
+      return this.radioGroup.name || `radio-${this.radioGroup._uid}`
+    },
+    validationState (): string | undefined {
+      return (this.radioGroup || {}).validationState || this.computedColor
+    },
   },
 
   methods: {
@@ -116,27 +116,40 @@ export default baseMixins.extend<options>().extend({
       if (!this.hasLabel) return null
 
       return this.$createElement(VLabel, {
-        on: { click: this.onChange },
+        on: {
+          click: (e: Event) => {
+            // Prevent label from
+            // causing the input
+            // to focus
+            e.preventDefault()
+
+            this.onChange()
+          },
+        },
         attrs: {
-          for: this.id
+          for: this.computedId,
         },
         props: {
-          color: ((this.radioGroup || {}).validationState) || false,
-          focused: this.hasState
-        }
+          color: this.validationState,
+          focused: this.hasState,
+        },
       }, getSlot(this, 'label') || this.label)
     },
     genRadio () {
       return this.$createElement('div', {
-        staticClass: 'v-input--selection-controls__input'
+        staticClass: 'v-input--selection-controls__input',
       }, [
         this.genInput({
           name: this.computedName,
           value: this.value,
-          ...this.$attrs
+          ...this.attrs$,
         }),
-        this.genRipple(this.setTextColor(this.computedColor)),
-        this.$createElement(VIcon, this.setTextColor(this.computedColor, {}), this.computedIcon)
+        this.genRipple(this.setTextColor(this.validationState)),
+        this.$createElement(VIcon, this.setTextColor(this.validationState, {
+          props: {
+            dense: this.radioGroup && this.radioGroup.dense,
+          },
+        }), this.computedIcon),
       ])
     },
     onFocus (e: Event) {
@@ -152,24 +165,18 @@ export default baseMixins.extend<options>().extend({
 
       this.toggle()
     },
-    onKeydown () {} // Override default with noop
+    onKeydown: () => {}, // Override default with noop
   },
 
   render (h): VNode {
-    let color
-
-    if ((this.radioGroup || {}).hasError) {
-      color = this.color
-    }
-
-    const data = this.setTextColor(color, {
+    const data = {
       staticClass: 'v-radio',
-      class: this.classes
-    })
+      class: this.classes,
+    } as VNodeData
 
     return h('div', data, [
       this.genRadio(),
-      this.genLabel()
+      this.genLabel(),
     ])
-  }
+  },
 })

@@ -7,7 +7,7 @@ import { keyCodes } from '../../util/helpers'
 // Types
 import {
   StackableInstance,
-  VuetifyStackOptions
+  VuetifyStackOptions,
 } from 'vuetify/types/services/stack'
 
 export class Stack extends Service {

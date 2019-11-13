@@ -4,23 +4,24 @@ import Vuetify, {
   VBtn,
   VCard,
   VCardText,
-  directives,
-  colors
 } from 'vuetify/lib'
+
+import * as directives from 'vuetify/lib/directives'
+
+Vuetify.install(Vue)
+
+Vuetify.install(Vue, {})
 
 Vuetify.install(Vue, {
   components: {
     VBtn,
     VCard,
-    VCardText
+    VCardText,
   },
   directives,
-  theme: {
-    themes: {
-      dark: {
-        primary: colors.green.base,
-        secondary: colors.blueGrey.base
-      }
-    } as any
-  }
+})
+
+/* eslint-disable-next-line no-new */
+new Vue({
+  vuetify: new Vuetify(),
 })

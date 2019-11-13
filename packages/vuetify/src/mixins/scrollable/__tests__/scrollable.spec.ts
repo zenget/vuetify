@@ -4,15 +4,13 @@ import Scrollable from '../'
 // Utilities
 import {
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
-import { rafPolyfill, scrollWindow } from '../../../../test'
+import { scrollWindow } from '../../../../test'
 
 describe('Scrollable.ts', () => {
   type Instance = InstanceType<typeof Scrollable>
   let mountFunction: (options?: object) => Wrapper<Instance>
-
-  rafPolyfill(window)
 
   beforeEach(() => {
     const Mock = {
@@ -21,14 +19,14 @@ describe('Scrollable.ts', () => {
         return h('div', {
           directives: [{
             name: 'scroll',
-            value: this.onScroll
-          }]
+            value: this.onScroll,
+          }],
         })
-      }
+      },
     }
     mountFunction = (options = {}) => {
       return mount(Mock, {
-        ...options
+        ...options,
       })
     }
   })
@@ -45,8 +43,8 @@ describe('Scrollable.ts', () => {
   it('should set a custom target', async () => {
     const wrapper = mountFunction({
       propsData: {
-        scrollTarget: 'body'
-      }
+        scrollTarget: 'body',
+      },
     })
 
     wrapper.vm.onScroll()
@@ -57,13 +55,13 @@ describe('Scrollable.ts', () => {
     const wrapper = mountFunction({
       data: () => ({
         currentScroll: 100,
-        previousScroll: 0
+        previousScroll: 0,
       }),
       computed: {
         canScroll () {
           return false
-        }
-      }
+        },
+      },
     })
 
     await scrollWindow(1000)
@@ -76,11 +74,11 @@ describe('Scrollable.ts', () => {
     const thresholdMet = jest.fn()
     const wrapper = mountFunction({
       methods: {
-        thresholdMet
+        thresholdMet,
       },
       propsData: {
-        scrollThreshold: 1000
-      }
+        scrollThreshold: 1000,
+      },
     })
 
     await scrollWindow(900)
@@ -96,8 +94,8 @@ describe('Scrollable.ts', () => {
   it('should reset savedScroll when isActive state changes', () => {
     const wrapper = mountFunction({
       data: () => ({
-        savedScroll: 100
-      })
+        savedScroll: 100,
+      }),
     })
 
     wrapper.setData({ isActive: true })
@@ -108,8 +106,8 @@ describe('Scrollable.ts', () => {
   it('should warn if target isn\'t present', async () => {
     mountFunction({
       propsData: {
-        scrollTarget: '#test'
-      }
+        scrollTarget: '#test',
+      },
     })
 
     expect('Unable to locate element with identifier #test').toHaveBeenTipped()

@@ -1,43 +1,34 @@
 <template>
-  <div>
-    <doc-heading>Generic.Pages.upNext</doc-heading>
-    <v-container
-      fluid
-      grid-list-xl
-      pa-0
-    >
-      <v-layout wrap>
-        <v-flex
-          v-for="(link, i) in links"
-          :key="i"
-          xs12
-          md4
-        >
-          <v-sheet color="grey lighten-3">
-            <v-list
-              class="pa-0"
-              two-line
-              nav
-            >
-              <core-item
-                :to="link.link"
-                :avatar="link.icon"
-                :avatar-color="link.color"
-                :text="link.target"
-                :subtext="link.section"
-                no-markdown
-                @click.native="$ga.event('up-next', 'click', link.target, $route.path)"
-              >
-                <v-list-item-action>
-                  <v-icon>mdi-arrow-right</v-icon>
-                </v-list-item-action>
-              </core-item>
-            </v-list>
-          </v-sheet>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </div>
+  <section id="up-next">
+    <base-heading id="up-next">Generic.Pages.upNext</base-heading>
+
+    <base-markdown>Generic.Pages.upNextText</base-markdown>
+
+    <v-row>
+      <v-col
+        v-for="(link, i) in links"
+        :key="i"
+        cols="12"
+        md="4"
+      >
+        <v-card outlined>
+          <base-item
+            :to="link.link"
+            :avatar="link.icon"
+            :avatar-color="link.color"
+            :text="link.target"
+            :subtext="link.section"
+            no-markdown
+            @click.native="$ga.event('up-next', 'click', link.target, $route.path)"
+          >
+            <v-list-item-action>
+              <v-icon>mdi-arrow-right</v-icon>
+            </v-list-item-action>
+          </base-item>
+        </v-card>
+      </v-col>
+    </v-row>
+  </section>
 </template>
 
 <script>
@@ -45,34 +36,40 @@
     props: {
       value: {
         type: Array,
-        default: () => ([])
-      }
+        default: () => ([]),
+      },
     },
 
     computed: {
       links () {
         return this.value.map(this.genLink)
-      }
+      },
     },
 
     methods: {
       genColor (section) {
         switch (section) {
+          case 'introduction': return 'primary'
           case 'getting-started': return 'teal'
-          case 'framework': return 'brown'
-          case 'components': return 'primary'
+          case 'customization': return 'red lighten-2'
+          case 'components': return 'indigo darken-1'
+          case 'professional-support': return 'amber darken-2'
           case 'directives': return 'blue-grey'
-          case 'themes': return 'tertiary'
+          case 'styles': return 'deep-purple accent-4'
+          case 'themes': return 'pink'
           default: return 'grey'
         }
       },
       genIcon (section) {
         switch (section) {
+          case 'introduction': return 'mdi-book-open-page-variant'
           case 'getting-started': return 'mdi-speedometer'
-          case 'framework': return 'mdi-buffer'
+          case 'customization': return 'mdi-cogs'
           case 'components': return 'mdi-view-dashboard'
+          case 'professional-support': return 'mdi-atom-variant'
           case 'directives': return 'mdi-function'
-          case 'themes': return 'mdi-palette'
+          case 'styles': return 'mdi-palette'
+          case 'themes': return 'mdi-vuetify'
         }
       },
       genLink (link) {
@@ -82,15 +79,15 @@
           ...this.genSectionInfo(section),
           link,
           section,
-          target
+          target,
         }
       },
       genSectionInfo (section) {
         return {
           color: this.genColor(section),
-          icon: this.genIcon(section)
+          icon: this.genIcon(section),
         }
-      }
-    }
+      },
+    },
   }
 </script>

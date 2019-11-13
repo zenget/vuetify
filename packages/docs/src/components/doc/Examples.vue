@@ -1,50 +1,63 @@
 <template>
-  <div>
-    <doc-heading>Generic.Pages.examples</doc-heading>
-    <div />
-    <template v-for="(example, i) in examples">
-      <doc-heading :key="`heading-${i}`">
-        {{ example.header }}
-      </doc-heading>
-      <doc-text :key="`text-${i}`">
-        {{ example.desc }}
-      </doc-text>
+  <section id="examples">
+    <base-heading id="examples">Generic.Pages.examples</base-heading>
+
+    <base-markdown>Generic.Pages.examplesText</base-markdown>
+
+    <section
+      v-for="(example, i) in examples"
+      :id="example.id"
+      :key="i"
+    >
+      <base-heading :id="example.id">{{ example.heading }}</base-heading>
+
+      <doc-text>{{ example.desc }}</doc-text>
+
       <doc-example
         :key="i"
         :value="value[i]"
       />
-    </template>
-  </div>
+
+      <ad-card
+        v-if="examples.length > 3 && i === 2"
+        :key="`ad-${i}`"
+      />
+    </section>
+  </section>
 </template>
 
 <script>
   // Utilities
   import {
-    mapGetters
-  } from 'vuex'
+    get,
+  } from 'vuex-pathify'
+
+  import kebabCase from 'lodash/kebabCase'
 
   export default {
     props: {
       value: {
         type: Array,
-        default: () => ([])
-      }
+        default: () => ([]),
+      },
     },
 
     computed: {
-      ...mapGetters('documentation', [
-        'namespace',
-        'page'
-      ]),
+      namespace: get('documentation/namespace'),
+      page: get('documentation/page'),
       examples () {
         return this.value.map(example => {
-          const file = example === Object(example) ? example.file : example
+          const path = example === Object(example) ? example.file : example
+          const file = path.split('/').pop()
+          const heading = `${this.namespace}.${this.page}.examples.${file}.heading`
+
           return {
-            header: `${this.namespace}.${this.page}.examples.${file}.header`,
-            desc: `${this.namespace}.${this.page}.examples.${file}.desc`
+            heading,
+            desc: `${this.namespace}.${this.page}.examples.${file}.desc`,
+            id: kebabCase(this.$t(heading)),
           }
         })
-      }
-    }
+      },
+    },
   }
 </script>

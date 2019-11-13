@@ -4,29 +4,25 @@ import VSnackbar from '../VSnackbar'
 // Utilities
 import {
   mount,
-  Wrapper
+  MountOptions,
+  Wrapper,
 } from '@vue/test-utils'
 
-// Types
-import { ExtractVue } from '../../../util/mixins'
-
 describe('VSnackbar.ts', () => {
-  type Instance = ExtractVue<typeof VSnackbar>
-  let mountFunction: (options?: object) => Wrapper<Instance>
+  type Instance = InstanceType<typeof VSnackbar>
+  let mountFunction: (options?: MountOptions<Instance>) => Wrapper<Instance>
 
   beforeEach(() => {
-    mountFunction = (options = {}) => {
-      return mount(VSnackbar, {
-        ...options
-      })
+    mountFunction = (options = {} as MountOptions<Instance>) => {
+      return mount(VSnackbar, options)
     }
   })
 
   it('should have a v-snack class', () => {
     const wrapper = mountFunction({
       propsData: {
-        value: true
-      }
+        value: true,
+      },
     })
 
     expect(wrapper.classes()).toContain('v-snack')
@@ -36,8 +32,8 @@ describe('VSnackbar.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: true,
-        color: 'orange lighten-2'
-      }
+        color: 'orange lighten-2',
+      },
     })
 
     expect(wrapper.findAll('.v-snack__wrapper.orange')).toHaveLength(1)
@@ -48,8 +44,8 @@ describe('VSnackbar.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: false,
-        timeout: 1000
-      }
+        timeout: 1000,
+      },
     })
 
     expect(wrapper.findAll('div .v-snack__content')).toHaveLength(0)
@@ -66,8 +62,8 @@ describe('VSnackbar.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: false,
-        timeout: 3141
-      }
+        timeout: 3141,
+      },
     })
 
     const value = jest.fn()
@@ -94,8 +90,8 @@ describe('VSnackbar.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: true,
-        timeout: 3141
-      }
+        timeout: 3141,
+      },
     })
 
     const value = jest.fn()

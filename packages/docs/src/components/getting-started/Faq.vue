@@ -1,101 +1,149 @@
 <template>
-  <v-container
-    fluid
-    pa-0
-  >
-    <v-layout wrap>
-      <v-flex
-        mb-3
-        xs12
-      >
-        <v-text-field
-          v-model="search"
-          prepend-inner-icon="mdi-comment-search"
-          label="Search"
-          box
-          single-line
-          clearable
-        />
-      </v-flex>
-      <v-flex
-        xs12
-        mb-5
-      >
-        <v-data-iterator
-          :items="gotchas"
-          :search.sync="search"
-          content-class="v-data-iterator--faq"
-          hide-actions
-        >
-          <template v-slot:item="{ item: gotcha, index }">
-            <div class="mb-5">
-              <core-goto :id="`question-${index + 1}`">
-                <doc-markdown :code="gotcha.q" />
-              </core-goto>
-              <v-paper
-                class="pa-3"
-                elevation="1"
-              >
-                <doc-markdown :code="gotcha.a" />
+  <v-row>
+    <v-col cols="12">
+      <v-text-field
+        v-model="search"
+        clearable
+        filled
+        label="Search"
+        prepend-inner-icon="mdi-comment-search"
+        single-line
+      />
+    </v-col>
 
-                <doc-markdown
-                  v-if="gotcha.a2"
-                  :code="gotcha.a2"
-                />
+    <v-col
+      class="mb-12"
+      cols="12"
+    >
+      <v-data-iterator
+        :items="gotchas"
+        :search.sync="search"
+        class="v-data-iterator--faq"
+        disable-pagination
+        hide-default-footer
+      >
+        <template v-slot:item="{ item: gotcha, index }">
+          <section
+            :id="gotcha.id"
+            class="mb-12"
+          >
+            <base-goto
+              :id="gotcha.id"
+              :code="gotcha.q"
+            />
 
-                <doc-markup
-                  v-if="gotcha.s"
-                  :value="gotcha.s"
-                  class="mb-0 mt-3"
-                />
-              </v-paper>
-            </div>
-          </template>
-        </v-data-iterator>
-      </v-flex>
-    </v-layout>
-  </v-container>
+            <v-card
+              class="pa-4"
+              outlined
+            >
+              <base-markdown :code="gotcha.a" />
+
+              <base-markdown
+                v-if="gotcha.a2"
+                :code="gotcha.a2"
+              />
+
+              <template v-if="gotcha.s">
+                <v-btn
+                  class="mt-4"
+                  depressed
+                  small
+                  @click="gotcha.m = !gotcha.m"
+                >
+                  Open code snippet
+
+                  <v-icon right>mdi-code-tags</v-icon>
+                </v-btn>
+
+                <div class="mt-3 mb-n4">
+                  <v-expand-transition>
+                    <div
+                      v-show="gotcha.m"
+                      class="swing-transition"
+                    >
+                      <template v-if="Array.isArray(gotcha.s)">
+                        <doc-markup
+                          v-for="(g, i) in gotcha.s"
+                          :key="i"
+                          :value="g"
+                        />
+                      </template>
+
+                      <doc-markup
+                        v-else
+                        :value="gotcha.s"
+                      />
+                    </div>
+                  </v-expand-transition>
+                </div>
+              </template>
+            </v-card>
+          </section>
+        </template>
+      </v-data-iterator>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
+  // Utilities
+  import kebabCase from 'lodash/kebabCase'
+
   export default {
-    name: 'FrequentlyAskedQuestions',
+    name: 'GettingStartedFaq',
 
     data: () => ({
-      search: null
+      internalFiltered: [],
+      search: null,
     }),
 
     computed: {
       gotchas () {
-        return this.$t('GettingStarted.FrequentlyAskedQuestions.gotchas')
-      },
-      filtered () {
-        if (!this.search) return this.gotchas
-
-        const search = this.search.toLowerCase()
-
-        return this.gotchas.filter(gotcha => {
-          const q = gotcha.q.toLowerCase()
-          const a = gotcha.a.toLowerCase()
-
-          return (
-            q.indexOf(search) > -1 ||
-            a.indexOf(search) > -1
-          )
+        return this.$t('Introduction.FrequentlyAskedQuestions.gotchas').map(faq => {
+          return Object.assign({}, faq, {
+            id: kebabCase(faq.q),
+            m: false,
+          })
         })
-      }
-    }
+      },
+      filtered: {
+        get () {
+          return this.internalFiltered
+        },
+        set (val) {
+          this.internalFiltered = this.filterItems()
+        },
+      },
+    },
+
+    beforeMount () {
+      this.internalFiltered = this.filterItems()
+    },
+
+    methods: {
+      filterItems () {
+        const search = (this.search || '').toLowerCase()
+
+        return this.gotchas
+          .filter(gotcha => {
+            const q = gotcha.q.toLowerCase()
+            const a = gotcha.a.toLowerCase()
+
+            return (
+              q.indexOf(search) > -1 ||
+              a.indexOf(search) > -1
+            )
+          })
+      },
+    },
   }
 </script>
 
-<style lang="stylus">
-.v-data-iterator--faq {
-  p {
-    margin: 0;
-  }
-}
+<style lang="sass">
+.v-data-iterator--faq
+  p
+    margin: 0
 
-.text-decoration-none {
-  text-decoration: none;
-}
+.text-decoration-none
+  text-decoration: none
 </style>

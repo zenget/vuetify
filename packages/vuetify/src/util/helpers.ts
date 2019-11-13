@@ -16,7 +16,7 @@ export function createSimpleFunctional (
       data.staticClass = (`${c} ${data.staticClass || ''}`).trim()
 
       return h(el, data, children)
-    }
+    },
   })
 }
 
@@ -42,24 +42,24 @@ export function createSimpleTransition (
     props: {
       group: {
         type: Boolean,
-        default: false
+        default: false,
       },
       hideOnLeave: {
         type: Boolean,
-        default: false
+        default: false,
       },
       leaveAbsolute: {
         type: Boolean,
-        default: false
+        default: false,
       },
       mode: {
         type: String,
-        default: mode
+        default: mode,
       },
       origin: {
         type: String,
-        default: origin
-      }
+        default: origin,
+      },
     },
 
     render (h, context): VNode {
@@ -67,7 +67,7 @@ export function createSimpleTransition (
       context.data = context.data || {}
       context.data.props = {
         name,
-        mode: context.props.mode
+        mode: context.props.mode,
       }
       context.data.on = context.data.on || {}
       if (!Object.isExtensible(context.data.on)) {
@@ -96,7 +96,7 @@ export function createSimpleTransition (
       context.data.on.leave = mergeTransitions(leave, ourLeave)
 
       return h(tag, context.data, context.children)
-    }
+    },
   }
 }
 
@@ -113,21 +113,21 @@ export function createJavaScriptTransition (
     props: {
       mode: {
         type: String,
-        default: mode
-      }
+        default: mode,
+      },
     },
 
     render (h, context): VNode {
       const data = {
         props: {
           ...context.props,
-          name
+          name,
         },
-        on: functions
+        on: functions,
       }
 
       return h('transition', data, context.children)
-    }
+    },
   }
 }
 
@@ -137,17 +137,46 @@ export function directiveConfig (binding: BindingConfig, defaults = {}): VNodeDi
     ...defaults,
     ...binding.modifiers,
     value: binding.arg,
-    ...(binding.value || {})
+    ...(binding.value || {}),
   }
 }
 
-export function addOnceEventListener (el: EventTarget, event: string, cb: () => void): void {
-  var once = () => {
-    cb()
-    el.removeEventListener(event, once, false)
+export function addOnceEventListener (
+  el: EventTarget,
+  eventName: string,
+  cb: (event: Event) => void,
+  options: boolean | AddEventListenerOptions = false
+): void {
+  var once = (event: Event) => {
+    cb(event)
+    el.removeEventListener(eventName, once, options)
   }
 
-  el.addEventListener(event, once, false)
+  el.addEventListener(eventName, once, options)
+}
+
+let passiveSupported = false
+try {
+  if (typeof window !== 'undefined') {
+    const testListenerOpts = Object.defineProperty({}, 'passive', {
+      get: () => {
+        passiveSupported = true
+      },
+    })
+
+    window.addEventListener('testListener', testListenerOpts, testListenerOpts)
+    window.removeEventListener('testListener', testListenerOpts, testListenerOpts)
+  }
+} catch (e) { console.warn(e) }
+export { passiveSupported }
+
+export function addPassiveEventListener (
+  el: EventTarget,
+  event: string,
+  cb: EventHandlerNonNull | (() => void),
+  options: {}
+): void {
+  el.addEventListener(event, cb, passiveSupported ? options : false)
 }
 
 export function getNestedValue (obj: any, path: (string | number)[], fallback?: any): any {
@@ -190,9 +219,10 @@ export function deepEqual (a: any, b: any): boolean {
   return props.every(p => deepEqual(a[p], b[p]))
 }
 
-export function getObjectValueByPath (obj: object, path: string, fallback?: any): any {
+export function getObjectValueByPath (obj: any, path: string, fallback?: any): any {
   // credit: http://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key#comment55278413_6491621
-  if (!path || path.constructor !== String) return fallback
+  if (obj == null || !path || typeof path !== 'string') return fallback
+  if (obj[path] !== undefined) return obj[path]
   path = path.replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
   path = path.replace(/^\./, '') // strip a leading dot
   return getNestedValue(obj, path.split('.'), fallback)
@@ -227,14 +257,14 @@ export function getZIndex (el?: Element | null): number {
 
   const index = +window.getComputedStyle(el).getPropertyValue('z-index')
 
-  if (isNaN(index)) return getZIndex(el.parentNode as Element)
+  if (!index) return getZIndex(el.parentNode as Element)
   return index
 }
 
 const tagsToReplace = {
   '&': '&amp;',
   '<': '&lt;',
-  '>': '&gt;'
+  '>': '&gt;',
 } as any
 
 export function escapeHTML (str: string): string {
@@ -289,20 +319,18 @@ export const keyCodes = Object.freeze({
   backspace: 8,
   insert: 45,
   pageup: 33,
-  pagedown: 34
+  pagedown: 34,
 })
 
-const ICONS_PREFIX = '$vuetify.'
-
-// This remaps internal names like '$vuetify.icons.cancel'
+// This remaps internal names like '$cancel' or '$vuetify.icons.cancel'
 // to the current name or component for that icon.
 export function remapInternalIcon (vm: Vue, iconName: string): VuetifyIcon {
-  if (!iconName.startsWith(ICONS_PREFIX)) {
+  if (!iconName.startsWith('$')) {
     return iconName
   }
 
   // Get the target icon name
-  const iconPath = `$vuetify.icons.values.${iconName.split('.').pop()}`
+  const iconPath = `$vuetify.icons.values.${iconName.split('$').pop()!.split('.').pop()}`
 
   // Now look up icon indirection name,
   // e.g. '$vuetify.icons.values.cancel'
@@ -325,7 +353,7 @@ export const camelize = (str: string): string => {
  * Returns the set difference of B and A, i.e. the set of elements in B but not in A
  */
 export function arrayDiff (a: any[], b: any[]): any[] {
-  const diff = []
+  const diff: any[] = []
   for (let i = 0; i < b.length; i++) {
     if (a.indexOf(b[i]) < 0) diff.push(b[i])
   }
@@ -346,7 +374,7 @@ export function groupByProperty (xs: any[], key: string): Record<string, any[]> 
   }, {})
 }
 
-export function wrapInArray<T> (v: T | T[]): T[] { return Array.isArray(v) ? v : [v] }
+export function wrapInArray<T> (v: T | T[] | null | undefined): T[] { return v != null ? Array.isArray(v) ? v : [v] : [] }
 
 export type compareFn<T = any> = (a: T, b: T) => number
 
@@ -358,6 +386,7 @@ export function sortItems (
   customSorters?: Record<string, compareFn>
 ) {
   if (sortBy === null || !sortBy.length) return items
+  const stringCollator = new Intl.Collator(locale, { sensitivity: 'accent', usage: 'sort' })
 
   return items.sort((a, b) => {
     for (let i = 0; i < sortBy.length; i++) {
@@ -370,18 +399,24 @@ export function sortItems (
         [sortA, sortB] = [sortB, sortA]
       }
 
-      if (customSorters && customSorters[sortKey]) return customSorters[sortKey](sortA, sortB)
+      if (customSorters && customSorters[sortKey]) {
+        const customResult = customSorters[sortKey](sortA, sortB)
+
+        if (!customResult) continue
+
+        return customResult
+      }
 
       // Check if both cannot be evaluated
       if (sortA === null && sortB === null) {
-        return 0
+        continue
       }
 
       [sortA, sortB] = [sortA, sortB].map(s => (s || '').toString().toLocaleLowerCase())
 
       if (sortA !== sortB) {
         if (!isNaN(sortA) && !isNaN(sortB)) return Number(sortA) - Number(sortB)
-        return sortA.localeCompare(sortB, locale)
+        return stringCollator.compare(sortA, sortB)
       }
     }
 
@@ -389,26 +424,21 @@ export function sortItems (
   })
 }
 
+export type FilterFn = (value: any, search: string | null, item: any) => boolean
+
+export function defaultFilter (value: any, search: string | null, item: any) {
+  return value != null &&
+    search != null &&
+    typeof value !== 'boolean' &&
+    value.toString().toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1
+}
+
 export function searchItems (items: any[], search: string) {
   if (!search) return items
   search = search.toString().toLowerCase()
   if (search.trim() === '') return items
 
-  return items.filter(i => Object.keys(i).some(j => {
-    const val = i[j]
-    return val != null &&
-      typeof val !== 'boolean' &&
-      val.toString().toLowerCase().indexOf(search) !== -1
-  }))
-}
-
-export function getTextAlignment (align: string | undefined, rtl: boolean): string {
-  align = align || 'start'
-
-  if (align === 'start') align = rtl ? 'right' : 'left'
-  else if (align === 'end') align = rtl ? 'left' : 'right'
-
-  return `text-xs-${align}`
+  return items.filter(item => Object.keys(item).some(key => defaultFilter(getObjectValueByPath(item, key), search, item)))
 }
 
 /**
@@ -447,4 +477,46 @@ export function getSlot (vm: Vue, name = 'default', data?: object, optional = fa
     return vm.$slots[name]
   }
   return undefined
+}
+
+export function clamp (value: number, min = 0, max = 1) {
+  return Math.max(min, Math.min(max, value))
+}
+
+export function padEnd (str: string, length: number, char = '0') {
+  return str + char.repeat(Math.max(0, length - str.length))
+}
+
+export function chunk (str: string, size = 1) {
+  const chunked: string[] = []
+  let index = 0
+  while (index < str.length) {
+    chunked.push(str.substr(index, size))
+    index += size
+  }
+  return chunked
+}
+
+export function humanReadableFileSize (bytes: number, binary = false): string {
+  const base = binary ? 1024 : 1000
+  if (bytes < base) {
+    return `${bytes} B`
+  }
+
+  const prefix = binary ? ['Ki', 'Mi', 'Gi'] : ['k', 'M', 'G']
+  let unit = -1
+  while (Math.abs(bytes) >= base && unit < prefix.length - 1) {
+    bytes /= base
+    ++unit
+  }
+  return `${bytes.toFixed(1)} ${prefix[unit]}B`
+}
+
+export function camelizeObjectKeys (obj: Record<string, any> | null | undefined) {
+  if (!obj) return {}
+
+  return Object.keys(obj).reduce((o: any, key: string) => {
+    o[camelize(key)] = obj[key]
+    return o
+  }, {})
 }

@@ -13,7 +13,7 @@ const icons: VuetifyIcons = {
   prev: 'fa fa-chevron-left',
   next: 'fa fa-chevron-right',
   checkboxOn: 'fa fa-check-square',
-  checkboxOff: 'fa fa-square-o', // note 'far'
+  checkboxOff: 'far fa-square', // note 'far'
   checkboxIndeterminate: 'fa fa-minus-square',
   delimiter: 'fa fa-circle', // for carousel
   sort: 'fa fa-sort-up',
@@ -21,14 +21,19 @@ const icons: VuetifyIcons = {
   menu: 'fa fa-bars',
   subgroup: 'fa fa-caret-down',
   dropdown: 'fa fa-caret-down',
-  radioOn: 'fa fa-dot-circle',
+  radioOn: 'fa fa-dot-circle-o',
   radioOff: 'fa fa-circle-o',
   edit: 'fa fa-pencil',
   ratingEmpty: 'fa fa-star-o',
   ratingFull: 'fa fa-star',
   ratingHalf: 'fa fa-star-half-o',
+  loading: 'fa fa-refresh',
   first: 'fa fa-step-backward',
-  last: 'fa fa-step-forward'
+  last: 'fa fa-step-forward',
+  unfold: 'fa fa-angle-double-down',
+  file: 'fa fa-paperclip',
+  plus: 'fa fa-plus',
+  minus: 'fa fa-minus',
 }
 
 export default icons

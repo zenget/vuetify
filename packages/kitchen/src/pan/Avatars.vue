@@ -1,5 +1,5 @@
 <template>
-  <v-container text-xs-center>
+  <v-container text-center>
     <v-layout
       column
       variations
@@ -317,6 +317,6 @@
     name: 'Avatars',
 
     data: () => ({
-    })
+    }),
   }
 </script>

@@ -26,6 +26,29 @@
       </core-section>
 
       <core-title>
+        Dense mode
+      </core-title>
+      <core-section>
+        <v-treeview
+          v-model="tree1"
+          dense
+          :open="open1"
+          :items="items1"
+          activatable
+          item-key="name"
+          open-on-click
+          #prepend="{ item, open }"
+        >
+          <v-icon v-if="!item.file">
+            {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+          </v-icon>
+          <v-icon v-else>
+            {{ files1[item.file] }}
+          </v-icon>
+        </v-treeview>
+      </core-section>
+
+      <core-title>
         Async data loading
       </core-title>
       <core-section>
@@ -35,7 +58,7 @@
           </v-card-title>
           <v-layout
             justify-space-between
-            pa-3
+            pa-4
           >
             <v-flex xs5>
               <v-treeview
@@ -60,7 +83,7 @@
             </v-flex>
             <v-flex
               d-flex
-              text-xs-center
+              text-center
             >
               <v-scroll-y-transition mode="out-in">
                 <div
@@ -73,7 +96,7 @@
                 <v-card
                   v-else
                   :key="selected2.id"
-                  class="pt-4 mx-auto"
+                  class="pt-6 mx-auto"
                   flat
                   max-width="400"
                 >
@@ -84,7 +107,7 @@
                     >
                       <v-img
                         :src="`https://avataaars.io/${avatar2}`"
-                        class="mb-4"
+                        class="mb-6"
                       />
                     </v-avatar>
                     <h3 class="headline mb-2">
@@ -100,14 +123,14 @@
                   <v-divider />
                   <v-layout
                     tag="v-card-text"
-                    text-xs-left
+                    text-left
                     wrap
                   >
                     <v-flex
                       tag="strong"
                       xs5
-                      text-xs-right
-                      mr-3
+                      text-right
+                      mr-4
                       mb-2
                     >
                       Company:
@@ -116,8 +139,8 @@
                     <v-flex
                       tag="strong"
                       xs5
-                      text-xs-right
-                      mr-3
+                      text-right
+                      mr-4
                       mb-2
                     >
                       Website:
@@ -133,8 +156,8 @@
                     <v-flex
                       tag="strong"
                       xs5
-                      text-xs-right
-                      mr-3
+                      text-right
+                      mr-4
                       mb-2
                     >
                       Phone:
@@ -153,7 +176,6 @@
       </core-title>
       <core-section>
         <v-layout
-          row
           justify-space-around
         >
           <v-flex>
@@ -199,7 +221,7 @@
     '?accessoriesType=Sunglasses&avatarStyle=Circle&clotheColor=Gray02&clotheType=ShirtScoopNeck&eyeType=EyeRoll&eyebrowType=RaisedExcited&facialHairColor=Red&facialHairType=BeardMagestic&hairColor=Red&hatColor=White&mouthType=Twinkle&skinColor=DarkBrown&topType=LongHairBun',
     '?accessoriesType=Prescription02&avatarStyle=Circle&clotheColor=Black&clotheType=ShirtVNeck&eyeType=Surprised&eyebrowType=Angry&facialHairColor=Blonde&facialHairType=Blank&hairColor=Blonde&hatColor=PastelOrange&mouthType=Smile&skinColor=Black&topType=LongHairNotTooLong',
     '?accessoriesType=Round&avatarStyle=Circle&clotheColor=PastelOrange&clotheType=Overall&eyeType=Close&eyebrowType=AngryNatural&facialHairColor=Blonde&facialHairType=Blank&graphicType=Pizza&hairColor=Black&hatColor=PastelBlue&mouthType=Serious&skinColor=Light&topType=LongHairBigHair',
-    '?accessoriesType=Kurt&avatarStyle=Circle&clotheColor=Gray01&clotheType=BlazerShirt&eyeType=Surprised&eyebrowType=Default&facialHairColor=Red&facialHairType=Blank&graphicType=Selena&hairColor=Red&hatColor=Blue02&mouthType=Twinkle&skinColor=Pale&topType=LongHairCurly'
+    '?accessoriesType=Kurt&avatarStyle=Circle&clotheColor=Gray01&clotheType=BlazerShirt&eyeType=Surprised&eyebrowType=Default&facialHairColor=Red&facialHairType=Blank&graphicType=Selena&hairColor=Red&hatColor=Blue02&mouthType=Twinkle&skinColor=Pale&topType=LongHairCurly',
   ]
 
   const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -217,15 +239,15 @@
         pdf: 'mdi-file-pdf',
         png: 'mdi-file-image',
         txt: 'mdi-file-document-outline',
-        xls: 'mdi-file-excel'
+        xls: 'mdi-file-excel',
       },
       tree1: [],
       items1: [
         {
-          name: '.git'
+          name: '.git',
         },
         {
-          name: 'node_modules'
+          name: 'node_modules',
         },
         {
           name: 'public',
@@ -234,43 +256,43 @@
               name: 'static',
               children: [{
                 name: 'logo.png',
-                file: 'png'
-              }]
+                file: 'png',
+              }],
             },
             {
               name: 'favicon.ico',
-              file: 'png'
+              file: 'png',
             },
             {
               name: 'index.html',
-              file: 'html'
-            }
-          ]
+              file: 'html',
+            },
+          ],
         },
         {
           name: '.gitignore',
-          file: 'txt'
+          file: 'txt',
         },
         {
           name: 'babel.config.js',
-          file: 'js'
+          file: 'js',
         },
         {
           name: 'package.json',
-          file: 'json'
+          file: 'json',
         },
         {
           name: 'README.md',
-          file: 'md'
+          file: 'md',
         },
         {
           name: 'vue.config.js',
-          file: 'js'
+          file: 'js',
         },
         {
           name: 'yarn.lock',
-          file: 'txt'
-        }
+          file: 'txt',
+        },
       ],
       active2: [],
       avatar2: null,
@@ -285,15 +307,15 @@
         pdf: 'mdi-file-pdf',
         png: 'mdi-file-image',
         txt: 'mdi-file-document-outline',
-        xls: 'mdi-file-excel'
+        xls: 'mdi-file-excel',
       },
       tree3: [],
       items3: [
         {
-          name: '.git'
+          name: '.git',
         },
         {
-          name: 'node_modules'
+          name: 'node_modules',
         },
         {
           name: 'public',
@@ -302,47 +324,47 @@
               name: 'static',
               children: [{
                 name: 'logo.png',
-                file: 'png'
-              }]
+                file: 'png',
+              }],
             },
             {
               name: 'favicon.ico',
-              file: 'png'
+              file: 'png',
             },
             {
               name: 'index.html',
               file: 'html',
-              changed: true
-            }
-          ]
+              changed: true,
+            },
+          ],
         },
         {
           name: '.gitignore',
-          file: 'txt'
+          file: 'txt',
         },
         {
           name: 'babel.config.js',
-          file: 'js'
+          file: 'js',
         },
         {
           name: 'package.json',
           file: 'json',
-          changed: true
+          changed: true,
         },
         {
           name: 'README.md',
-          file: 'md'
+          file: 'md',
         },
         {
           name: 'vue.config.js',
-          file: 'js'
+          file: 'js',
         },
         {
           name: 'yarn.lock',
           file: 'txt',
-          changed: true
-        }
-      ]
+          changed: true,
+        },
+      ],
     }),
 
     computed: {
@@ -350,8 +372,8 @@
         return [
           {
             name: 'Users',
-            children: this.users2
-          }
+            children: this.users2,
+          },
         ]
       },
       selected2 () {
@@ -360,11 +382,11 @@
         const id = this.active2[0]
 
         return this.users2.find(user => user.id === id)
-      }
+      },
     },
 
     watch: {
-      selected2: 'randomAvatar2'
+      selected2: 'randomAvatar2',
     },
 
     methods: {
@@ -380,7 +402,7 @@
       },
       randomAvatar2 () {
         this.avatar2 = avatars[Math.floor(Math.random() * avatars.length)]
-      }
-    }
+      },
+    },
   }
 </script>

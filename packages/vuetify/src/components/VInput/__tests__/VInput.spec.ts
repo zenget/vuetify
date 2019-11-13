@@ -2,7 +2,7 @@ import VInput from '../VInput'
 import {
   mount,
   MountOptions,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 
 describe('VInput.ts', () => {
@@ -10,15 +10,19 @@ describe('VInput.ts', () => {
   let mountFunction: (options?: MountOptions<Instance>) => Wrapper<Instance>
   beforeEach(() => {
     mountFunction = (options?: MountOptions<Instance>) => {
-      return mount(VInput, options)
+      return mount(VInput, {
+        // https://github.com/vuejs/vue-test-utils/issues/1130
+        sync: false,
+        ...options,
+      })
     }
   })
 
   it('should have hint', () => {
     const wrapper = mountFunction({
       propsData: {
-        hint: 'foo'
-      }
+        hint: 'foo',
+      },
     })
 
     expect(wrapper.vm.hasHint).toBe(false)
@@ -44,32 +48,34 @@ describe('VInput.ts', () => {
 
   it('should generate append and prepend slots', () => {
     const el = slot => ({
-      render: h => h('div', slot)
+      render: h => h('div', slot),
     })
     const wrapper = mountFunction({
-      slots: { 'append': [el('append')] }
+      slots: { append: [el('append')] },
     })
     const wrapper2 = mountFunction({
-      slots: { 'prepend': [el('prepend')] }
+      slots: { prepend: [el('prepend')] },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
     expect(wrapper2.html()).toMatchSnapshot()
   })
 
-  it('should generate an icon and match snapshot', () => {
+  it('should generate an icon and match snapshot', async () => {
     const wrapper = mountFunction({
       propsData: {
-        prependIcon: 'list'
-      }
+        prependIcon: 'list',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({
       prependIcon: undefined,
-      appendIcon: 'list'
+      appendIcon: 'list',
     })
+
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
   })
@@ -77,8 +83,8 @@ describe('VInput.ts', () => {
   it('should not generate input details', () => {
     const wrapper = mountFunction({
       propsData: {
-        hideDetails: true
-      }
+        hideDetails: true,
+      },
     })
 
     expect(wrapper.vm.genMessages()).toBeNull()
@@ -90,19 +96,19 @@ describe('VInput.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         prependIcon: 'list',
-        appendIcon: 'search'
+        appendIcon: 'search',
       },
       listeners: {
         'click:prepend': cb,
-        'click:append': cb
-      }
+        'click:append': cb,
+      },
     })
 
     const click = jest.fn()
     wrapper.vm.$on('click', click)
 
-    const prepend = wrapper.findAll('.v-icon').wrappers[0]
-    const append = wrapper.findAll('.v-icon').wrappers[1]
+    const prepend = wrapper.findAll('.v-icon').at(0)
+    const append = wrapper.findAll('.v-icon').at(1)
     const slot = wrapper.find('.v-input__slot')
 
     prepend.trigger('click')
@@ -115,7 +121,7 @@ describe('VInput.ts', () => {
     expect(click).toHaveBeenCalled()
   })
 
-  it('should accept a custom height', () => {
+  it('should accept a custom height', async () => {
     const wrapper = mountFunction()
 
     const inputWrapper = wrapper.find('.v-input__slot')
@@ -123,21 +129,24 @@ describe('VInput.ts', () => {
     expect(wrapper.vm.height).toBeUndefined()
 
     wrapper.setProps({ height: 10 })
+    await wrapper.vm.$nextTick()
     expect(inputWrapper.element.style.height).toBe('10px')
     wrapper.setProps({ height: '20px' })
+    await wrapper.vm.$nextTick()
     expect(inputWrapper.element.style.height).toBe('20px')
   })
 
-  it('should update lazyValue when value is updated', () => {
+  it('should update lazyValue when value is updated', async () => {
     const wrapper = mountFunction({
       propsData: {
-        value: 'foo'
-      }
+        value: 'foo',
+      },
     })
 
     expect(wrapper.vm.lazyValue).toBe('foo')
 
     wrapper.setProps({ value: 'bar' })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.lazyValue).toBe('bar')
   })
@@ -150,8 +159,8 @@ describe('VInput.ts', () => {
       methods: {
         onClick,
         onMouseDown,
-        onMouseUp
-      }
+        onMouseUp,
+      },
     })
 
     const slot = wrapper.find('.v-input__slot')
@@ -170,12 +179,13 @@ describe('VInput.ts', () => {
 
   it('should be in an error state', async () => {
     const wrapper = mountFunction({
-      propsData: { error: true }
+      propsData: { error: true },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ errorMessages: 'required', error: false })
+    await wrapper.vm.$nextTick()
     expect(wrapper.html()).toMatchSnapshot()
   })
 
@@ -189,20 +199,20 @@ describe('VInput.ts', () => {
     expect(wrapper.vm.isDisabled).toBe(true)
 
     wrapper.setProps({
-      disabled: undefined,
-      readonly: true
+      disabled: false,
+      readonly: true,
     })
 
     expect(wrapper.vm.isDisabled).toBe(true)
 
-    wrapper.setProps({ readonly: undefined })
+    wrapper.setProps({ readonly: false })
 
     expect(wrapper.vm.isDisabled).toBe(false)
   })
 
   it('should render a label', () => {
     const wrapper = mountFunction({
-      propsData: { label: 'foo' }
+      propsData: { label: 'foo' },
     })
 
     expect(wrapper.vm.hasLabel).toBe(true)
@@ -211,8 +221,8 @@ describe('VInput.ts', () => {
 
     const wrapper2 = mountFunction({
       slots: {
-        label: [{ render: h => h('div', 'foo') }]
-      }
+        label: [{ render: h => h('div', 'foo') }],
+      },
     })
 
     expect(wrapper2.html()).toMatchSnapshot()
@@ -226,10 +236,21 @@ describe('VInput.ts', () => {
         persistentHint: true,
         light: true,
         prependIcon: 'prepend',
-        appendIcon: 'append'
-      }
+        appendIcon: 'append',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
+  })
+
+  it('should not apply attrs to element', () => {
+    const wrapper = mountFunction({
+      propsData: {
+        foo: 'bar',
+      },
+    })
+
+    expect(wrapper.html()).toMatchSnapshot()
+    expect(wrapper.attributes()).not.toHaveProperty('foobar')
   })
 })

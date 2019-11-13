@@ -12,7 +12,7 @@ export default Vue.extend({
     return {
       activeZIndex: null as null | number,
       stackMinZIndex: 0,
-      isActive: false
+      isActive: false,
     }
   },
 

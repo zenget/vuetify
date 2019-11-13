@@ -20,7 +20,16 @@
       "children": [
         {
           "type": "api",
-          "value": [ "v-radio-group", "v-radio", "v-checkbox", "v-switch" ]
+          "value": [ "v-checkbox", "v-radio", "v-radio-group", "v-switch" ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "playground",
+          "value": "playground"
         }
       ]
     },
@@ -30,20 +39,21 @@
         {
           "type": "examples",
           "value": [
-            "checkboxesBoolean",
-            "checkboxesArray",
-            "checkboxesStates",
-            "checkboxesColors",
-            "checkboxesInlineTexfield",
-            "radiosDefault",
-            "radiosDirection",
-            "radiosColors",
-            "switchesBoolean",
-            "switchesArray",
-            "switchesStates",
-            "switchesColors",
-            "switchesFlat",
-            "labelSlot"
+            "simple/checkboxes-boolean",
+            "simple/checkboxes-array",
+            "simple/checkboxes-states",
+            "simple/checkboxes-colors",
+            "intermediate/checkboxes-inline-textfield",
+            "simple/radios-default",
+            "simple/radios-direction",
+            "simple/radios-colors",
+            "simple/switches-boolean",
+            "simple/switches-array",
+            "simple/switches-states",
+            "simple/switches-colors",
+            "simple/switches-flat",
+            "simple/switches-inset",
+            "intermediate/label-slot"
           ]
         }
       ]

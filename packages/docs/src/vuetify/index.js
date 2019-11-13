@@ -10,20 +10,20 @@ export function createVuetify (ssrContext) {
     theme: {
       themes: {
         light: {
-          primary: '#1867c0',
+          primary: '#1867C0',
           secondary: '#5CBBF6',
           tertiary: '#E57373',
-          accent: '#005CAF'
-        }
-      }
+          accent: '#005CAF',
+        },
+      },
     },
     options: {
       minifyTheme: css => {
         return process.env.NODE_ENV === 'production'
           ? css.replace(/[\s|\r\n|\r|\n]/g, '')
           : css
-      }
-    }
+      },
+    },
   })
 
   // Using goTo for scroll options means it

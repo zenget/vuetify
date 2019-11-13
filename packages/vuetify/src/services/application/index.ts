@@ -2,27 +2,33 @@
 import { Service } from '../service'
 
 // Types
-import { TargetPropValues, TargetProp } from 'vuetify/types/services/application'
+import { TargetPropValues, TargetProp, Application as IApplication } from 'vuetify/types/services/application'
 
-export class Application extends Service {
+export class Application extends Service implements IApplication {
   static property = 'application'
 
   bar = 0
+
   top = 0
+
   left = 0
+
   insetFooter = 0
+
   right = 0
+
   bottom = 0
+
   footer = 0
 
-  application: Record<string, TargetPropValues> = {
+  application: Dictionary<TargetPropValues> = {
     bar: {},
     top: {},
     left: {},
     insetFooter: {},
     right: {},
     bottom: {},
-    footer: {}
+    footer: {},
   }
 
   register (

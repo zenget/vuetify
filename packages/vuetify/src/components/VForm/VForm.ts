@@ -1,10 +1,9 @@
-// Styles
-import './VForm.sass'
-
 // Components
 import VInput from '../VInput/VInput'
 
 // Mixins
+import mixins from '../../util/mixins'
+import BindsAttrs from '../../mixins/binds-attrs'
 import { provide as RegistrableProvide } from '../../mixins/registrable'
 
 // Helpers
@@ -19,20 +18,24 @@ type Watchers = {
 }
 
 /* @vue/component */
-export default RegistrableProvide('form').extend({
+export default mixins(
+  BindsAttrs,
+  RegistrableProvide('form')
+  /* @vue/component */
+).extend({
   name: 'v-form',
 
   inheritAttrs: false,
 
   props: {
+    lazyValidation: Boolean,
     value: Boolean,
-    lazyValidation: Boolean
   },
 
   data: () => ({
     inputs: [] as VInputInstance[],
     watchers: [] as Watchers[],
-    errorBag: {} as ErrorBag
+    errorBag: {} as ErrorBag,
   }),
 
   watch: {
@@ -43,8 +46,8 @@ export default RegistrableProvide('form').extend({
         this.$emit('input', !errors)
       },
       deep: true,
-      immediate: true
-    }
+      immediate: true,
+    },
   },
 
   methods: {
@@ -58,7 +61,7 @@ export default RegistrableProvide('form').extend({
       const watchers: Watchers = {
         _uid: input._uid,
         valid: () => {},
-        shouldValidate: () => {}
+        shouldValidate: () => {},
       }
 
       if (this.lazyValidation) {
@@ -79,7 +82,7 @@ export default RegistrableProvide('form').extend({
     },
     /** @public */
     validate (): boolean {
-      return this.inputs.every(input => input.validate(true))
+      return this.inputs.filter(input => !input.validate(true)).length === 0
     },
     /** @public */
     reset (): void {
@@ -117,7 +120,7 @@ export default RegistrableProvide('form').extend({
       this.watchers = this.watchers.filter(i => i._uid !== found._uid)
       this.inputs = this.inputs.filter(i => i._uid !== found._uid)
       this.$delete(this.errorBag, found._uid)
-    }
+    },
   },
 
   render (h): VNode {
@@ -125,11 +128,11 @@ export default RegistrableProvide('form').extend({
       staticClass: 'v-form',
       attrs: {
         novalidate: true,
-        ...this.$attrs
+        ...this.attrs$,
       },
       on: {
-        submit: (e: Event) => this.$emit('submit', e)
-      }
+        submit: (e: Event) => this.$emit('submit', e),
+      },
     }, this.$slots.default)
-  }
+  },
 })

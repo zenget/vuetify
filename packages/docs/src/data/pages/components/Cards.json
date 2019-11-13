@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VCard",
   "mdSpec": {
     "version": "2",
     "link": "https://material.io/design/components/cards.html"
@@ -10,8 +11,39 @@
       "type": "section",
       "children": [
         {
-          "type": "usage",
-          "value": "usage"
+          "type": "usage-new",
+          "value": {
+            "booleans": [
+              "disabled",
+              "loading",
+              "image",
+              {
+                "prop": "subtitle",
+                "value": true
+              },
+              {
+                "prop": "supportingText",
+                "value": true
+              }
+            ],
+            "sliders": [
+              {
+                "prop": "elevation",
+                "label": "Elevation",
+                "attrs": {
+                  "min": 0,
+                  "max": 24
+                }
+              }
+            ],
+            "tabs": [
+              "default",
+              "outlined",
+              "raised",
+              "shaped",
+              "tile"
+            ]
+          }
         }
       ]
     },
@@ -23,6 +55,7 @@
           "value": [
             "v-card",
             "v-card-actions",
+            "v-card-subtitle",
             "v-card-text",
             "v-card-title"
           ]
@@ -35,17 +68,17 @@
         {
           "type": "examples",
           "value": [
-            "intermediate",
-            "infoCard",
-            "mediaWithText",
-            "outlined",
-            "horizontal",
-            "grids",
-            "customActions",
-            "twitterCard",
-            "loading",
-            "weather",
-            "advanced"
+            "simple/outlined",
+            "intermediate/intermediate",
+            "intermediate/info-card",
+            "intermediate/media-with-text",
+            "intermediate/grids",
+            "complex/horizontal",
+            "complex/custom-actions",
+            "complex/twitter-card",
+            "complex/loading",
+            "complex/weather",
+            "complex/advanced"
           ]
         }
       ]
@@ -58,7 +91,7 @@
           "value": [
             "components/buttons",
             "components/images",
-            "framework/typography"
+            "styles/typography"
           ]
         }
       ]

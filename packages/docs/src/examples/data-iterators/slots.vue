@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-md>
+  <v-container fluid>
     <v-data-iterator
       :items="items"
       :items-per-page.sync="itemsPerPage"
@@ -17,14 +17,14 @@
       </template>
 
       <template v-slot:default="props">
-        <v-layout row wrap>
-          <v-flex
+        <v-row>
+          <v-col
             v-for="item in props.items"
             :key="item.name"
-            xs12
-            sm6
-            md4
-            lg3
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
           >
             <v-card>
               <v-card-title class="subheading font-weight-bold">{{ item.name }}</v-card-title>
@@ -32,44 +32,44 @@
               <v-divider></v-divider>
 
               <v-list dense>
-                <v-list-tile>
-                  <v-list-tile-content>Calories:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.calories }}</v-list-tile-content>
-                </v-list-tile>
+                <v-list-item>
+                  <v-list-item-content>Calories:</v-list-item-content>
+                  <v-list-item-content class="align-end">{{ item.calories }}</v-list-item-content>
+                </v-list-item>
 
-                <v-list-tile>
-                  <v-list-tile-content>Fat:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.fat }}</v-list-tile-content>
-                </v-list-tile>
+                <v-list-item>
+                  <v-list-item-content>Fat:</v-list-item-content>
+                  <v-list-item-content class="align-end">{{ item.fat }}</v-list-item-content>
+                </v-list-item>
 
-                <v-list-tile>
-                  <v-list-tile-content>Carbs:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.carbs }}</v-list-tile-content>
-                </v-list-tile>
+                <v-list-item>
+                  <v-list-item-content>Carbs:</v-list-item-content>
+                  <v-list-item-content class="align-end">{{ item.carbs }}</v-list-item-content>
+                </v-list-item>
 
-                <v-list-tile>
-                  <v-list-tile-content>Protein:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.protein }}</v-list-tile-content>
-                </v-list-tile>
+                <v-list-item>
+                  <v-list-item-content>Protein:</v-list-item-content>
+                  <v-list-item-content class="align-end">{{ item.protein }}</v-list-item-content>
+                </v-list-item>
 
-                <v-list-tile>
-                  <v-list-tile-content>Sodium:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.sodium }}</v-list-tile-content>
-                </v-list-tile>
+                <v-list-item>
+                  <v-list-item-content>Sodium:</v-list-item-content>
+                  <v-list-item-content class="align-end">{{ item.sodium }}</v-list-item-content>
+                </v-list-item>
 
-                <v-list-tile>
-                  <v-list-tile-content>Calcium:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.calcium }}</v-list-tile-content>
-                </v-list-tile>
+                <v-list-item>
+                  <v-list-item-content>Calcium:</v-list-item-content>
+                  <v-list-item-content class="align-end">{{ item.calcium }}</v-list-item-content>
+                </v-list-item>
 
-                <v-list-tile>
-                  <v-list-tile-content>Iron:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.iron }}</v-list-tile-content>
-                </v-list-tile>
+                <v-list-item>
+                  <v-list-item-content>Iron:</v-list-item-content>
+                  <v-list-item-content class="align-end">{{ item.iron }}</v-list-item-content>
+                </v-list-item>
               </v-list>
             </v-card>
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
       </template>
 
       <template v-slot:footer>
@@ -99,7 +99,7 @@
           protein: 4.0,
           sodium: 87,
           calcium: '14%',
-          iron: '1%'
+          iron: '1%',
         },
         {
           name: 'Ice cream sandwich',
@@ -109,7 +109,7 @@
           protein: 4.3,
           sodium: 129,
           calcium: '8%',
-          iron: '1%'
+          iron: '1%',
         },
         {
           name: 'Eclair',
@@ -119,7 +119,7 @@
           protein: 6.0,
           sodium: 337,
           calcium: '6%',
-          iron: '7%'
+          iron: '7%',
         },
         {
           name: 'Cupcake',
@@ -129,9 +129,9 @@
           protein: 4.3,
           sodium: 413,
           calcium: '3%',
-          iron: '8%'
-        }
-      ]
-    })
+          iron: '8%',
+        },
+      ],
+    }),
   }
 </script>

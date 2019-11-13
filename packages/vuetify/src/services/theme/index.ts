@@ -9,17 +9,20 @@ import * as ThemeUtils from './utils'
 import Vue from 'vue'
 import {
   VuetifyParsedTheme,
-  VuetifyThemeOptions,
   VuetifyThemes,
-  VuetifyThemeVariant
+  VuetifyThemeVariant,
+  Theme as ITheme,
 } from 'vuetify/types/services/theme'
 
 export class Theme extends Service {
   static property = 'theme'
 
   public disabled = false
-  public options: VuetifyThemeOptions['options']
+
+  public options!: ITheme['options']
+
   public styleEl?: HTMLStyleElement
+
   public themes: VuetifyThemes = {
     light: {
       primary: '#1976D2',   // blue.darken2
@@ -28,7 +31,7 @@ export class Theme extends Service {
       error: '#FF5252',     // red.accent2
       info: '#2196F3',      // blue.base
       success: '#4CAF50',   // green.base
-      warning: '#FB8C00'    // amber.base
+      warning: '#FB8C00',    // amber.base
     },
     dark: {
       primary: '#2196F3',   // blue.base
@@ -37,15 +40,19 @@ export class Theme extends Service {
       error: '#FF5252',     // red.accent2
       info: '#2196F3',      // blue.base
       success: '#4CAF50',   // green.base
-      warning: '#FB8C00'    // amber.base
-    }
+      warning: '#FB8C00',    // amber.base
+    },
   }
+
   public defaults: VuetifyThemes = this.themes
 
   private isDark = null as boolean | null
+
   private vueInstance = null as Vue | null
 
-  constructor (options: Partial<VuetifyThemeOptions> = {}) {
+  private vueMeta = null as any | null
+
+  constructor (options: Partial<ITheme> = {}) {
     super()
     if (options.disable) {
       this.disabled = true
@@ -53,24 +60,27 @@ export class Theme extends Service {
       return
     }
 
-    this.options = {
-      ...this.options,
-      ...options.options
-    }
+    this.options = options.options!
 
     this.dark = Boolean(options.dark)
-    const themes = options.themes || {}
+    const themes = options.themes || {} as never
 
     this.themes = {
       dark: this.fillVariant(themes.dark, true),
-      light: this.fillVariant(themes.light, false)
+      light: this.fillVariant(themes.light, false),
     }
   }
 
   // When setting css, check for element
   // and apply new values
   set css (val: string) {
-    this.checkStyleElement() && (this.styleEl!.innerHTML = val)
+    if (this.vueMeta) {
+      if (this.isVueMeta23) {
+        this.applyVueMeta23()
+      }
+      return
+    }
+    this.checkOrCreateStyleElement() && (this.styleEl!.innerHTML = val)
   }
 
   set dark (val: boolean) {
@@ -104,13 +114,10 @@ export class Theme extends Service {
   public init (root: Vue, ssrContext?: any): void {
     if (this.disabled) return
 
-    const meta = Boolean((root as any).$meta) // TODO: don't import public types from /src
-    const ssr = Boolean(ssrContext)
-
     /* istanbul ignore else */
-    if (meta) {
-      this.initNuxt(root)
-    } else if (ssr) {
+    if ((root as any).$meta) {
+      this.initVueMeta(root)
+    } else if (ssrContext) {
       this.initSSR(ssrContext)
     }
 
@@ -131,13 +138,14 @@ export class Theme extends Service {
   }
 
   // Check for existence of style element
-  private checkStyleElement (): boolean {
+  private checkOrCreateStyleElement (): boolean {
+    this.styleEl = document.getElementById('vuetify-theme-stylesheet') as HTMLStyleElement
+
     /* istanbul ignore next */
     if (this.styleEl) return true
 
     this.genStyleElement() // If doesn't have it, create it
 
-    this.styleEl = document.getElementById('vuetify-theme-stylesheet') as HTMLStyleElement
     return Boolean(this.styleEl)
   }
 
@@ -156,6 +164,7 @@ export class Theme extends Service {
   // Generate the style element
   // if applicable
   private genStyleElement (): void {
+    /* istanbul ignore if */
     if (typeof document === 'undefined') return
 
     /* istanbul ignore next */
@@ -172,27 +181,50 @@ export class Theme extends Service {
     document.head.appendChild(this.styleEl)
   }
 
-  private initNuxt (root: Vue) {
-    const options = this.options || {}
-    const metaInfo = {
-      style: [
-        {
+  private initVueMeta (root: any) {
+    this.vueMeta = root.$meta()
+    if (this.isVueMeta23) {
+      // vue-meta needs to apply after mounted()
+      root.$nextTick(() => {
+        this.applyVueMeta23()
+      })
+      return
+    }
+
+    const metaKeyName = typeof this.vueMeta.getOptions === 'function' ? this.vueMeta.getOptions().keyName : 'metaInfo'
+    const metaInfo = root.$options[metaKeyName] || {}
+
+    root.$options[metaKeyName] = () => {
+      metaInfo.style = metaInfo.style || []
+
+      const vuetifyStylesheet = metaInfo.style.find((s: any) => s.id === 'vuetify-theme-stylesheet')
+
+      if (!vuetifyStylesheet) {
+        metaInfo.style.push({
           cssText: this.generatedStyles,
           type: 'text/css',
           id: 'vuetify-theme-stylesheet',
-          nonce: options.cspNonce
-        }
-      ]
-    }
+          nonce: (this.options || {}).cspNonce,
+        })
+      } else {
+        vuetifyStylesheet.cssText = this.generatedStyles
+      }
 
-    root.$children.push({
-      $children: [],
-      $options: {
-        metaInfo, // TODO: vue-meta 2.0 $meta.getOptions()
-        head: metaInfo
-      },
-      $vnode: { data: {} }
-    } as any)
+      return metaInfo
+    }
+  }
+
+  private applyVueMeta23 () {
+    const { set } = this.vueMeta.addApp('vuetify')
+
+    set({
+      style: [{
+        cssText: this.generatedStyles,
+        type: 'text/css',
+        id: 'vuetify-theme-stylesheet',
+        nonce: (this.options || {}).cspNonce,
+      }],
+    })
   }
 
   private initSSR (ssrContext?: any) {
@@ -221,9 +253,9 @@ export class Theme extends Service {
         themes: {
           immediate: true,
           deep: true,
-          handler: () => this.applyTheme()
-        }
-      }
+          handler: () => this.applyTheme(),
+        },
+      },
     })
   }
 
@@ -262,5 +294,11 @@ export class Theme extends Service {
     /* istanbul ignore next */
     const theme = this.currentTheme || {}
     return ThemeUtils.parse(theme)
+  }
+
+  // Is using v2.3 of vue-meta
+  // https://github.com/nuxt/vue-meta/releases/tag/v2.3.0
+  private get isVueMeta23 (): boolean {
+    return typeof this.vueMeta.addApp === 'function'
   }
 }

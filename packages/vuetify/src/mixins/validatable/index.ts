@@ -1,5 +1,6 @@
 // Mixins
 import Colorable from '../colorable'
+import Themeable from '../themeable'
 import { inject as RegistrableInject } from '../registrable'
 
 // Utilities
@@ -9,14 +10,15 @@ import mixins from '../../util/mixins'
 
 // Types
 import { PropValidator } from 'vue/types/options'
-export type VuetifyRuleValidator = (value: any) => string | false
+export type VuetifyRuleValidator = (value: any) => string | boolean
 export type VuetifyMessage = string | string[]
 export type VuetifyRuleValidations = (VuetifyRuleValidator | string)[]
 
 /* @vue/component */
 export default mixins(
   Colorable,
-  RegistrableInject('form')
+  RegistrableInject('form'),
+  Themeable
 ).extend({
   name: 'validatable',
 
@@ -25,28 +27,28 @@ export default mixins(
     error: Boolean,
     errorCount: {
       type: [Number, String],
-      default: 1
+      default: 1,
     },
     errorMessages: {
       type: [String, Array],
-      default: () => []
+      default: () => [],
     } as PropValidator<VuetifyMessage>,
     messages: {
       type: [String, Array],
-      default: () => []
+      default: () => [],
     } as PropValidator<VuetifyMessage>,
     readonly: Boolean,
     rules: {
       type: Array,
-      default: () => []
+      default: () => [],
     } as PropValidator<VuetifyRuleValidations>,
     success: Boolean,
     successMessages: {
       type: [String, Array],
-      default: () => []
+      default: () => [],
     } as PropValidator<VuetifyMessage>,
     validateOnBlur: Boolean,
-    value: { required: false }
+    value: { required: false },
   },
 
   data () {
@@ -58,11 +60,22 @@ export default mixins(
       isFocused: false,
       isResetting: false,
       lazyValue: this.value,
-      valid: false
+      valid: false,
     }
   },
 
   computed: {
+    computedColor (): string | undefined {
+      if (this.disabled) return undefined
+      if (this.color) return this.color
+      // It's assumed that if the input is on a
+      // dark background, the user will want to
+      // have a white color. If the entire app
+      // is setup to be dark, then they will
+      // like want to use their primary color
+      if (this.isDark && !this.appIsDark) return 'white'
+      else return 'primary'
+    },
     hasError (): boolean {
       return (
         this.internalErrorMessages.length > 0 ||
@@ -85,6 +98,8 @@ export default mixins(
       return this.validationTarget.length > 0
     },
     hasState (): boolean {
+      if (this.disabled) return false
+
       return (
         this.hasSuccess ||
         (this.shouldValidate && this.hasError)
@@ -107,7 +122,7 @@ export default mixins(
         this.lazyValue = val
 
         this.$emit('input', val)
-      }
+      },
     },
     shouldValidate (): boolean {
       if (this.externalError) return true
@@ -121,9 +136,10 @@ export default mixins(
       return this.validationTarget.slice(0, Number(this.errorCount))
     },
     validationState (): string | undefined {
+      if (this.disabled) return undefined
       if (this.hasError && this.shouldValidate) return 'error'
       if (this.hasSuccess) return 'success'
-      if (this.hasColor) return this.color
+      if (this.hasColor) return this.computedColor
       return undefined
     },
     validationTarget (): VuetifyRuleValidations {
@@ -136,7 +152,7 @@ export default mixins(
       } else if (this.shouldValidate) {
         return this.errorBucket
       } else return []
-    }
+    },
   },
 
   watch: {
@@ -145,7 +161,7 @@ export default mixins(
         if (deepEqual(newVal, oldVal)) return
         this.validate()
       },
-      deep: true
+      deep: true,
     },
     internalValue () {
       // If it's the first time we're setting input,
@@ -155,11 +171,10 @@ export default mixins(
     },
     isFocused (val) {
       // Should not check validation
-      // if disabled or readonly
+      // if disabled
       if (
         !val &&
-        !this.disabled &&
-        !this.readonly
+        !this.disabled
       ) {
         this.hasFocused = true
         this.validateOnBlur && this.validate()
@@ -180,7 +195,7 @@ export default mixins(
     },
     value (val) {
       this.lazyValue = val
-    }
+    },
   },
 
   beforeMount () {
@@ -234,6 +249,6 @@ export default mixins(
       this.valid = errorBucket.length === 0
 
       return this.valid
-    }
-  }
+    },
+  },
 })

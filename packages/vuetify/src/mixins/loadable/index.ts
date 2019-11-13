@@ -21,12 +21,12 @@ export default Vue.extend<colorable>().extend({
   props: {
     loading: {
       type: [Boolean, String],
-      default: false
+      default: false,
     },
     loaderHeight: {
       type: [Number, String],
-      default: 2
-    }
+      default: 2,
+    },
   },
 
   methods: {
@@ -35,13 +35,14 @@ export default Vue.extend<colorable>().extend({
 
       return this.$slots.progress || this.$createElement(VProgressLinear, {
         props: {
+          absolute: true,
           color: (this.loading === true || this.loading === '')
             ? (this.color || 'primary')
             : this.loading,
           height: this.loaderHeight,
-          indeterminate: true
-        }
+          indeterminate: true,
+        },
       })
-    }
-  }
+    },
+  },
 })

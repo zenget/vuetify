@@ -3,7 +3,7 @@ import { Lang } from '../../../services/lang'
 import {
   mount,
   MountOptions,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 import Vue from 'vue'
 
@@ -14,9 +14,9 @@ Vue.prototype.$vuetify = {
       next: 'mdi-chevron-right',
       dropdown: 'mdi-menu-down',
       first: 'mdi-page-first',
-      last: 'mdi-page-last'
-    }
-  }
+      last: 'mdi-page-last',
+    },
+  },
 }
 
 describe('VDataFooter.ts', () => {
@@ -27,45 +27,28 @@ describe('VDataFooter.ts', () => {
 
     mountFunction = (options?: MountOptions<Instance>) => {
       return mount(VDataFooter, {
+        // https://github.com/vuejs/vue-test-utils/issues/1130
+        sync: false,
         mocks: {
           $vuetify: {
             lang: new Lang(),
             theme: {
-              dark: false
-            }
-          }
+              dark: false,
+            },
+          },
         },
-        ...options
+        ...options,
       })
     }
-  })
-
-  it('should render and match snapshot', () => {
-    const wrapper = mountFunction({
-      propsData: {
-        options: {
-          page: 4
-        },
-        pagination: {
-          page: 4,
-          pageStart: 1,
-          pageStop: 10,
-          pageCount: 10,
-          itemsLength: 100
-        }
-      }
-    })
-
-    expect(wrapper.vm.isCustomItemsPerPage).toBeTruthy()
-    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('should render with custom itemsPerPage', () => {
     const wrapper = mountFunction({
       propsData: {
+        itemsPerPageOptions: [50, 100],
         options: {
           page: 4,
-          itemsPerPage: 10
+          itemsPerPage: 100,
         },
         pagination: {
           page: 4,
@@ -73,12 +56,11 @@ describe('VDataFooter.ts', () => {
           pageStart: 1,
           pageStop: 10,
           pageCount: 10,
-          itemsLength: 100
-        }
-      }
+          itemsLength: 100,
+        },
+      },
     })
 
-    expect(wrapper.vm.isCustomItemsPerPage).toBeFalsy()
     expect(wrapper.html()).toMatchSnapshot()
   })
 
@@ -87,7 +69,7 @@ describe('VDataFooter.ts', () => {
       propsData: {
         options: {
           page: 4,
-          itemsPerPage: 10
+          itemsPerPage: 10,
         },
         pagination: {
           page: 4,
@@ -95,19 +77,19 @@ describe('VDataFooter.ts', () => {
           pageStart: 1,
           pageStop: 10,
           pageCount: 10,
-          itemsLength: 100
+          itemsLength: 100,
         },
-        showFirstLastPage: true
+        showFirstLastPage: true,
       },
       mocks: {
         $vuetify: {
           rtl: true,
           lang: new Lang(),
           theme: {
-            dark: false
-          }
-        }
-      }
+            dark: false,
+          },
+        },
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -118,7 +100,7 @@ describe('VDataFooter.ts', () => {
       propsData: {
         options: {
           page: 4,
-          itemsPerPage: 10
+          itemsPerPage: 10,
         },
         pagination: {
           page: 4,
@@ -126,10 +108,10 @@ describe('VDataFooter.ts', () => {
           pageStart: 1,
           pageStop: 10,
           pageCount: 10,
-          itemsLength: 100
+          itemsLength: 100,
         },
-        showFirstLastPage: true
-      }
+        showFirstLastPage: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -142,7 +124,7 @@ describe('VDataFooter.ts', () => {
       propsData: {
         options: {
           page: 4,
-          itemsPerPage: 10
+          itemsPerPage: 10,
         },
         pagination: {
           page: 4,
@@ -150,12 +132,12 @@ describe('VDataFooter.ts', () => {
           pageStart: 1,
           pageStop: 10,
           pageCount: 10,
-          itemsLength: 100
-        }
+          itemsLength: 100,
+        },
       },
       listeners: {
-        'update:options': mock
-      }
+        'update:options': mock,
+      },
     })
 
     wrapper.vm.onNextPage()
@@ -177,7 +159,7 @@ describe('VDataFooter.ts', () => {
       propsData: {
         options: {
           page: 4,
-          itemsPerPage: 10
+          itemsPerPage: 10,
         },
         pagination: {
           page: 4,
@@ -185,10 +167,32 @@ describe('VDataFooter.ts', () => {
           pageStart: 1,
           pageStop: 10,
           pageCount: 10,
-          itemsLength: 100
+          itemsLength: 100,
         },
-        showCurrentPage: true
-      }
+        showCurrentPage: true,
+      },
+    })
+
+    expect(wrapper.html()).toMatchSnapshot()
+  })
+
+  it('should disable last page button if no items', () => {
+    const wrapper = mountFunction({
+      propsData: {
+        options: {
+          page: 1,
+          itemsPerPage: 10,
+        },
+        pagination: {
+          page: 1,
+          itemsPerPage: 10,
+          pageStart: 0,
+          pageStop: 0,
+          pageCount: 0,
+          itemsLength: 0,
+        },
+        showFirstLastPage: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()

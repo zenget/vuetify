@@ -22,13 +22,13 @@
   display: flex
   flex: 1 1 auto
   font-size: 16px
+  letter-spacing: normal
+  max-width: 100%
   text-align: left
 
   .v-progress-linear
     top: calc(100% - 1px)
     left: 0
-    margin: 0
-    position: absolute
 
   input
     max-height: 32px
@@ -58,10 +58,16 @@
       user-select: none
 
   &__append-outer
-    margin-left: 9px
+    +ltr()
+      margin-left: 9px
+    +rtl()
+      margin-right: 9px
 
   &__prepend-outer
-    margin-right: 9px
+    +ltr()
+      margin-right: 9px
+    +rtl()
+      margin-left: 9px
 
   &__control
     display: flex
@@ -69,6 +75,7 @@
     height: auto
     flex-grow: 1
     flex-wrap: wrap
+    min-width: 0
     width: 100% // For IE11
 
   &__icon
@@ -93,6 +100,9 @@
     transition: $primary-transition
     width: 100%
 
+  &--dense > .v-input__control > .v-input__slot
+    margin-bottom: 4px
+
   &--is-disabled:not(.v-input--is-readonly)
     pointer-events: none
 
@@ -106,4 +116,4 @@
 
   &--has-state
     &.error--text .v-label
-      animation: shake .6s map-get($transition, 'swing')
+      animation: v-shake .6s map-get($transition, 'swing')

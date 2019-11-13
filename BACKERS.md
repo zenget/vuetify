@@ -2,18 +2,22 @@
 
 You can join them in supporting Vuetify.js by [pledging on Patreon](https://www.patreon.com/vuetify)
 
-### $500+
+### Premiere
+- [QOMPLX](https://www.qomplx.com/)
+
+### Diamond
 - [LMAX Exchange](https://www.lmax.com/)
 - [Intygrate](http://intygrate.com/)
 - [Resale AI](http://resaleai.com/)
 
-### $250+
-- [Eikos Partners](http://www.eikospartners.com/) <!-- Brian Slater -->
+### Platinum
 - [rateGenius](https://application.rategenius.com/) <!-- Ravi Alamuri -->
 - [Clearblue Technologies](http://www.clearbluetechnologies.com/) <!-- Mark Windrim -->
 - [DigitalMaas](https://www.digitalmaas.com/) <!-- Scott Francis -->
+- [Asolvi](http://asolvi.com/) <!-- Sverre Dreier -->
+- [Quanted Square](https://analytics.quantedsquare.com/)
 
-### $50+
+### Gold
 - [Xavier Escoté](http://www.deister.net/)
 - [Cycloid](https://www.cycloid.io/)
 - [Zweidenker](http://zweidenker.de) <!-- Christian Denker -->
@@ -21,46 +25,45 @@ You can join them in supporting Vuetify.js by [pledging on Patreon](https://www.
 - [Hohenstein Laboratories](https://www.hohenstein.de/en/home/home.xhtml)
 - [P2L Technologies](https://p2l.tech/) <!-- Blaise Laflamme -->
 - [madhead](https://www.madhead.com/) <!-- Terence Tsang -->
+- Musashi Miyamori
+- Elfo s.r.l.
+- Codefirst
+- Dan Trevino
+- [customessaymeister](https://www.customessaymeister.com/)
+- [blokt](https://blokt.com/)
+- [Loomio](https://www.loomio.org/)
 - Hannes Kochniß
-- Yaroslav Dobzhanskij
-- Benjamin Chung
-- Aaron Henderson
-
+- [EduBirdie](https://edubirdie.com/)
 
 ### $20+
-- [Anthony Gherghetta](https://gorilladash.com/)
 - Michael Marti
 - [Aeroden](https://www.aeroden.com) <!-- Adrian Belovic -->
 - Jay Blanchard
 - Christo Crampton
-- Team Of Monkeys
+- Team of Monkeys
 - Robin Paolini
 - [Integra CCS](https://www.integraccs.com/)
 - Joel Hatch
 - Juha Vehnia
 - Kent Johnson
-- [White Rabbit Express](https://www.whiterabbitexpress.com/) <!-- Max Hodges -->
 - Working Group Two
+- Kyle Lawhorn
+- Jason Frueh
+- [Austin Ginder](https://austinginder.com/)
+- Brad Stewart
 
 ### $10+
-- Espen Bratberg
-- Ivan Vedernikov
 - Chava Sobreyra
 - Costa Huang
 - Paul
-- Code Fortitude
-- Phillippe Genois
+- Philippe Genois
 - Sam Bosell
-- Cliff Hess
 - Omar Spira
 - Jiří Žižka
-- Dejan Kovac
-- Anythony Estebe
-- Eeico Wentrup
-- Matthew O'Leary
+- Anthony Estebe
+- Eelco Wentrup
 - Mike Margerum
 - Mark Freedman
-- Eric Nguyen
 - Alvin Wang
 - Jadranko Dragoje
 - Stanislovas Janonis
@@ -68,11 +71,8 @@ You can join them in supporting Vuetify.js by [pledging on Patreon](https://www.
 - Idea Junction Ltd.
 - Michael Hipp
 - Keyur Desai
-- Casey Dwyer
-- Bohdan Kokotko
 - Blaine Landowski
 - Paul Whittemore
-- Alexander Weiher
 - Helmi
 - Hexodus
 - Pierre Vanhulst
@@ -82,9 +82,7 @@ You can join them in supporting Vuetify.js by [pledging on Patreon](https://www.
 - James Chang
 - YubiGeek
 - Shu Ogawa
-- Dan Trevino
 - Daan Roet
-- Rollin Crittendon
 - Quentin Casares
 - Jeremy Hall
 - Harrison Leong
@@ -94,8 +92,6 @@ You can join them in supporting Vuetify.js by [pledging on Patreon](https://www.
 - Adam Kaput
 - Eric Helgeson
 - Glen Azzopardi
-- Eldar Zakiryanov
-- Taylor Hubbard
 - Rich Harris
 - Jilson Thomas
 - Boris Dayma
@@ -103,15 +99,26 @@ You can join them in supporting Vuetify.js by [pledging on Patreon](https://www.
 - Nathanael Björkgård
 - Göran Ehrsson
 - Daniel Rivers
-- Stephan Deglow
 - Tom McGee
-- David
 - Justin Sheppard
 - Steve Drucker
 - Morgan Benton
-- Mark
 - Christopher Bartling
 - Matheus Fonseca
-- Chadi Devigne
-- Kjetil Wikestad
+- Stephen Elliot
+- Jan Hjørdie
+- Chirstian Burkhard
+- Mateusz Gilewicz
+- Quitin Donnell henry
+- Salty Fish
+- Graham Hunter
+- Erik Vavro
+- Bohdan Kokotko
+- Daniel Chote
+- Mohammed Alkhuzayyim
+- Jonty Brook
+- Jose Rojas
+- Sean Kimball
 - MEHMET SAGLAM
+- Mark Couvaras
+- [quickytools](https://www.quickytools.com/)

@@ -1,8 +1,9 @@
 // Types
 import Vue from 'vue'
+import { Framework } from 'vuetify'
 
 export interface VuetifyServiceContract {
-  framework: Record<string, VuetifyServiceContract>
+  framework: Framework
   init: (root: Vue, ssrContext?: object) => void
 }
 

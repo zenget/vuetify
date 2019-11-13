@@ -4,9 +4,8 @@ import VProgressCircular from '../VProgressCircular'
 // Utilities
 import {
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
-import { compileToFunctions } from 'vue-template-compiler'
 
 describe('VProgressCircular.ts', () => {
   type Instance = InstanceType<typeof VProgressCircular>
@@ -14,20 +13,18 @@ describe('VProgressCircular.ts', () => {
 
   beforeEach(() => {
     mountFunction = (options = {}) => {
-      return mount(VProgressCircular, {
-        ...options
-      })
+      return mount(VProgressCircular, options)
     }
   })
 
   it('should render component and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        value: 33
+        value: 33,
       },
       slots: {
-        default: [compileToFunctions('<span>content</span>')]
-      }
+        default: '<span>content</span>',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -69,8 +66,8 @@ describe('VProgressCircular.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        color: 'orange lighten-1'
-      }
+        color: 'orange lighten-1',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -80,8 +77,8 @@ describe('VProgressCircular.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        button: true
-      }
+        button: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -91,8 +88,8 @@ describe('VProgressCircular.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        rotate: 29
-      }
+        rotate: 29,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -102,8 +99,8 @@ describe('VProgressCircular.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        size: 17
-      }
+        size: 17,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -112,8 +109,8 @@ describe('VProgressCircular.ts', () => {
   it('should render component with indeterminate prop and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        indeterminate: true
-      }
+        indeterminate: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -123,8 +120,8 @@ describe('VProgressCircular.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        width: 13
-      }
+        width: 13,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -134,8 +131,8 @@ describe('VProgressCircular.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        fill: 'green lighten-1'
-      }
+        fill: 'green lighten-1',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()

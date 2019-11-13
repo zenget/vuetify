@@ -1,54 +1,57 @@
 <template>
-  <v-layout
-    align-center
-    justify-center
-    wrap
+  <v-row
+    :align="$attrs.align || 'center'"
+    :justify="$attrs.justify || 'center'"
+    class="ma-0 supporter-group"
+    no-gutters
+    v-bind="$attrs"
   >
-    <v-flex
-      font-weight-medium
-      grey--text
-      tag="h3"
-      xs12
+    <v-col
+      v-if="title"
+      :class="$vuetify.theme.dark ? undefined : 'grey--text text--darken-3'"
+      class="body-1 supporter-group__title"
+      cols="12"
+      tag="h4"
       v-text="title"
     />
 
     <template v-for="(item, i) in group">
-      <v-flex
-        v-if="i % 4 === 0"
+      <v-col
+        v-if="i % 4 === 0 && group.length > 1"
         :key="`divider-${i}`"
-        xs12
+        cols="12"
       />
 
-      <v-flex
+      <v-col
         :key="i"
-        d-flex
-        shrink
+        class="d-flex shrink"
       >
-        <patron
-          :value="item"
+        <supporters-sponsor
           :large="$attrs.large"
           :small="$attrs.small"
+          :value="item"
+          :x-large="$attrs['x-large']"
         />
-      </v-flex>
+      </v-col>
     </template>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
   export default {
-    components: {
-      Patron: () => import('@/components/supporters/Patron')
-    },
+    name: 'SupportersSupporterGroup',
+
+    inheritAttrs: false,
 
     props: {
       group: {
         type: Array,
-        default: () => ([])
+        default: () => ([]),
       },
       title: {
         type: String,
-        default: ''
-      }
-    }
+        default: '',
+      },
+    },
   }
 </script>

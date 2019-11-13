@@ -1,11 +1,22 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VTooltip",
   "mdSpec": {
     "version": "2",
     "link": "https://material.io/design/components/tooltips.html"
   },
   "children": [
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "alert",
+          "lang": "headerAlert1",
+          "value": "info"
+        }
+      ]
+    },
     {
       "type": "section",
       "children": [
@@ -42,7 +53,7 @@
         {
           "type": "up-next",
           "value": [
-            "components/buttons",
+            "components/badges",
             "components/icons",
             "components/menus"
           ]

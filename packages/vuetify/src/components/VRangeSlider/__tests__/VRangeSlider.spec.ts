@@ -2,7 +2,7 @@ import VRangeSlider from '../VRangeSlider'
 import {
   mount,
   MountOptions,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 
 describe('VRangeSlider.ts', () => {
@@ -22,10 +22,10 @@ describe('VRangeSlider.ts', () => {
           $vuetify: {
             rtl: false,
             theme: {
-              dark: false
-            }
-          }
-        }
+              dark: false,
+            },
+          },
+        },
       })
     }
   })
@@ -42,8 +42,8 @@ describe('VRangeSlider.ts', () => {
   it('should round values and swap order if needed', () => {
     const wrapper = mountFunction({
       propsData: {
-        value: [0, 0]
-      }
+        value: [0, 0],
+      },
     })
 
     expect(wrapper.vm.lazyValue).toEqual([0, 0])
@@ -77,7 +77,7 @@ describe('VRangeSlider.ts', () => {
   it('should change value on key down', () => {
     const setInternalValue = jest.fn()
     const wrapper = mountFunction({
-      methods: { setInternalValue }
+      methods: { setInternalValue },
     })
     const input = wrapper.find('.v-slider__thumb-container')
 
@@ -117,38 +117,6 @@ describe('VRangeSlider.ts', () => {
 
     expect(wrapper.vm.isActive).toBeTruthy()
     expect(wrapper.vm.activeThumb).toBe(0)
-  })
-
-  it('should react to a track click', () => {
-    const setInternalValue = jest.fn()
-    const getIndexOfClosestValue = jest.fn()
-    const wrapper = mountFunction({
-      methods: {
-        getIndexOfClosestValue,
-        setInternalValue
-      }
-    })
-
-    // Will return false for isInsideTrack
-    wrapper.vm.onMouseMove({})
-
-    expect(setInternalValue).not.toHaveBeenCalled()
-    expect(getIndexOfClosestValue).not.toHaveBeenCalled()
-
-    // Will return true for isInsideTrack
-    wrapper.vm.onMouseMove({
-      clientX: 0
-    })
-
-    expect(getIndexOfClosestValue).not.toHaveBeenCalled()
-    expect(setInternalValue).toHaveBeenCalledTimes(1)
-
-    wrapper.vm.onMouseMove({
-      clientX: 0
-    }, true)
-
-    expect(getIndexOfClosestValue).toHaveBeenCalled()
-    expect(setInternalValue).toHaveBeenCalledTimes(2)
   })
 
   it('should set internal value', () => {
@@ -204,8 +172,8 @@ describe('VRangeSlider.ts', () => {
   it('should render a vertical slider', async () => {
     const wrapper = mountFunction({
       propsData: {
-        vertical: true
-      }
+        vertical: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -214,10 +182,27 @@ describe('VRangeSlider.ts', () => {
   it('should render disabled slider', async () => {
     const wrapper = mountFunction({
       propsData: {
-        disabled: true
-      }
+        disabled: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
+  })
+  it('should not change to another handle', async () => {
+    const setInternalValue = jest.fn()
+    const mockParseMouseMoveResult = { value: 1, isInsideTrack: true }
+    const wrapper = mountFunction({
+      methods: { parseMouseMove: e => mockParseMouseMoveResult, setInternalValue },
+      propsData: {
+        min: 0,
+        max: 1,
+        value: [0, 1],
+      },
+    })
+    wrapper.setData({ activeThumb: 0 })
+    wrapper.vm.onMouseMove(null)
+
+    expect(wrapper.vm.activeThumb).toEqual(0)
+    expect(setInternalValue).toHaveBeenCalledWith(1)
   })
 })

@@ -5,83 +5,33 @@
       class="px-2"
     >
       <strong>MISSING ITEMS:</strong>
+
       {{ missingItems.join(', ') }}
     </div>
+
     <v-data-iterator
-      :search="search"
       :items="computedItems"
-      sort-by="name"
       :items-per-page="-1"
-      class="component-parameters pa-2"
+      :search="search"
+      class="component-parameters"
       hide-default-footer
+      sort-by="name"
     >
-      <template #default="{ items }">
-        <v-flex
-          v-for="item in items"
-          :key="item.name"
-          xs12
-          grey
-          lighten-2
-          mt-2
-        >
-          <v-layout wrap px-2 py-1>
-            <v-flex
-              v-for="(header, i) in headers"
-              :key="header.value"
-              :class="header.class"
-            >
-              <div
-                class="header grey--text text--darken-2"
-                v-text="genHeaderName(header.value, item)"
-              />
-              <div :class="['mono', header.value]">
-                <span v-text="item[header.value]" />
-                <template v-if="i === 0">
-                  <v-chip
-                    v-if="item.newIn"
-                    x-small
-                    label
-                    text-color="white"
-                    color="primary"
-                  >
-                    New in — v{{ item.newIn }}
-                  </v-chip>
-                  <v-chip
-                    v-else-if="item.deprecatedIn"
-                    x-small
-                    label
-                    color="red lighten-3"
-                  >
-                    Deprecated in — v{{ item.deprecatedIn }}
-                  </v-chip>
-                </template>
-              </div>
-            </v-flex>
-          </v-layout>
-          <v-layout
-            grey
-            lighten-4
-            pa-2
-            wrap
-          >
-            <v-flex grey--text text--darken-3 xs12>
-              <doc-markdown
-                :code="item.description"
-                class="justify"
-              />
-            </v-flex>
-            <v-flex>
-              <!-- eslint-disable -->
-              <doc-markup
-                v-if="item.example"
-                class="mt-2 mb-0"
-                lang="ts"
-                value="example"
-              >{{ genTypescriptDef(item.example) }}</doc-markup>
-              <!-- eslint-enable -->
-            </v-flex>
-          </v-layout>
-        </v-flex>
+      <template v-slot="{ items }">
+        <div>
+          <template v-for="(item, i) in items">
+            <doc-api-item
+              :key="item.name"
+              :headers="headers"
+              :item="item"
+            />
+
+            <v-divider
+              v-if="i + 1!== items.length"
+              :key="`divider-${i}`"
+            />
+          </template>
+        </div>
       </template>
     </v-data-iterator>
   </div>
@@ -90,8 +40,7 @@
 <script>
   // Utilities
   import {
-    mapGetters,
-    mapState
+    mapState,
   } from 'vuex'
   import { getObjectValueByPath } from 'vuetify/es5/util/helpers'
   import camelCase from 'lodash/camelCase'
@@ -99,38 +48,45 @@
   import pluralize from 'pluralize'
 
   export default {
+    name: 'DocParameters',
+
+    inject: {
+      overrideNamespace: {
+        default: null,
+      },
+      overridePage: {
+        default: null,
+      },
+    },
+
     props: {
       target: {
         type: String,
-        default: ''
+        default: '',
       },
       headers: {
         type: Array,
-        default: () => ([])
+        default: () => ([]),
       },
       lang: {
         type: String,
-        default: ''
+        default: '',
       },
       items: {
         type: Array,
-        default: () => ([])
+        default: () => ([]),
       },
       search: {
         type: String,
-        default: ''
+        default: '',
       },
       type: {
         type: String,
-        default: ''
-      }
+        default: '',
+      },
     },
 
     computed: {
-      ...mapGetters('documentation', [
-        'namespace',
-        'page'
-      ]),
       ...mapState('documentation', ['deprecatedIn', 'newIn']),
       computedItems () {
         const items = []
@@ -188,7 +144,13 @@
         return this.computedItems.filter(item => {
           return item.description.indexOf('MISSING DESCRIPTION') > -1
         }).map(item => item.name)
-      }
+      },
+      namespace () {
+        return this.overrideNamespace || this.$store.getters['documentation/namespace']
+      },
+      page () {
+        return this.overridePage || this.$store.getters['documentation/page']
+      },
     },
 
     methods: {
@@ -199,11 +161,11 @@
         )
       },
       /* eslint-disable-next-line max-statements */
-      genDescription (name, item) {
+      genDescription (name, item, namespace = this.namespace, page = this.page) {
         let description = ''
         let devPrepend = ''
         const camelSource = this.parseSource(item.source)
-        const page = this.lang ? upperFirst(camelCase(this.lang)) : this.page
+        if (this.lang) page = upperFirst(camelCase(this.lang))
         const composite = `${this.namespace}.${page}`
 
         // Components.Alerts.props['v-alert'].value
@@ -218,6 +180,8 @@
         const mixinDesc = `Mixins.${camelSource}.${this.type}['${name}']`
         // Generic.Props.value
         const genericDesc = `Generic.${upperFirst(this.type)}['${name}']`
+        // api['v-btn'] = 'Components.Buttons'
+        const apiDesc = `${composite}.api['${this.target}']`
 
         if (this.$te(specialDesc)) {
           description = this.$t(specialDesc)
@@ -237,6 +201,10 @@
         } else if (this.$te(genericDesc)) {
           description = this.$t(genericDesc)
           devPrepend = `**GENERIC (${item.source})** - `
+        } else if (this.$te(apiDesc)) {
+          const [namespace, page] = this.$t(apiDesc).split('.')
+
+          return this.genDescription(name, item, namespace, page)
         } else {
           description = ''
           devPrepend = `**MISSING DESCRIPTION** - ${item.source}`
@@ -270,12 +238,20 @@
 
         return this.genTypescriptDef(props)
       },
+      genValue (value) {
+        if (typeof value === 'string') return value
+
+        return this.genTypescriptDef(value)
+      },
+      genExample (example) {
+        return this.genTypescriptDef(example)
+      },
       genDefault (value) {
         if (typeof value !== 'string') return JSON.stringify(value)
         else return value
       },
       genTypescriptDef (obj) {
-        return JSON.stringify(obj, null, 2).replace(/"(.*)":\s"(.*)",?/g, '$1: $2')
+        return JSON.stringify(obj, null, 2).replace(/"(.*)":\s"(.*)",?/g, '$1: $2').replace(/"(.*)":\s\{/g, '$1: {')
       },
       genHeaderName (header, item) {
         let name = header
@@ -290,30 +266,29 @@
         }
 
         return upperFirst(camelCase(source))
-      }
-    }
+      },
+    },
   }
 </script>
 
-<style lang="stylus">
-  .component-parameters
-    font-size: 14px
+<style lang="sass">
+.component-parameters
+  font-size: 14px
 
-    p
-      margin-bottom: 0
+  p
+    margin-bottom: 0
 
-    .mono
-      font-family: 'Roboto Mono', monospace
-      font-weight: 500
+  .mono
+    font-family: 'Roboto Mono', monospace
+    font-weight: 500
 
-    .header
-      font-family: 'Roboto Mono', monospace
-      font-size: 0.8rem
+  .header
+    font-family: 'Roboto Mono', monospace
+    font-size: 0.8rem
 
-    .justify
-      text-align: justify
+  .justify
+    text-align: justify
 
-    .name
-      color: #bd4147
-
+  .name
+    color: #bd4147
 </style>

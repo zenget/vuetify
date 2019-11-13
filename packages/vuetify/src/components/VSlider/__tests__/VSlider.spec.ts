@@ -4,9 +4,8 @@ import VSlider from '../VSlider'
 // Utilities
 import {
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
-import toHaveBeenWarnedInit from '../../../../test/util/to-have-been-warned'
 
 /* eslint-disable max-statements */
 describe('VSlider.ts', () => {
@@ -20,12 +19,14 @@ describe('VSlider.ts', () => {
     document.body.appendChild(el)
     mountFunction = (options = {}) => {
       return mount(VSlider, {
+        // https://github.com/vuejs/vue-test-utils/issues/1130
+        sync: false,
         mocks: {
           $vuetify: {
-            rtl: false
-          }
+            rtl: false,
+          },
         },
-        ...options
+        ...options,
       })
     }
   })
@@ -33,8 +34,6 @@ describe('VSlider.ts', () => {
   afterEach(() => {
     document.body.removeChild(el)
   })
-
-  toHaveBeenWarnedInit()
 
   it('should match a snapshot', () => {
     const wrapper = mountFunction()
@@ -45,8 +44,8 @@ describe('VSlider.ts', () => {
   it('should render vertical slider', async () => {
     const wrapper = mountFunction({
       propsData: {
-        vertical: true
-      }
+        vertical: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -56,35 +55,39 @@ describe('VSlider.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         ticks: 'yes',
-        step: 25
-      }
+        step: 25,
+      },
     })
 
     expect('Invalid prop: custom validator check failed for prop "ticks"').toHaveBeenWarned()
 
     wrapper.setProps({ ticks: true })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ ticks: 'always' })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
   })
 
-  it('should render component with thumbLabel and match a snapshot', () => {
+  it('should render component with thumbLabel and match a snapshot', async () => {
     const wrapper = mountFunction({
       propsData: {
-        thumbLabel: 'true'
-      }
+        thumbLabel: 'true',
+      },
     })
 
     expect('Invalid prop: custom validator check failed for prop "thumbLabel"').toHaveBeenWarned()
 
     wrapper.setProps({ thumbLabel: true })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ thumbLabel: 'always' })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
   })
@@ -92,8 +95,8 @@ describe('VSlider.ts', () => {
   it('should set tabindex in disabled component', () => {
     const wrapper = mountFunction({
       propsData: {
-        disabled: true
-      }
+        disabled: true,
+      },
     })
 
     const slider = wrapper.find('.v-slider__thumb-container')
@@ -105,8 +108,8 @@ describe('VSlider.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         min: 2,
-        max: 4
-      }
+        max: 4,
+      },
     })
 
     const input = jest.fn()
@@ -126,8 +129,8 @@ describe('VSlider.ts', () => {
       propsData: {
         value: 5,
         min: 0,
-        max: 10
-      }
+        max: 10,
+      },
     })
 
     const input = jest.fn()
@@ -147,8 +150,8 @@ describe('VSlider.ts', () => {
       propsData: {
         min: 3,
         max: 15,
-        step: 3
-      }
+        step: 3,
+      },
     })
 
     const input = jest.fn()
@@ -166,8 +169,8 @@ describe('VSlider.ts', () => {
   it('should react to keydown event', async () => {
     const wrapper = mountFunction({
       propsData: {
-        value: 50
-      }
+        value: 50,
+      },
     })
 
     const input = jest.fn()
@@ -203,12 +206,12 @@ describe('VSlider.ts', () => {
     wrapper.setProps({ max: 100 })
 
     slider.trigger('keydown.left', {
-      shiftKey: true
+      shiftKey: true,
     })
     expect(input).toHaveBeenCalledWith(74)
 
     slider.trigger('keydown.right', {
-      ctrlKey: true
+      ctrlKey: true,
     })
     expect(input).toHaveBeenCalledWith(78)
     expect(input).toHaveBeenCalledTimes(12)
@@ -223,7 +226,7 @@ describe('VSlider.ts', () => {
     wrapper.vm.$vuetify.rtl = true
 
     slider.trigger('keydown.right', {
-      shiftKey: true
+      shiftKey: true,
     })
     expect(input).toHaveBeenCalledWith(72)
     wrapper.vm.$vuetify.rtl = undefined
@@ -234,8 +237,8 @@ describe('VSlider.ts', () => {
       attachToDocument: true,
       attrs: { id: 'foo' },
       propsData: {
-        label: 'bar'
-      }
+        label: 'bar',
+      },
     })
 
     const label = wrapper.find('.v-label')
@@ -245,18 +248,18 @@ describe('VSlider.ts', () => {
     const wrapper2 = mountFunction({
       attachToDocument: true,
       propsData: {
-        label: 'bar'
-      }
+        label: 'bar',
+      },
     })
 
     const label2 = wrapper2.find('.v-label')
 
-    expect(label2.element.getAttribute('for')).toBeNull()
+    expect(label2.element.getAttribute('for')).toBe(`input-${(wrapper2.vm as any)._uid}`)
   })
 
   it('should deactivate', async () => {
     const wrapper = mountFunction({
-      attachToDocument: true
+      attachToDocument: true,
     })
 
     const container = wrapper.find('.v-slider__thumb-container')
@@ -270,7 +273,7 @@ describe('VSlider.ts', () => {
 
   it('should react to touch', async () => {
     const wrapper = mountFunction({
-      attachToDocument: true
+      attachToDocument: true,
     })
 
     const container = wrapper.find('.v-slider__thumb-container')
@@ -291,7 +294,7 @@ describe('VSlider.ts', () => {
     expect(wrapper.vm.isActive).toBe(false)
 
     container.trigger('mousedown', {
-      touches: []
+      touches: [],
     })
 
     await wrapper.vm.$nextTick()
@@ -314,7 +317,7 @@ describe('VSlider.ts', () => {
 
   it('should return a rounded value', () => {
     const wrapper = mountFunction({
-      propsData: { step: 0 }
+      propsData: { step: 0 },
     })
 
     expect(wrapper.vm.roundValue(1.234)).toBe(1.234)
@@ -336,7 +339,7 @@ describe('VSlider.ts', () => {
 
   it('should return a rounded value with offset', async () => {
     const wrapper = mountFunction({
-      propsData: { step: 0 }
+      propsData: { step: 0 },
     })
 
     expect(wrapper.vm.roundValue(1.234)).toBe(1.234)
@@ -362,8 +365,8 @@ describe('VSlider.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         min: 5,
-        max: 10
-      }
+        max: 10,
+      },
     })
 
     wrapper.setProps({ value: 1 })
@@ -378,8 +381,8 @@ describe('VSlider.ts', () => {
   it('should not update if value matches lazy value', async () => {
     const wrapper = mountFunction({
       propsData: {
-        value: 10
-      }
+        value: 10,
+      },
     })
 
     const input = jest.fn()
@@ -438,8 +441,8 @@ describe('VSlider.ts', () => {
     const onBlur = jest.fn()
     const wrapper = mountFunction({
       propsData: {
-        thumbLabel: true
-      }
+        thumbLabel: true,
+      },
     })
 
     const input = wrapper.find('.v-slider__thumb-container')
@@ -459,41 +462,47 @@ describe('VSlider.ts', () => {
     expect(wrapper.vm.isFocused).toBe(false)
   })
 
-  it('should reverse label location when inverse', () => {
+  it('should reverse label location when inverse', async () => {
     const wrapper = mountFunction({
-      propsData: { label: 'foo' }
+      propsData: { label: 'foo' },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ inverseLabel: true })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
   })
 
-  it('should change track styles in rtl', () => {
+  it('should change track styles in rtl', async () => {
     const wrapper = mountFunction()
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ value: 50 })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ disabled: true })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.vm.$vuetify.rtl = true
     wrapper.setProps({ value: 0, disabled: false })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ value: 50 })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({ disabled: true })
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.html()).toMatchSnapshot()
   })
@@ -501,7 +510,7 @@ describe('VSlider.ts', () => {
   it('should display label and have different aria-label', () => {
     const wrapper = mountFunction({
       propsData: { label: 'foo' },
-      attrs: { 'aria-label': 'bar' }
+      attrs: { 'aria-label': 'bar' },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -511,8 +520,8 @@ describe('VSlider.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         max: 1,
-        tickLabels: ['foo', 'bar']
-      }
+        tickLabels: ['foo', 'bar'],
+      },
     })
 
     const ticks = wrapper.findAll('.v-slider__tick')
@@ -526,7 +535,7 @@ describe('VSlider.ts', () => {
     const parseKeyDown = jest.fn()
     const wrapper = mountFunction({
       propsData: { disabled: true },
-      methods: { parseKeyDown }
+      methods: { parseKeyDown },
     })
 
     const input = wrapper.find('.v-slider__thumb-container')
@@ -537,7 +546,7 @@ describe('VSlider.ts', () => {
 
     wrapper.setProps({
       disabled: false,
-      readonly: true
+      readonly: true,
     })
 
     input.trigger('keydown.right')
@@ -546,11 +555,67 @@ describe('VSlider.ts', () => {
 
     wrapper.setProps({
       disabled: false,
-      readonly: false
+      readonly: false,
     })
 
     input.trigger('keydown.right')
 
     expect(parseKeyDown).toHaveBeenCalled()
+  })
+
+  it('should set value to min value if given a NaN', () => {
+    const input = jest.fn()
+    const wrapper = mountFunction({
+      propsData: {
+        min: -20,
+        max: 20,
+      },
+      listeners: {
+        input,
+      },
+    })
+
+    expect(input).toHaveBeenCalledWith(-20)
+  })
+
+  it('should correctly handle initial value of zero (#7320)', () => {
+    const input = jest.fn()
+    const wrapper = mountFunction({
+      propsData: {
+        min: -20,
+        max: 20,
+        value: 0,
+      },
+      listeners: {
+        input,
+      },
+    })
+
+    expect(input).not.toHaveBeenCalledWith(-20)
+    expect(wrapper.html()).toMatchSnapshot()
+  })
+
+  // TODO: this fails without sync, nextTick doesn't help
+  // https://github.com/vuejs/vue-test-utils/issues/1130
+  it.skip('should correctly handle setting value to zero (#7320)', async () => {
+    const input = jest.fn()
+    const wrapper = mountFunction({
+      propsData: {
+        min: -20,
+        max: 20,
+        value: 10,
+      },
+      listeners: {
+        input,
+      },
+    })
+
+    wrapper.setProps({
+      value: 0,
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(input).not.toHaveBeenCalledWith(-20)
+    expect(wrapper.html()).toMatchSnapshot()
   })
 })

@@ -2,54 +2,70 @@
 import { Service } from '../service'
 
 // Types
-import { VuetifyBreakpointOptions } from 'vuetify/types/services/breakpoint'
+import { BreakpointOptions, Breakpoint as IBreakpoint } from 'vuetify/types/services/breakpoint'
 
-export class Breakpoint extends Service {
+export class Breakpoint extends Service implements IBreakpoint {
   public static property = 'breakpoint'
 
   // Public
   public xs = false
+
   public sm = false
+
   public md = false
+
   public lg = false
+
   public xl = false
 
   public xsOnly = false
+
   public smOnly = false
+
   public smAndDown = false
+
   public smAndUp = false
+
   public mdOnly = false
+
   public mdAndDown = false
+
   public mdAndUp = false
+
   public lgOnly = false
+
   public lgAndDown = false
+
   public lgAndUp = false
+
   public xlOnly = false
 
   public name = ''
 
   public height = 0
+
   public width = 0
 
   public thresholds = {
     xs: 600,
     sm: 960,
     md: 1280,
-    lg: 1920
+    lg: 1920,
   }
-  public scrollbarWidth = 16
+
+  public scrollBarWidth = 16
 
   private resizeTimeout = 0
 
-  constructor (options: Partial<VuetifyBreakpointOptions> = {}) {
+  constructor (options: Partial<BreakpointOptions> = {}) {
     super()
     this.thresholds = {
       ...this.thresholds,
-      ...options.thresholds
+      ...options.thresholds,
     }
-    this.scrollbarWidth = (
+    this.scrollBarWidth = (
       options.scrollBarWidth ||
-      this.scrollbarWidth
+      this.scrollBarWidth
     )
     this.init()
   }
@@ -84,9 +100,9 @@ export class Breakpoint extends Service {
 
     const xs = width < this.thresholds.xs
     const sm = width < this.thresholds.sm && !xs
-    const md = width < (this.thresholds.md - this.scrollbarWidth) && !(sm || xs)
-    const lg = width < (this.thresholds.lg - this.scrollbarWidth) && !(md || sm || xs)
-    const xl = width >= (this.thresholds.lg - this.scrollbarWidth)
+    const md = width < (this.thresholds.md - this.scrollBarWidth) && !(sm || xs)
+    const lg = width < (this.thresholds.lg - this.scrollBarWidth) && !(md || sm || xs)
+    const xl = width >= (this.thresholds.lg - this.scrollBarWidth)
 
     this.height = height
     this.width = width

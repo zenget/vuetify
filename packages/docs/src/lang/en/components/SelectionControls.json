@@ -1,69 +1,74 @@
 {
-  "header": "# Selection controls",
-  "headerText": "Selection control components allow a user to select options. These components **must** be used with the `v-model` prop as they do not maintain their own state.",
+  "heading": "# Selection controls",
+  "headingText": "Selection control components allow a user to select options. These components **must** be used with the `v-model` prop as they do not maintain their own state.",
   "examples": {
     "usage": {
       "desc": ""
     },
-    "checkboxesBoolean": {
-      "header": "### Checkboxes - Boolean",
+    "checkboxes-boolean": {
+      "heading": "### Checkboxes - Boolean",
       "desc": ""
     },
-    "checkboxesArray": {
-      "header": "### Checkboxes - Array",
+    "checkboxes-array": {
+      "heading": "### Checkboxes - Array",
       "desc": ""
     },
-    "checkboxesStates": {
-      "header": "### Checkboxes - States",
+    "checkboxes-states": {
+      "heading": "### Checkboxes - States",
       "desc": ""
     },
-    "checkboxesColors": {
-      "header": "### Checkboxes - Colors",
+    "checkboxes-colors": {
+      "heading": "### Checkboxes - Colors",
       "desc": "Checkboxes can be colored by using any of the builtin colors and contextual names using the `color` prop."
     },
-    "checkboxesInlineTexfield": {
-      "header": "### Checkboxes - Inline with a textfield",
+    "checkboxes-inline-textfield": {
+      "heading": "### Checkboxes - Inline with a textfield",
       "desc": ""
     },
-    "radiosDefault": {
-      "header": "### Radios - Default",
+    "radios-default": {
+      "heading": "### Radios - Default",
       "desc": "Radio-groups are by default mandatory. This can be changed with the `mandatory` prop."
     },
-    "radiosDirection": {
-      "header": "### Radios - Direction",
+    "radios-direction": {
+      "heading": "### Radios - Direction",
       "desc": "Radio-groups can be presented either as a row or a column, using their respective props. The default is as a column."
     },
-    "radiosColors": {
-      "header": "### Radios - Colors",
+    "radios-colors": {
+      "heading": "### Radios - Colors",
       "desc": "Radios can be colored by using any of the builtin colors and contextual names using the `color` prop."
     },
-    "switchesBoolean": {
-      "header": "### Switches - Boolean",
+    "switches-boolean": {
+      "heading": "### Switches - Boolean",
       "desc": ""
     },
-    "switchesArray": {
-      "header": "### Switches - Array",
+    "switches-array": {
+      "heading": "### Switches - Array",
       "desc": ""
     },
-    "switchesStates": {
-      "header": "### Switches - States",
+    "switches-states": {
+      "heading": "### Switches - States",
       "desc": ""
     },
-    "switchesColors": {
-      "header": "### Switches - Colors",
+    "switches-colors": {
+      "heading": "### Switches - Colors",
       "desc": "Switches can be colored by using any of the builtin colors and contextual names using the `color` prop."
     },
-    "switchesFlat": {
-      "header": "### Switches - Flat",
+    "switches-flat": {
+      "heading": "### Switches - Flat",
       "desc": "You can make switch render without elevation of thumb using `flat` property."
     },
-    "labelSlot": {
-      "header": "### Label slot",
+    "switches-inset": {
+      "heading": "### Switches - inset",
+      "desc": "You can make switch render in inset mode."
+    },
+    "label-slot": {
+      "heading": "### Label slot",
       "desc": "Selection controls' labels can be defined in `label` slot - that will allow to use HTML content"
     }
   },
   "props": {
     "column": "Displays radio buttons in column",
+    "dark": "Components.Inputs.props.dark",
     "flat": "Display component without elevation. Default elevation for thumb is 4dp, `flat` resets it",
     "indeterminate": "Sets an indeterminate state for the checkbox",
     "indeterminateIcon": "The icon used when in an indeterminate state",
@@ -88,7 +93,10 @@
     "prepend": "Components.Selects.slots.prepend"
   },
   "events": {
+    "blur": "Components.Inputs.events.blur",
     "change": "Components.Inputs.events.change",
+    "focus": "Emitted when the input is focused",
+    "update:indeterminate": "The **indeterminate.sync** event.",
     "update:error": "Mixins.Validatable.events['update:error']"
   }
 }

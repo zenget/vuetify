@@ -1,20 +1,23 @@
 const Vue = require('vue')
 const Vuetify = require('vuetify')
 const fs = require('fs')
-const map = require('./map')
-const deepmerge = require('deepmerge')
+const map = require('./helpers/map')
+const deepmerge = require('./helpers/merge')
+const pkg = require('../package.json')
 
-function arrayMerge (a, b) {
-  const arr = a.slice()
-  for (let i = 0; i < b.length; i++) {
-    const found = a.findIndex(item => item.name == b[i].name)
-    if (found >= 0) {
-      arr[found] = deepmerge(a[found], b[i])
-    } else {
-      arr.push(b[i])
-    }
-  }
-  return arr
+const camelizeRE = /-(\w)/g
+const camelize = str => {
+  return str.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '')
+}
+
+const capitalize = str => {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+const hyphenateRE = /\B([A-Z])/g
+
+function hyphenate (str) {
+  return str.replace(hyphenateRE, '-$1').toLowerCase()
 }
 
 Vue.use(Vuetify)
@@ -75,23 +78,22 @@ function getPropSource (name, mixins) {
   return source
 }
 
-function genProp (name, props, mixins) {
-  const prop = props[name]
+function genProp (name, prop, mixins, cmp) {
   const type = getPropType(prop.type)
-  const source = getPropSource(name, mixins)
+  const source = getPropSource(name, mixins) || cmp
 
   return {
     name,
     type,
     default: getPropDefault(prop.default, type),
-    source
+    source,
   }
 }
 
 function parseComponent (component) {
   return {
     props: parseProps(component),
-    mixins: parseMixins(component)
+    mixins: parseMixins(component),
   }
 }
 
@@ -100,8 +102,8 @@ function parseProps (component, array = [], mixin = false) {
   const mixins = [component.super].concat(options.extends).concat(options.mixins).filter(m => !!m)
   const props = options.props || {}
 
-  Object.keys(props).forEach(prop => {
-    const generated = genProp(prop, props, mixins)
+  Object.keys(props).forEach(key => {
+    const generated = genProp(key, props[key], mixins, component.options.name)
     array.push(generated)
   })
 
@@ -135,11 +137,6 @@ const directives = {}
 const installedComponents = Vue.options._base.options.components
 const installedDirectives = Vue.options._base.options.directives
 
-const hyphenateRE = /\B([A-Z])/g
-const hyphenate = str => {
-  return str.replace(hyphenateRE, '-$1').toLowerCase()
-}
-
 const componentNameRegex = /^(?:V[A-Z]|v-[a-z])/
 for (const name in installedComponents) {
   if (!componentNameRegex.test(name)) continue
@@ -154,13 +151,13 @@ for (const name in installedComponents) {
   let options = parseComponent(component)
 
   if (map[kebabName]) {
-    options = deepmerge(options, map[kebabName], { arrayMerge })
+    options = deepmerge(options, map[kebabName])
   }
 
   components[kebabName] = options
 }
 
-for (const key of ['Ripple', 'Resize', 'Scroll', 'Touch']) {
+for (const key of ['Mutate', 'Intersect', 'Ripple', 'Resize', 'Scroll', 'Touch']) {
   if (!installedDirectives[key]) continue
 
   const lowerCaseVersion = key.toLowerCase()
@@ -174,10 +171,10 @@ function writeApiFile (obj, file) {
   const stream = fs.createWriteStream(file)
 
   const comment = `/*
- * THIS FILE HAS BEEN AUTOMATICALLY GENERATED USING THE API-GENERATOR TOOL.
- *
- * CHANGES MADE TO THIS FILE WILL BE LOST!
- */
+  * THIS FILE HAS BEEN AUTOMATICALLY GENERATED USING THE API-GENERATOR TOOL.
+  *
+  * CHANGES MADE TO THIS FILE WILL BE LOST!
+  */
 
 `
 
@@ -185,6 +182,7 @@ function writeApiFile (obj, file) {
     stream.write(comment)
     stream.write('module.exports = ')
     stream.write(JSON.stringify(obj, null, 2))
+    stream.write('\n')
     stream.end()
   })
 }
@@ -210,7 +208,7 @@ function writePlainFile (content, file) {
 const tags = Object.keys(components).reduce((t, k) => {
   t[k] = {
     attributes: components[k].props.map(p => p.name.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`)).sort(),
-    description: ''
+    description: '',
   }
 
   return t
@@ -228,7 +226,7 @@ const attributes = Object.keys(components).reduce((attrs, k) => {
 
     a[`${k}/${name}`] = {
       type,
-      description: ''
+      description: '',
     }
 
     return a
@@ -239,7 +237,7 @@ const attributes = Object.keys(components).reduce((attrs, k) => {
 
 const fakeComponents = ts => {
   const imports = [
-    `import Vue from 'vue'`
+    `import Vue from 'vue'`,
   ]
   if (ts) imports.push(`import { PropValidator } from 'vue/types/options'`)
   const inspection = ts ? '' : `// noinspection JSUnresolvedFunction\n`
@@ -271,7 +269,134 @@ writeJsonFile(attributes, 'dist/attributes.json')
 writePlainFile(fakeComponents(false), 'dist/fakeComponents.js')
 writePlainFile(fakeComponents(true), 'dist/fakeComponents.ts')
 
+// Create web-types.json to provide autocomplete in JetBrains IDEs
+const webTypes = {
+  $schema: 'https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json',
+  framework: 'vue',
+  name: 'vuetify',
+  version: pkg.version,
+  contributions: {
+    html: {
+      'types-syntax': 'typescript',
+      tags: [],
+      attributes: [],
+    },
+  },
+}
+
 components['$vuetify'] = map['$vuetify']
 components['internationalization'] = map['internationalization']
 
 writeApiFile({ ...components, ...directives }, 'dist/api.js')
+
+delete components['$vuetify']
+delete components['internationalization']
+
+Object.keys(components).forEach(function (key) {
+  const name = capitalize(camelize(key))
+  const attributes = mapArray(components[key].props, transformAttribute)
+  const events = mapArray(components[key].events, transformEvent)
+  const slots = mapArray(components[key].slots, transformSlot)
+  const tag = {
+    name,
+    source: { module: './src/components/index.ts', symbol: name },
+    attributes,
+    events,
+    slots,
+  }
+  webTypes.contributions.html.tags.push(tag)
+
+  function mapArray (arr, mapper) {
+    return arr !== undefined ? arr.map(mapper) : undefined
+  }
+
+  function transformAttribute (attr) {
+    attr = copyObject(attr)
+    delete attr['source']
+    if (attr['type']) {
+      attr['value'] = {
+        kind: 'expression',
+        type: attr['type'],
+      }
+      if (attr['type'] !== 'boolean') {
+        delete attr['type']
+      }
+    }
+    if (attr['default'] !== undefined) {
+      attr['default'] = JSON.stringify(attr['default'])
+    }
+    delete attr['example']
+    return attr
+  }
+
+  function transformEvent (event) {
+    event = copyObject(event)
+    if (event['value'] !== undefined) {
+      const type = event['value']
+      event.arguments = [{
+        name: 'argument',
+        type: typeof type === 'string' ? type : JSON.stringify(type),
+      }]
+    }
+    delete event['value']
+    delete event['source']
+    return event
+  }
+
+  function transformSlot (slot) {
+    slot = copyObject(slot)
+    if (slot['props'] !== undefined) {
+      const props = []
+      Object.keys(slot['props']).forEach(function (name) {
+        const type = slot['props'][name]
+        props.push({
+          name,
+          type: typeof type === 'string' ? type : JSON.stringify(type),
+        })
+      })
+      slot['vue-properties'] = props
+    }
+    delete slot['props']
+    delete slot['source']
+    return slot
+  }
+
+  function copyObject (obj) {
+    const result = {}
+    if (typeof obj === 'string') {
+      result['name'] = obj
+    } else {
+      Object.keys(obj).forEach(function (name) {
+        result[name] = obj[name]
+      })
+    }
+    return result
+  }
+})
+
+Object.keys(directives).forEach(function (key) {
+  const name = key
+  const directive = directives[key]
+  const modifiers = []
+  let valueType
+  let defaultValue
+  for (const option of directive.options || []) {
+    if (option.name.indexOf('modifiers.') === 0) {
+      modifiers.push({
+        name: option.name.substr('modifiers.'.length),
+      })
+    } else if (option.name === 'value') {
+      valueType = option.type
+      defaultValue = option.default
+    }
+  }
+  webTypes.contributions.html.attributes.push({
+    name,
+    source: { module: './src/directives/index.ts', symbol: capitalize(name.substr(2)) },
+    default: defaultValue,
+    value: valueType ? { kind: 'expression', type: valueType } : undefined,
+    'vue-modifiers': modifiers.length > 0 ? modifiers : undefined,
+  })
+})
+
+writeJsonFile(webTypes, 'dist/web-types.json')

@@ -6,17 +6,15 @@ import VStepperStep from '../VStepperStep'
 // Utilities
 import {
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
-
-import toHaveBeenWarnedInit from '../../../../test/util/to-have-been-warned'
 
 Vue.prototype.$vuetify = {
   icons: {
     values: {
-      complete: 'mdi-check'
-    }
-  }
+      complete: 'mdi-check',
+    },
+  },
 }
 
 const tip = '[Vuetify] The v-stepper-step component must be used inside a v-stepper'
@@ -29,19 +27,18 @@ describe('VStepperStep.ts', () => {
   beforeEach(() => {
     mountFunction = (options = {}) => {
       return mount(VStepperStep, {
-        ...options
+        ...options,
       })
     }
   })
-  toHaveBeenWarnedInit()
 
   it('should accept a custom color', async () => {
     const wrapper = mountFunction({
       attachToDocument: true,
       propsData: {
         color: 'pink',
-        complete: true
-      }
+        complete: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -54,8 +51,8 @@ describe('VStepperStep.ts', () => {
       attachToDocument: true,
       propsData: {
         color: '#aabbcc',
-        complete: true
-      }
+        complete: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()

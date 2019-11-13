@@ -3,7 +3,7 @@ import VTextarea from '../VTextarea'
 import {
   mount,
   MountOptions,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 
 describe('VTextarea.ts', () => {
@@ -20,13 +20,13 @@ describe('VTextarea.ts', () => {
       attachToDocument: true,
       propsData: {
         value: '',
-        autoGrow: true
-      }
+        autoGrow: true,
+      },
     })
     const input = jest.fn(value => wrapper.setProps({ value }))
     wrapper.vm.$on('input', input)
 
-    const el = wrapper.findAll('textarea').wrappers[0]
+    const el = wrapper.findAll('textarea').at(0)
 
     el.trigger('focus')
     await wrapper.vm.$nextTick()
@@ -62,12 +62,12 @@ describe('VTextarea.ts', () => {
   it('should calculate height on mounted', async () => {
     const calculateInputHeight = jest.fn()
 
-    const wrapper = mountFunction({
+    mountFunction({
       attachToDocument: true,
       propsData: {
-        autoGrow: true
+        autoGrow: true,
       },
-      methods: { calculateInputHeight }
+      methods: { calculateInputHeight },
     })
 
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -80,7 +80,7 @@ describe('VTextarea.ts', () => {
     const stopPropagation = jest.fn()
     const onKeyDown = {
       keyCode: keyCodes.enter,
-      stopPropagation
+      stopPropagation,
     }
     wrapper.vm.onKeyDown(onKeyDown)
 
@@ -95,8 +95,8 @@ describe('VTextarea.ts', () => {
 
   it('should render no-resize the same if already auto-grow', () => {
     const wrappers = [
-      { autoGrow: true, outline: false },
-      { autoGrow: true, outline: true }
+      { autoGrow: true, outlined: false },
+      { autoGrow: true, outlined: true },
     ].map(propsData => mountFunction({ propsData }))
 
     wrappers.forEach(async wrapper => {
@@ -124,5 +124,23 @@ describe('VTextarea.ts', () => {
     textarea.trigger('keydown.enter')
 
     expect(keydown).toHaveBeenCalled()
+  })
+
+  it('should dynamically adjust row-height', async () => {
+    const wrapper = mountFunction({
+      propsData: {
+        autoGrow: true,
+      },
+    })
+
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    expect(wrapper.vm.$refs.input.style.height).toBe('120px')
+
+    wrapper.setProps({ rowHeight: 30 })
+
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.$refs.input.style.height).toBe('150px')
   })
 })

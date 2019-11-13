@@ -1,6 +1,7 @@
 import './VTooltip.sass'
 
 // Mixins
+import Activatable from '../../mixins/activatable'
 import Colorable from '../../mixins/colorable'
 import Delayable from '../../mixins/delayable'
 import Dependent from '../../mixins/dependent'
@@ -23,41 +24,41 @@ export default mixins(Colorable, Delayable, Dependent, Detachable, Menuable, Tog
   props: {
     closeDelay: {
       type: [Number, String],
-      default: 0
-    },
-    debounce: {
-      type: [Number, String],
-      default: 0
+      default: 0,
     },
     disabled: Boolean,
     fixed: {
       type: Boolean,
-      default: true
+      default: true,
     },
     openDelay: {
       type: [Number, String],
-      default: 0
+      default: 0,
+    },
+    openOnHover: {
+      type: Boolean,
+      default: true,
     },
     tag: {
       type: String,
-      default: 'span'
+      default: 'span',
     },
     transition: String,
     zIndex: {
-      default: null
-    }
+      default: null,
+    },
   },
 
   data: () => ({
     calculatedMinWidth: 0,
-    closeDependents: false
+    closeDependents: false,
   }),
 
   computed: {
     calculatedLeft (): string {
       const { activator, content } = this.dimensions
       const unknown = !this.bottom && !this.left && !this.top && !this.right
-      const activatorLeft = this.isAttached ? activator.offsetLeft : activator.left
+      const activatorLeft = this.attach !== false ? activator.offsetLeft : activator.left
       let left = 0
 
       if (this.top || this.bottom || unknown) {
@@ -81,7 +82,7 @@ export default mixins(Colorable, Delayable, Dependent, Detachable, Menuable, Tog
     },
     calculatedTop (): string {
       const { activator, content } = this.dimensions
-      const activatorTop = this.isAttached ? activator.offsetTop : activator.top
+      const activatorTop = this.attach !== false ? activator.offsetTop : activator.top
       let top = 0
 
       if (this.top || this.bottom) {
@@ -108,7 +109,11 @@ export default mixins(Colorable, Delayable, Dependent, Detachable, Menuable, Tog
         'v-tooltip--top': this.top,
         'v-tooltip--right': this.right,
         'v-tooltip--bottom': this.bottom,
-        'v-tooltip--left': this.left
+        'v-tooltip--left': this.left,
+        'v-tooltip--attached':
+          this.attach === '' ||
+          this.attach === true ||
+          this.attach === 'attach',
       }
     },
     computedTransition (): string {
@@ -129,9 +134,9 @@ export default mixins(Colorable, Delayable, Dependent, Detachable, Menuable, Tog
         minWidth: convertToUnit(this.minWidth),
         opacity: this.isActive ? 0.9 : 0,
         top: this.calculatedTop,
-        zIndex: this.zIndex || this.activeZIndex
+        zIndex: this.zIndex || this.activeZIndex,
       }
-    }
+    },
   },
 
   beforeMount () {
@@ -157,72 +162,55 @@ export default mixins(Colorable, Delayable, Dependent, Detachable, Menuable, Tog
     deactivate () {
       this.runDelay('close')
     },
-    genActivator () {
-      const listeners = this.disabled ? undefined : {
-        mouseenter: (e: Event) => {
-          this.getActivator(e)
-          this.runDelay('open')
-        },
-        focus: (e: Event) => {
-          this.getActivator(e)
-          this.runDelay('open')
-        },
-        mouseleave: (e: Event) => {
-          this.getActivator(e)
-          this.runDelay('close')
-        },
-        blur: (e: Event) => {
+    genActivatorListeners () {
+      const listeners = Activatable.options.methods.genActivatorListeners.call(this)
+
+      listeners.focus = (e: Event) => {
+        this.getActivator(e)
+        this.runDelay('open')
+      }
+      listeners.blur = (e: Event) => {
+        this.getActivator(e)
+        this.runDelay('close')
+      }
+      listeners.keydown = (e: KeyboardEvent) => {
+        if (e.keyCode === keyCodes.esc) {
           this.getActivator(e)
           this.runDelay('close')
-        },
-        keydown: (e: KeyboardEvent) => {
-          if (e.keyCode === keyCodes.esc) {
-            this.getActivator(e)
-            this.runDelay('close')
-          }
         }
       }
 
-      if (getSlotType(this, 'activator') === 'scoped') {
-        const activator = this.$scopedSlots.activator!({ on: listeners })
-        this.activatorNode = activator || null
-        return activator
-      }
-
-      return this.$createElement('span', {
-        on: listeners,
-        ref: 'activator'
-      }, this.$slots.activator)
-    }
+      return listeners
+    },
   },
 
   render (h): VNode {
     const tooltip = h('div', this.setBackgroundColor(this.color, {
       staticClass: 'v-tooltip__content',
-      'class': {
+      class: {
         [this.contentClass]: true,
-        'menuable__content__active': this.isActive,
-        'v-tooltip__content--fixed': this.activatorFixed
+        menuable__content__active: this.isActive,
+        'v-tooltip__content--fixed': this.activatorFixed,
       },
       style: this.styles,
       attrs: this.getScopeIdAttrs(),
       directives: [{
         name: 'show',
-        value: this.isContentActive
+        value: this.isContentActive,
       }],
-      ref: 'content'
-    }), this.showLazyContent(this.$slots.default))
+      ref: 'content',
+    }), this.showLazyContent(this.getContentSlot()))
 
     return h(this.tag, {
       staticClass: 'v-tooltip',
-      'class': this.classes
+      class: this.classes,
     }, [
       h('transition', {
         props: {
-          name: this.computedTransition
-        }
+          name: this.computedTransition,
+        },
       }, [tooltip]),
-      this.genActivator()
+      this.genActivator(),
     ])
-  }
+  },
 })

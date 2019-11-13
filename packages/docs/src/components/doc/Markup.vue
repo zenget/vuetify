@@ -1,9 +1,15 @@
 <template>
-  <div :id="id" class="v-markup">
+  <v-card
+    :id="id"
+    :color="$vuetify.theme.dark ? undefined : 'grey darken-4'"
+    class="v-markup"
+    outlined
+  >
     <prism
       v-if="$slots.default || code"
       :language="language"
       :code="code"
+      :inline="inline"
     ><slot /></prism>
 
     <div
@@ -11,22 +17,28 @@
       class="v-markup__edit"
     >
       <a
-        :href="`https://github.com/vuetifyjs/vuetify/tree/master/packages/docs/src/snippets/${file}`"
+        :href="href"
         target="_blank"
         rel="noopener"
         title="Edit code"
+        aria-label="Edit code"
       >
         <v-icon>mdi-pencil</v-icon>
       </a>
     </div>
 
-    <div class="v-markup__copy">
+    <div
+      v-if="!hideCopy"
+      class="v-markup__copy"
+    >
       <v-icon
         title="Copy code"
+        aria-label="Copy code"
         @click="copyMarkup"
       >
-        content_copy
+        mdi-content-copy
       </v-icon>
+
       <v-slide-x-transition>
         <span
           v-if="copied"
@@ -36,7 +48,7 @@
     </div>
 
     <a
-      v-if="filename"
+      v-if="filename && file"
       :href="href"
       target="_blank"
       rel="noopener"
@@ -44,36 +56,53 @@
     >
       <span v-text="file" />
     </a>
-  </div>
+  </v-card>
 </template>
 
 <script>
+  // Prism
+  import 'prismjs'
+  import 'prismjs/components/prism-bash.js'
+  import 'prismjs/components/prism-css.js'
+  import 'prismjs/components/prism-javascript.js'
+  import 'prismjs/components/prism-json.js'
+  import 'prismjs/components/prism-sass.js'
+  import 'prismjs/components/prism-scss.js'
+  import 'prismjs/components/prism-stylus.js'
+  import 'prismjs/components/prism-typescript.js'
+
+  // Utilities
+  import { getBranch } from '@/util/helpers'
+
   export default {
     name: 'Markup',
 
     components: {
-      Prism: () => import('vue-prism-component')
+      Prism: () => import('vue-prism-component'),
     },
 
     props: {
       lang: {
         type: String,
-        default: undefined
+        default: undefined,
       },
+      inline: Boolean,
       value: {
         type: String,
-        default: 'markup'
+        default: 'markup',
       },
       filename: {
         type: Boolean,
-        default: process.env.NODE_ENV !== 'production'
-      }
+        default: process.env.NODE_ENV !== 'production',
+      },
+      hideCopy: Boolean,
     },
 
     data: vm => ({
       code: null,
       copied: false,
-      language: vm.lang
+      language: vm.lang,
+      branch: null,
     }),
 
     computed: {
@@ -85,19 +114,17 @@
         return `${folder}/${file}.txt`
       },
       href () {
-        const branch = process.env.NODE_ENV === 'production' ? 'master' : 'dev'
-        const href = `https://github.com/vuetifyjs/vuetify/tree/${branch}/packages/docs/src/snippets`
-
-        return `${href}/${this.file}`
+        return `https://github.com/vuetifyjs/vuetify/tree/${this.branch}/packages/docs/src/snippets/${this.file}`
       },
       id () {
         if (this.value === 'markup') return
         return 'markup-' + this.value.replace(/_/g, '-')
-      }
+      },
     },
 
     mounted () {
       this.$nextTick(this.init)
+      this.branch = getBranch()
     },
 
     methods: {
@@ -120,13 +147,13 @@
       parseRaw (res) {
         this.language = this.lang || this.value.split('_').shift()
         this.code = res.default.trim()
-      }
-    }
+      },
+    },
   }
 </script>
 
-<style lang="stylus">
-  .v-markup
+<style lang="sass">
+  .v-application .v-markup
     align-items: center
     box-shadow: none
     display: flex
@@ -137,6 +164,9 @@
     margin-bottom: 16px
     background: #2d2d2d
     color: #fff
+
+    &.theme--dark
+      background: #424242
 
     pre, code
       margin: 0
@@ -163,12 +193,12 @@
     &__copied
       position: absolute
       top: 12px
-      right: 100px
+      right: 75px
 
     &__copy,
     &__edit
       position: absolute
-      top: 0px
+      top: 0
       cursor: pointer
       width: 25px
       height: 25px
@@ -184,7 +214,7 @@
         color: inherit
         text-decoration: none
 
-    &__filename
+    a.v-markup__filename
       text-decoration: none
       position: absolute
       bottom: 0
@@ -225,4 +255,95 @@
         width: 50px
         height: 50px
         z-index: 4
+
+    // prism.js tomorrow night eighties for JavaScript, CoffeeScript, CSS and HTML
+    // Based on https://github.com/chriskempson/tomorrow-theme
+    // @author Rose Pritchard
+
+    code[class*="language-"],
+    pre[class*="language-"]
+      color: #ccc
+      background: none
+      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace
+      font-size: 1em
+      text-align: left
+      white-space: pre
+      word-spacing: normal
+      word-break: normal
+      word-wrap: normal
+      line-height: 1.5
+      tab-size: 4
+      hyphens: none
+
+    pre[class*="language-"]
+      padding: 1em
+      margin: .5em 0
+      overflow: auto
+
+    :not(pre) > code[class*="language-"]
+      padding: .1em
+      border-radius: .3em
+      white-space: normal
+
+    .token.comment,
+    .token.block-comment,
+    .token.prolog,
+    .token.doctype,
+    .token.cdata
+      color: #999
+
+    .token.punctuation
+      color: #ccc
+
+    .token.tag,
+    .token.attr-name,
+    .token.namespace,
+    .token.deleted
+      color: #e2777a
+
+    .token.function-name
+      color: #6196cc
+
+    .token.boolean,
+    .token.number,
+    .token.function
+      color: #f08d49
+
+    .token.property,
+    .token.class-name,
+    .token.constant,
+    .token.symbol
+      color: #f8c555
+
+    .token.selector,
+    .token.important,
+    .token.atrule,
+    .token.keyword,
+    .token.builtin
+      color: #cc99cd
+
+    .token.string,
+    .token.char,
+    .token.attr-value,
+    .token.regex,
+    .token.variable
+      color: #7ec699
+
+    .token.operator,
+    .token.entity,
+    .token.url
+      color: #67cdcc
+
+    .token.important,
+    .token.bold
+      font-weight: bold
+
+    .token.italic
+      font-style: italic
+
+    .token.entity
+      cursor: help
+
+    .token.inserted
+      color: green
 </style>

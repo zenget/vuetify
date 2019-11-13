@@ -1,5 +1,7 @@
 import './VSimpleCheckbox.sass'
 
+import ripple from '../../directives/ripple'
+
 import Vue, { VNode, VNodeDirective } from 'vue'
 import { VIcon } from '../VIcon'
 
@@ -12,28 +14,32 @@ export default Vue.extend({
 
   functional: true,
 
+  directives: {
+    ripple,
+  },
+
   props: {
     ...Colorable.options.props,
     ...Themeable.options.props,
     disabled: Boolean,
     ripple: {
       type: Boolean,
-      default: true
+      default: true,
     },
     value: Boolean,
     indeterminate: Boolean,
     indeterminateIcon: {
       type: String,
-      default: '$vuetify.icons.checkboxIndeterminate'
+      default: '$checkboxIndeterminate',
     },
     onIcon: {
       type: String,
-      default: '$vuetify.icons.checkboxOn'
+      default: '$checkboxOn',
     },
     offIcon: {
       type: String,
-      default: '$vuetify.icons.checkboxOff'
-    }
+      default: '$checkboxOff',
+    },
   },
 
   render (h, { props, data }): VNode {
@@ -44,8 +50,8 @@ export default Vue.extend({
         staticClass: 'v-input--selection-controls__ripple',
         directives: [{
           name: 'ripple',
-          value: { center: true }
-        }] as VNodeDirective[]
+          value: { center: true },
+        }] as VNodeDirective[],
       }))
 
       children.push(ripple)
@@ -55,29 +61,31 @@ export default Vue.extend({
     if (props.indeterminate) icon = props.indeterminateIcon
     else if (props.value) icon = props.onIcon
 
-    children.push(h(VIcon, Colorable.options.methods.setTextColor(props.color, {
+    children.push(h(VIcon, Colorable.options.methods.setTextColor(props.value && props.color, {
       props: {
         disabled: props.disabled,
         dark: props.dark,
-        light: props.light
-      }
+        light: props.light,
+      },
     }), icon))
 
     const classes = {
       'v-simple-checkbox': true,
-      'v-simple-checkbox--disabled': props.disabled
+      'v-simple-checkbox--disabled': props.disabled,
     }
 
     return h('div', {
       ...data,
       class: classes,
       on: {
-        click: () => {
+        click: (e: MouseEvent) => {
+          e.stopPropagation()
+
           if (data.on && data.on.input && !props.disabled) {
             wrapInArray(data.on.input).forEach(f => f(!props.value))
           }
-        }
-      }
+        },
+      },
     }, children)
-  }
+  },
 })

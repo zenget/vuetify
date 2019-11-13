@@ -12,18 +12,15 @@ import VWindowItem from '../VWindowItem'
 import {
   createLocalVue,
   mount,
-  Wrapper
+  Wrapper,
+  MountOptions,
 } from '@vue/test-utils'
-import { ExtractVue } from '../../../util/mixins'
-import { rafPolyfill } from '../../../../test/index'
 
 describe('VWindowItem.ts', () => {
-  type Instance = ExtractVue<typeof VWindowItem>
-  let mountFunction: (options?: object) => Wrapper<Instance>
+  type Instance = InstanceType<typeof VWindowItem>
+  let mountFunction: (options?: MountOptions<Instance>) => Wrapper<Instance>
   let router: Router
   let localVue: typeof Vue
-
-  rafPolyfill(global)
 
   beforeEach(() => {
     router = new Router()
@@ -34,74 +31,74 @@ describe('VWindowItem.ts', () => {
       return mount(VWindowItem, {
         localVue,
         router,
-        ...options
+        ...options,
       })
     }
   })
 
+  // eslint-disable-next-line max-statements
   it('should transition content', async () => {
     const wrapper = mount(VWindow, {
       slots: {
-        default: [VWindowItem]
+        default: [VWindowItem],
       },
       mocks: {
         $vuetify: {
-          rtl: false
-        }
-      }
+          rtl: false,
+        },
+      },
     })
+
+    await new Promise(resolve => window.requestAnimationFrame(resolve))
 
     const item = wrapper.find(VWindowItem.options)
     // Before enter
     expect(wrapper.vm.isActive).toBeFalsy()
-    item.vm.onBeforeEnter()
+    expect(wrapper.vm.transitionHeight).toBeUndefined()
+    item.vm.onBeforeTransition()
     expect(wrapper.vm.isActive).toBeTruthy()
+    expect(wrapper.vm.transitionHeight).toBe('0px')
 
     // Enter
-    const el = document.createElement('div')
-    expect(wrapper.vm.internalHeight).toBeUndefined()
+    const el = { clientHeight: 50 }
     item.vm.onEnter(el)
-    await new Promise(resolve => window.requestAnimationFrame(resolve))
-    expect(wrapper.vm.internalHeight).toBe('0px')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.transitionHeight).toBe('50px')
 
     // After enter
-    item.vm.onAfterEnter()
-    await new Promise(resolve => window.requestAnimationFrame(resolve))
-    expect(wrapper.vm.internalHeight).toBeUndefined()
+    item.vm.onAfterTransition()
+    expect(wrapper.vm.transitionHeight).toBeUndefined()
     expect(wrapper.vm.isActive).toBeFalsy()
 
-    // Leave
-    item.vm.onLeave(el)
-    expect(wrapper.vm.internalHeight).toBe('0px')
-
     // Canceling
-    item.vm.onBeforeEnter()
+    item.vm.onBeforeTransition()
     item.vm.onEnter(el)
-    item.vm.onEnterCancelled()
+    item.vm.onTransitionCancelled()
 
-    expect(item.vm.wasCancelled).toBeTruthy()
+    expect(item.vm.inTransition).toBeFalsy()
+    expect(wrapper.vm.isActive).toBeFalsy()
+
+    // Normal path.
+    item.vm.onBeforeTransition()
     expect(wrapper.vm.isActive).toBeTruthy()
+    item.vm.onAfterTransition()
 
-    item.vm.onAfterEnter()
-
-    await new Promise(resolve => requestAnimationFrame(resolve))
-
-    expect(wrapper.vm.isActive).toBeTruthy()
+    expect(wrapper.vm.isActive).toBeFalsy()
   })
 
   it('should use custom transition', () => {
     const wrapper = mountFunction({
       propsData: {
         transition: 'foo',
-        reverseTransition: 'bar'
+        reverseTransition: 'bar',
       },
       data: () => ({
         windowGroup: {
           internalReverse: false,
           register: () => {},
-          unregister: () => {}
-        }
-      })
+          unregister: () => {},
+        },
+      }),
     })
 
     expect(wrapper.vm.computedTransition).toBe('foo')
@@ -116,67 +113,69 @@ describe('VWindowItem.ts', () => {
     expect(wrapper.vm.computedTransition).toBe('')
   })
 
-  it('should only call done when the transition is on the window-item', () => {
-    const done = jest.fn()
-
-    const wrapper = mountFunction({
-      data: () => ({
-        done,
-        windowGroup: {
-          internalReverse: false,
-          register: () => {},
-          unregister: () => {}
-        }
-      })
-    })
-
-    // Incorrect property
-    wrapper.vm.onTransitionEnd({
-      propertyName: 'border-color'
-    })
-
-    expect(done).not.toHaveBeenCalled()
-
-    // Incorrect target
-    wrapper.vm.onTransitionEnd({
-      propertyName: 'transform',
-      target: document.createElement('div')
-    })
-
-    expect(done).not.toHaveBeenCalled()
-
-    // Should work
-    wrapper.vm.onTransitionEnd({
-      propertyName: 'transform',
-      target: wrapper.vm.$el
-    })
-
-    expect(done).toHaveBeenCalledTimes(1)
-  })
-
-  it('should immediately call done when no transition', async () => {
-    const done = jest.fn()
-
-    const wrapper = mountFunction({
+  it('should not set initial height if no computedTransition', async () => {
+    const heightChanged = jest.fn()
+    const wrapper = mount(VWindow, {
       propsData: {
         transition: false,
-        reverseTransition: false
+        reverseTransition: false,
       },
-      data: () => ({
-        windowGroup: {
-          internalHeight: 0,
-          register: () => {},
-          unregister: () => {}
-        }
-      })
+      watch: {
+        transitionHeight: heightChanged,
+      },
+      slots: {
+        default: [VWindowItem],
+      },
+      mocks: {
+        $vuetify: {
+          rtl: false,
+        },
+      },
     })
 
+    const item = wrapper.find(VWindowItem.options)
     expect(wrapper.vm.computedTransition).toBeFalsy()
 
-    wrapper.vm.onEnter(wrapper.$el, done)
+    item.vm.onBeforeTransition()
+    expect(wrapper.vm.isActive).toBeTruthy()
+    expect(heightChanged).toHaveBeenCalledTimes(1)
 
+    item.vm.onEnter(wrapper.$el)
     await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(wrapper.vm.isActive).toBeTruthy()
 
-    expect(done).toHaveBeenCalled()
+    expect(heightChanged).toHaveBeenCalledTimes(1)
+  })
+
+  it('should increase and decrease transition count correctly', () => {
+    const wrapper = mount(VWindow, {
+      slots: {
+        default: [VWindowItem, VWindowItem, VWindowItem],
+      },
+    })
+
+    const items = wrapper.vm.items
+    expect(items).toHaveLength(3)
+
+    expect(wrapper.vm.transitionCount).toBe(0)
+    expect(wrapper.vm.isActive).toBeFalsy()
+    items[0].onBeforeTransition()
+    expect(wrapper.vm.transitionCount).toBe(1)
+    expect(wrapper.vm.isActive).toBeTruthy()
+    items[1].onBeforeTransition()
+    expect(wrapper.vm.transitionCount).toBe(2)
+    expect(wrapper.vm.isActive).toBeTruthy()
+    items[0].onTransitionCancelled()
+    expect(wrapper.vm.transitionCount).toBe(1)
+    expect(wrapper.vm.isActive).toBeTruthy()
+    items[2].onBeforeTransition()
+    expect(wrapper.vm.transitionCount).toBe(2)
+    expect(wrapper.vm.isActive).toBeTruthy()
+    items[1].onAfterTransition()
+    expect(wrapper.vm.transitionCount).toBe(1)
+    expect(wrapper.vm.isActive).toBeTruthy()
+    items[2].onAfterTransition()
+    expect(wrapper.vm.transitionCount).toBe(0)
+    expect(wrapper.vm.isActive).toBeFalsy()
   })
 })

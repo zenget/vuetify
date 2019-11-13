@@ -39,13 +39,13 @@ export default mixins(
 
   props: {
     allowedHours: {
-      type: [ Function, Array ]
+      type: [Function, Array],
     } as PropValidator<AllowFunction | number[]>,
     allowedMinutes: {
-      type: [ Function, Array ]
+      type: [Function, Array],
     } as PropValidator<AllowFunction | number[]>,
     allowedSeconds: {
-      type: [ Function, Array ]
+      type: [Function, Array],
     } as PropValidator<AllowFunction | number[]>,
     disabled: Boolean,
     format: {
@@ -53,7 +53,7 @@ export default mixins(
       default: 'ampm',
       validator (val) {
         return ['ampm', '24hr'].includes(val)
-      }
+      },
     } as PropValidator<'ampm' | '24hr'>,
     min: String,
     max: String,
@@ -61,7 +61,7 @@ export default mixins(
     scrollable: Boolean,
     useSeconds: Boolean,
     value: null as any as PropValidator<any>,
-    ampmInTitle: Boolean
+    ampmInTitle: Boolean,
   },
 
   data () {
@@ -73,34 +73,34 @@ export default mixins(
       lazyInputMinute: null as number | null,
       lazyInputSecond: null as number | null,
       period: 'am' as Period,
-      selecting: SelectingTimes.Hour
+      selecting: SelectingTimes.Hour,
     }
   },
 
   computed: {
     selectingHour: {
-      get () {
+      get (): boolean {
         return this.selecting === SelectingTimes.Hour
       },
       set (v: boolean) {
         this.selecting = SelectingTimes.Hour
-      }
+      },
     },
     selectingMinute: {
-      get () {
+      get (): boolean {
         return this.selecting === SelectingTimes.Minute
       },
       set (v: boolean) {
         this.selecting = SelectingTimes.Minute
-      }
+      },
     },
     selectingSecond: {
-      get () {
+      get (): boolean {
         return this.selecting === SelectingTimes.Second
       },
       set (v: boolean) {
         this.selecting = SelectingTimes.Second
-      }
+      },
     },
     isAllowedHourCb (): AllowFunction {
       let cb: AllowFunction
@@ -182,13 +182,13 @@ export default mixins(
           (!cb || cb(val))
       }
     },
-    isAmPm () {
+    isAmPm (): boolean {
       return this.format === 'ampm'
-    }
+    },
   },
 
   watch: {
-    value: 'setInputData'
+    value: 'setInputData',
   },
 
   mounted () {
@@ -320,30 +320,30 @@ export default mixins(
             ? this.inputHour
             : (this.selecting === SelectingTimes.Minute
               ? this.inputMinute
-              : this.inputSecond)
+              : this.inputSecond),
         },
         on: {
           input: this.onInput,
-          change: this.onChange
+          change: this.onChange,
         },
-        ref: 'clock'
+        ref: 'clock',
       })
     },
     genClockAmPm () {
       return this.$createElement('div', this.setTextColor(this.color || 'primary', {
-        staticClass: 'v-time-picker-clock__ampm'
+        staticClass: 'v-time-picker-clock__ampm',
       }), [
-        this.genPickerButton('period', 'am', 'AM', this.disabled || this.readonly),
-        this.genPickerButton('period', 'pm', 'PM', this.disabled || this.readonly)
+        this.genPickerButton('period', 'am', this.$vuetify.lang.t('$vuetify.timePicker.am'), this.disabled || this.readonly),
+        this.genPickerButton('period', 'pm', this.$vuetify.lang.t('$vuetify.timePicker.pm'), this.disabled || this.readonly),
       ])
     },
     genPickerBody () {
       return this.$createElement('div', {
         staticClass: 'v-time-picker-clock__container',
-        key: this.selecting
+        key: this.selecting,
       }, [
         !this.ampmInTitle && this.isAmPm && this.genClockAmPm(),
-        this.genClock()
+        this.genClock(),
       ])
     },
     genPickerTitle () {
@@ -357,19 +357,19 @@ export default mixins(
           period: this.period,
           readonly: this.readonly,
           useSeconds: this.useSeconds,
-          selecting: this.selecting
+          selecting: this.selecting,
         },
         on: {
           'update:selecting': (value: 1 | 2 | 3) => (this.selecting = value),
-          'update:period': this.setPeriod
+          'update:period': this.setPeriod,
         },
         ref: 'title',
-        slot: 'title'
+        slot: 'title',
       })
-    }
+    },
   },
 
   render (): VNode {
     return this.genPicker('v-picker--time')
-  }
+  },
 })

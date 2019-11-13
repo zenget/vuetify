@@ -1,24 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`VMessages.ts should allow HTML 1`] = `
-
+exports[`VMessages.ts should accept a scoped slot 1`] = `
 <div class="v-messages theme--light">
   <span name="message-transition"
         tag="div"
         class="v-messages__wrapper"
   >
     <div class="v-messages__message">
-      <a href="#">
-        a link
-      </a>
+      <div>
+        Foo
+      </div>
     </div>
   </span>
 </div>
+`;
 
+exports[`VMessages.ts should allow HTML 1`] = `
+<div class="v-messages theme--light">
+  <span name="message-transition"
+        tag="div"
+        class="v-messages__wrapper"
+  >
+    <div class="v-messages__message">
+      &lt;a href="#"&gt;a link&lt;/a&gt;
+    </div>
+  </span>
+</div>
+`;
+
+exports[`VMessages.ts should not allow HTML 1`] = `
+<div class="v-messages theme--light">
+  <span name="message-transition"
+        tag="div"
+        class="v-messages__wrapper"
+  >
+    <div class="v-messages__message">
+      &lt;a href="#"&gt;a link&lt;/a&gt;
+    </div>
+  </span>
+</div>
 `;
 
 exports[`VMessages.ts should show messages 1`] = `
-
 <div class="v-messages theme--light">
   <span name="message-transition"
         tag="div"
@@ -32,11 +55,9 @@ exports[`VMessages.ts should show messages 1`] = `
     </div>
   </span>
 </div>
-
 `;
 
 exports[`VMessages.ts should show messages 2`] = `
-
 <div class="v-messages theme--light">
   <span name="message-transition"
         tag="div"
@@ -44,5 +65,4 @@ exports[`VMessages.ts should show messages 2`] = `
   >
   </span>
 </div>
-
 `;

@@ -28,7 +28,9 @@ export default Vue.extend<Vue & Toggleable & Stackable & options>().extend({
   name: 'overlayable',
 
   props: {
-    hideOverlay: Boolean
+    hideOverlay: Boolean,
+    overlayColor: String,
+    overlayOpacity: [Number, String],
   },
 
   data () {
@@ -40,9 +42,11 @@ export default Vue.extend<Vue & Toggleable & Stackable & options>().extend({
 
   watch: {
     hideOverlay (value) {
+      if (!this.isActive) return
+
       if (value) this.removeOverlay()
       else this.genOverlay()
-    }
+    },
   },
 
   beforeDestroy () {
@@ -55,8 +59,10 @@ export default Vue.extend<Vue & Toggleable & Stackable & options>().extend({
         propsData: {
           absolute: this.absolute,
           value: false,
-          zIndex: this.overlayZIndex
-        }
+          color: this.overlayColor,
+          opacity: this.overlayOpacity,
+          zIndex: this.overlayZIndex,
+        },
       })
 
       overlay.$mount()
@@ -70,6 +76,8 @@ export default Vue.extend<Vue & Toggleable & Stackable & options>().extend({
       this.overlay = overlay
     },
     genOverlay () {
+      if (this.hideOverlay) return
+
       if (!this.overlay) this.createOverlay()
 
       requestAnimationFrame(() => {
@@ -77,6 +85,8 @@ export default Vue.extend<Vue & Toggleable & Stackable & options>().extend({
 
         if (this.activeZIndex !== undefined) {
           this.overlay.zIndex = String(this.activeZIndex - 1)
+        } else if (this.$el) {
+          this.overlay.zIndex = getZIndex(this.$el)
         }
 
         this.overlay.value = true
@@ -84,14 +94,14 @@ export default Vue.extend<Vue & Toggleable & Stackable & options>().extend({
 
       return true
     },
-    /** removeOverlay(false) will not restore the scollbar afterwards */
     removeOverlay () {
       if (this.overlay) {
         addOnceEventListener(this.overlay.$el, 'transitionend', () => {
           if (
             !this.overlay ||
             !this.overlay.$el ||
-            !this.overlay.$el.parentNode
+            !this.overlay.$el.parentNode ||
+            this.overlay.value
           ) return
 
           this.overlay.$el.parentNode.removeChild(this.overlay.$el)

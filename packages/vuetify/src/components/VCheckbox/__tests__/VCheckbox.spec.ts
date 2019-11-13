@@ -1,13 +1,12 @@
 import {
   mount,
   Wrapper,
-  MountOptions
+  MountOptions,
 } from '@vue/test-utils'
 import VCheckbox from '../VCheckbox'
-import { ExtractVue } from '../../../util/mixins'
 
 describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
-  type Instance = ExtractVue<typeof VCheckbox>
+  type Instance = InstanceType<typeof VCheckbox>
   let mountFunction: (options?: MountOptions<Instance>) => Wrapper<Instance>
   beforeEach(() => {
     mountFunction = (options?: MountOptions<Instance>) => {
@@ -18,8 +17,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
   it('should return true when clicked', () => {
     const wrapper = mountFunction({
       propsData: {
-        inputValue: false
-      }
+        inputValue: false,
+      },
     })
 
     const input = wrapper.find('input')
@@ -36,8 +35,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         value: 'John',
-        inputValue: null
-      }
+        inputValue: null,
+      },
     })
 
     const input = wrapper.find('input')
@@ -53,8 +52,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         value: 'John',
-        inputValue: 'John'
-      }
+        inputValue: 'John',
+      },
     })
 
     const ripple = wrapper.find('input')
@@ -70,9 +69,9 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         label: 'Label',
-        value: null
+        value: null,
       },
-      attrs: {}
+      attrs: {},
     })
 
     const label = wrapper.find('label')
@@ -84,11 +83,11 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     expect(change).toHaveBeenCalled()
   })
 
-  it('should render role and aria-checked attributes on input group', () => {
+  it('should render role and aria-checked attributes on input group', async () => {
     const wrapper = mountFunction({
       propsData: {
-        inputValue: false
-      }
+        inputValue: false,
+      },
     })
 
     const input = wrapper.find('input')
@@ -96,41 +95,19 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     expect(input.element.getAttribute('role')).toBe('checkbox')
     expect(input.element.getAttribute('aria-checked')).toBe('false')
 
-    wrapper.setProps({ 'inputValue': true })
+    wrapper.setProps({ inputValue: true })
     expect(input.element.getAttribute('aria-checked')).toBe('true')
 
-    wrapper.setProps({ 'indeterminate': true })
+    wrapper.setProps({ indeterminate: true })
+    await wrapper.vm.$nextTick()
     expect(input.element.getAttribute('aria-checked')).toBe('mixed')
-  })
-
-  it('should render aria-label attribute with label value on input group', () => {
-    const wrapper = mountFunction({
-      propsData: {
-        label: 'Test'
-      },
-      attrs: {}
-    })
-
-    const inputGroup = wrapper.find('input')
-    expect(inputGroup.element.getAttribute('aria-label')).toBe('Test')
-  })
-
-  it('should not render aria-label attribute with no label value on input group', () => {
-    const wrapper = mountFunction({
-      propsData: {
-        label: null
-      }
-    })
-
-    const inputGroup = wrapper.find('input')
-    expect(inputGroup.element.getAttribute('aria-label')).toBeFalsy()
   })
 
   it('should toggle on keypress', async () => {
     const wrapper = mountFunction({
       propsData: {
-        inputValue: false
-      }
+        inputValue: false,
+      },
     })
 
     const change = jest.fn()
@@ -151,26 +128,26 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         inputValue: false,
-        disabled: false
-      }
+        disabled: false,
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
 
-    expect((ripple.element as any)._ripple.enabled).toBe(true)
-    expect((ripple.element as any)._ripple.centered).toBe(true)
+    expect((ripple.element as any)._ripple.enabled).toBeTruthy()
+    expect((ripple.element as any)._ripple.centered).toBeTruthy()
 
     wrapper.setProps({ disabled: true })
 
-    expect(wrapper.contains('.v-input--selection-controls__ripple')).toBe(true)
+    expect(wrapper.contains('.v-input--selection-controls__ripple')).toBeTruthy()
   })
 
   it('should not render ripple when ripple prop is false', () => {
     const wrapper = mountFunction({
       propsData: {
         inputValue: false,
-        ripple: false
-      }
+        ripple: false,
+      },
     })
 
     const ripple = wrapper.findAll('.v-input--selection-controls__ripple')
@@ -181,22 +158,22 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
   it('should render ripple when ripple prop is true', () => {
     const wrapper = mountFunction({
       propsData: {
-        ripple: true
-      }
+        ripple: true,
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
 
-    expect((ripple.element as any)._ripple.enabled).toBe(true)
-    expect((ripple.element as any)._ripple.centered).toBe(true)
+    expect((ripple.element as any)._ripple.enabled).toBeTruthy()
+    expect((ripple.element as any)._ripple.centered).toBeTruthy()
   })
 
   it('should return a value when toggled on with a specified object value', () => {
     const wrapper = mountFunction({
       propsData: {
         value: { x: 1, y: 2 },
-        inputValue: null
-      }
+        inputValue: null,
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -212,8 +189,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         value: [1, '2', { x: 1, y: 2 }],
-        inputValue: null
-      }
+        inputValue: null,
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -229,8 +206,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         value: 'John',
-        inputValue: []
-      }
+        inputValue: [],
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -246,8 +223,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         value: [1, 2, { x: 1, y: 2 }],
-        inputValue: ['Existing']
-      }
+        inputValue: ['Existing'],
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -264,8 +241,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
       propsData: {
         multiple: false, // must use multiple flag for array values
         value: ['John'],
-        inputValue: ['John']
-      }
+        inputValue: ['John'],
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -281,8 +258,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         value: 1,
-        inputValue: [1, 2, 1, 3]
-      }
+        inputValue: [1, 2, 1, 3],
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -298,8 +275,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
     const wrapper = mountFunction({
       propsData: {
         value: { a: 1 },
-        inputValue: [{ a: 1 }, { b: 1 }, { a: 1 }, { c: 1 }]
-      }
+        inputValue: [{ a: 1 }, { b: 1 }, { a: 1 }, { c: 1 }],
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -316,8 +293,8 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
       propsData: {
         trueValue: 'on',
         falseValue: 'off',
-        inputValue: null
-      }
+        inputValue: null,
+      },
     })
 
     const ripple = wrapper.find('.v-input--selection-controls__ripple')
@@ -337,7 +314,7 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
   // https://github.com/vuetifyjs/vuetify/issues/2119
   it('should put id on internal input', () => {
     const wrapper = mountFunction({
-      propsData: { id: 'foo' }
+      propsData: { id: 'foo' },
     })
 
     const input = wrapper.find('input')
@@ -351,22 +328,22 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
         onIcon: 'foo',
         offIcon: 'bar',
         indeterminate: true,
-        value: 'fizz'
-      }
+        value: 'fizz',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
-    wrapper.setProps({ value: 'fizz' })
+    wrapper.setProps({ inputValue: true })
     expect(wrapper.html()).toMatchSnapshot()
-    wrapper.setProps({ value: 'buzz' })
+    wrapper.setProps({ inputValue: false })
     expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('should render themed component', () => {
     const wrapper = mountFunction({
       propsData: {
-        light: true
-      }
+        light: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -374,7 +351,7 @@ describe('VCheckbox.ts', () => { // eslint-disable-line max-statements
 
   it('should be disabled', () => {
     const wrapper = mountFunction({
-      propsData: { disabled: true }
+      propsData: { disabled: true },
     })
     const input = wrapper.find('input')
 

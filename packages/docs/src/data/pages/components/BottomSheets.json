@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VBottomSheet",
   "mdSpec": {
     "version": "2",
     "link": "https://material.io/design/components/sheets-bottom.html"
@@ -28,9 +29,22 @@
       "type": "section",
       "children": [
         {
+          "type": "playground",
+          "value": "playground"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
           "type": "examples",
           "value": [
-            "inset"
+            "simple/persistent",
+            "simple/model",
+            "simple/inset",
+            "complex/player",
+            "complex/open-in-list"
           ]
         }
       ]

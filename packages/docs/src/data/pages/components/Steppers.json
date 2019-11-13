@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VStepper",
   "mdSpec": {
     "version": "1",
     "link": "https://material.io/archive/guidelines/components/steppers.html"
@@ -33,20 +34,29 @@
       "type": "section",
       "children": [
         {
+          "type": "playground",
+          "value": "playground"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
           "type": "examples",
           "value": [
-            "editable",
-            "nonEditable",
-            "optional",
-            "horizontal",
-            "vertical",
-            "linear",
-            "nonLinear",
-            "alternateLabels",
-            "error",
-            "alternateError",
-            "verticalError",
-            "dynamic"
+            "simple/editable",
+            "simple/non-editable",
+            "simple/optional",
+            "simple/horizontal",
+            "simple/vertical",
+            "simple/linear",
+            "simple/non-linear",
+            "simple/alternate-labels",
+            "simple/error",
+            "simple/alternate-error",
+            "simple/vertical-error",
+            "intermediate/dynamic"
           ]
         }
       ]
@@ -57,7 +67,7 @@
         {
           "type": "up-next",
           "value": [
-            "framework/breakpoints",
+            "components/tabs",
             "components/buttons",
             "components/windows"
           ]

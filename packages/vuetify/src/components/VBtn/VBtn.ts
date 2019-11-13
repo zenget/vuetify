@@ -15,13 +15,12 @@ import Routable from '../../mixins/routable'
 import Sizeable from '../../mixins/sizeable'
 
 // Utilities
-import { getObjectValueByPath } from '../../util/helpers'
-import { deprecate } from '../../util/console'
+import mixins, { ExtractVue } from '../../util/mixins'
+import { breaking } from '../../util/console'
 
 // Types
 import { VNode } from 'vue'
 import { PropValidator } from 'vue/types/options'
-import mixins, { ExtractVue } from '../../util/mixins'
 import { RippleOptions } from '../../directives/ripple'
 
 const baseMixins = mixins(
@@ -44,65 +43,64 @@ export default baseMixins.extend<options>().extend({
     activeClass: {
       type: String,
       default (): string | undefined {
-        if (!this.btnToggle) return 'v-btn--active'
+        if (!this.btnToggle) return ''
 
         return this.btnToggle.activeClass
-      }
+      },
     } as any as PropValidator<string>,
     block: Boolean,
     depressed: Boolean,
     fab: Boolean,
-    /* @deprecate */
-    flat: Boolean,
     icon: Boolean,
     loading: Boolean,
-    outline: Boolean,
-    ripple: {
-      type: [Boolean, Object],
-      default: null
-    },
-    round: Boolean,
+    outlined: Boolean,
+    retainFocusOnClick: Boolean,
     rounded: Boolean,
     tag: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     text: Boolean,
     type: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
-    value: null as any as PropValidator<any>
+    value: null as any as PropValidator<any>,
   },
+
+  data: () => ({
+    proxyClass: 'v-btn--active',
+  }),
 
   computed: {
     classes (): any {
       return {
         'v-btn': true,
-        [this.activeClass]: this.isActive,
+        ...Routable.options.computed.classes.call(this),
         'v-btn--absolute': this.absolute,
         'v-btn--block': this.block,
         'v-btn--bottom': this.bottom,
         'v-btn--contained': this.contained,
-        'v-btn--depressed': (this.depressed && !this.flat) || this.outline,
+        'v-btn--depressed': (this.depressed) || this.outlined,
         'v-btn--disabled': this.disabled,
-        'v-btn--fab': this.fab || this.icon,
+        'v-btn--fab': this.fab,
         'v-btn--fixed': this.fixed,
         'v-btn--flat': this.isFlat,
         'v-btn--icon': this.icon,
         'v-btn--left': this.left,
         'v-btn--loading': this.loading,
-        'v-btn--outline': this.outline,
+        'v-btn--outlined': this.outlined,
         'v-btn--right': this.right,
         'v-btn--round': this.isRound,
-        'v-btn--rounded': this.round || this.rounded,
+        'v-btn--rounded': this.rounded,
         'v-btn--router': this.to,
         'v-btn--text': this.text,
+        'v-btn--tile': this.tile,
         'v-btn--top': this.top,
         ...this.themeClasses,
         ...this.groupClasses,
         ...this.elevationClasses,
-        ...this.sizeableClasses
+        ...this.sizeableClasses,
       }
     },
     contained (): boolean {
@@ -117,14 +115,13 @@ export default baseMixins.extend<options>().extend({
     computedRipple (): RippleOptions | boolean {
       const defaultRipple = this.icon || this.fab ? { circle: true } : true
       if (this.disabled) return false
-      else return this.ripple !== null ? this.ripple : defaultRipple
+      else return this.ripple != null ? this.ripple : defaultRipple
     },
     isFlat (): boolean {
       return Boolean(
         this.icon ||
         this.text ||
-        this.flat ||
-        this.outline
+        this.outlined
       )
     },
     isRound (): boolean {
@@ -135,85 +132,65 @@ export default baseMixins.extend<options>().extend({
     },
     styles (): object {
       return {
-        ...this.measurableStyles
+        ...this.measurableStyles,
       }
-    }
-  },
-
-  watch: {
-    '$route': 'onRouteChange'
+    },
   },
 
   created () {
+    const breakingProps = [
+      ['flat', 'text'],
+      ['outline', 'outlined'],
+      ['round', 'rounded'],
+    ]
+
     /* istanbul ignore next */
-    if (this.flat) deprecate('flat', 'text', this)
-    /* istanbul ignore next */
-    if (this.round) deprecate('round', 'rounded', this)
+    breakingProps.forEach(([original, replacement]) => {
+      if (this.$attrs.hasOwnProperty(original)) breaking(original, replacement, this)
+    })
   },
 
   methods: {
-    // Prevent focus to match md spec
     click (e: MouseEvent): void {
-      !this.fab &&
-      e.detail &&
-      this.$el.blur()
-
+      !this.retainFocusOnClick && !this.fab && e.detail && this.$el.blur()
       this.$emit('click', e)
 
       this.btnToggle && this.toggle()
     },
     genContent (): VNode {
-      return this.$createElement(
-        'span',
-        { 'class': 'v-btn__content' },
-        this.$slots.default
-      )
+      return this.$createElement('span', {
+        staticClass: 'v-btn__content',
+      }, this.$slots.default)
     },
     genLoader (): VNode {
       return this.$createElement('span', {
-        class: 'v-btn__loader'
+        class: 'v-btn__loader',
       }, this.$slots.loader || [this.$createElement(VProgressCircular, {
         props: {
           indeterminate: true,
           size: 23,
-          width: 2
-        }
+          width: 2,
+        },
       })])
     },
-    onRouteChange () {
-      if (!this.to || !this.$refs.link) return
-
-      const path = `_vnode.data.class.${this.activeClass}`
-
-      this.$nextTick(() => {
-        /* istanbul ignore else */
-        if (getObjectValueByPath(this.$refs.link, path)) {
-          this.toggle()
-        }
-      })
-    }
   },
 
   render (h): VNode {
     const children = [
       this.genContent(),
-      this.loading && this.genLoader()
+      this.loading && this.genLoader(),
     ]
     const setColor = !this.isFlat ? this.setBackgroundColor : this.setTextColor
-    const { tag, data } = this.generateRouteLink(this.classes, this.styles)
+    const { tag, data } = this.generateRouteLink()
 
-    if (tag === 'button') data.attrs!.type = this.type
-
+    if (tag === 'button') {
+      data.attrs!.type = this.type
+      data.attrs!.disabled = this.disabled
+    }
     data.attrs!.value = ['string', 'number'].includes(typeof this.value)
       ? this.value
       : JSON.stringify(this.value)
 
-    if (this.btnToggle) data.ref = 'link'
-
-    const render = h(tag, setColor(this.color, data), children)
-
-    if (this.isFlat) return render
-
-    return render
-  }
+    return h(tag, this.disabled ? data : setColor(this.color, data), children)
+  },
 })

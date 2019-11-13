@@ -25,7 +25,6 @@
       </core-title>
       <core-section>
         <v-layout
-          row
           justify-space-around
         >
           <v-rating
@@ -48,7 +47,6 @@
       </core-title>
       <core-section>
         <v-layout
-          row
           justify-space-around
         >
           <v-rating
@@ -71,7 +69,6 @@
       </core-title>
       <core-section>
         <v-layout
-          row
           justify-space-around
         >
           <v-rating
@@ -208,7 +205,6 @@
       </core-title>
       <core-section>
         <v-layout
-          row
           justify-space-around
         >
           <v-rating
@@ -241,7 +237,6 @@
       </core-title>
       <core-section>
         <v-layout
-          row
           justify-space-around
         >
           <v-rating
@@ -354,7 +349,7 @@
             />
           </v-layout>
           <v-divider dark />
-          <v-card-actions class="pa-3">
+          <v-card-actions class="pa-4">
             Rate this album
             <v-spacer />
             <span class="grey--text text--lighten-2 caption mr-2">
@@ -384,7 +379,7 @@
       rating: 4,
       rating1: 4,
       colors: ['green', 'purple', 'orange', 'indigo', 'red'],
-      rating2: 4
-    })
+      rating2: 4,
+    }),
   }
 </script>

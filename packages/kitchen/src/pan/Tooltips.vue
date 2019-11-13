@@ -15,6 +15,7 @@
               <v-btn
                 color="primary"
                 dark
+                data-cy-btn="tooltip"
               >
                 Left
               </v-btn>
@@ -29,6 +30,7 @@
               <v-btn
                 color="primary"
                 dark
+                data-cy-btn="tooltip"
               >
                 Top
               </v-btn>
@@ -43,6 +45,7 @@
               <v-btn
                 color="primary"
                 dark
+                data-cy-btn="tooltip"
               >
                 Bottom
               </v-btn>
@@ -57,6 +60,7 @@
               <v-btn
                 color="primary"
                 dark
+                data-cy-btn="tooltip"
               >
                 Right
               </v-btn>
@@ -76,14 +80,14 @@
           align-center
         >
           <v-flex xs12>
-            <v-btn @click="show = !show">
+            <v-btn data-cy-btn="tooltip" @click="show = !show">
               toggle
             </v-btn>
           </v-flex>
 
           <v-flex
             xs12
-            class="mt-5"
+            class="mt-12"
           >
             <v-tooltip
               v-model="show"
@@ -95,7 +99,7 @@
                 <v-btn
                   icon
                 >
-                  <v-icon color="grey lighten-1">
+                  <v-icon color="grey lighten-1" data-cy-btn="tooltip">
                     mdi-cart
                   </v-icon>
                 </v-btn>
@@ -114,7 +118,7 @@
     name: 'Tooltips',
 
     data: () => ({
-      show: false
-    })
+      show: false,
+    }),
   }
 </script>

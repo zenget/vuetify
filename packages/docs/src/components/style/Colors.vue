@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <doc-heading>colorHeader</doc-heading>
+  <section id="material-colors">
+    <base-heading>colorHeader</base-heading>
+
     <doc-text>colorText</doc-text>
 
     <v-text-field
@@ -12,45 +13,65 @@
       single-line
     />
 
-    <v-container fluid pa-0 grid-list-xl>
-      <v-layout wrap>
-        <v-flex
+    <v-container
+      class="pa-0"
+      fluid
+    >
+      <v-row>
+        <v-col
           v-for="(color, key) in computedColors"
           :key="key"
-          xs6
-          md4
+          cols="12"
+          md="6"
+          lg="4"
         >
           <v-card
             :color="key"
+            outlined
             tile
           >
             <v-card-text>
-              <span class="title" v-text="key" />
+              <span
+                class="title"
+                v-text="key"
+              />
             </v-card-text>
           </v-card>
+
           <v-card
             v-for="(subColor, key2) in color"
             :key="key2"
             :color="`${key} ${convertToClass(key2)}`"
-            :class="getColorClass(key2)"
+            flat
             tile
           >
-            <v-card-text>
-              <v-layout>
-                <v-flex xs8 caption>
+            <v-card-text :class="getColorClass(key2)">
+              <v-row>
+                <v-col
+                  cols="8"
+                  class="caption"
+                >
                   <span v-if="key !== 'shades'">{{ key }}&nbsp;</span>
+
                   <span v-if="key2 !== 'base'">{{ key2.replace(/(.*)(\d)/, '$1-$2') }}</span>
-                </v-flex>
-                <v-flex xs4 text-xs-right>
-                  <span v-if="subColor !== 'transparent'" v-text="subColor.toUpperCase()" />
-                </v-flex>
-              </v-layout>
+                </v-col>
+
+                <v-col
+                  cols="4"
+                  class="text-right"
+                >
+                  <span
+                    v-if="subColor !== 'transparent'"
+                    v-text="subColor.toUpperCase()"
+                  />
+                </v-col>
+              </v-row>
             </v-card-text>
           </v-card>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-container>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -59,9 +80,11 @@
   import colors from 'vuetify/es5/util/colors'
 
   export default {
+    name: 'StyleColors',
+
     data: () => ({
       colors,
-      search: ''
+      search: '',
     }),
 
     computed: {
@@ -78,7 +101,7 @@
         })
 
         return colors
-      }
+      },
     },
 
     methods: {
@@ -100,7 +123,7 @@
         ) return 'black--text'
 
         return 'white--text'
-      }
-    }
+      },
+    },
   }
 </script>

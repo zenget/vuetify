@@ -1,17 +1,22 @@
 <template>
-  <figure class="mb-4">
-    <v-sheet>
+  <figure class="mb-6 text-center">
+    <v-card
+      color="transparent"
+      flat
+    >
       <v-img
         :src="computedValue"
-        class="mb-2"
+        class="d-inline-block"
+        eager
+        max-width="100%"
       />
-    </v-sheet>
+    </v-card>
 
     <figcaption
       v-if="$slots.default"
-      class="caption text-xs-center"
+      class="caption text-center"
     >
-      <doc-markdown><slot /></doc-markdown>
+      <base-markdown><slot /></base-markdown>
     </figcaption>
   </figure>
 </template>
@@ -21,20 +26,18 @@
     props: {
       value: {
         type: String,
-        default: undefined
-      }
+        default: undefined,
+      },
     },
 
     computed: {
       computedValue () {
         if (!this.value) return
 
-        if (this.value.indexOf('http') > -1) {
-          return this.value
-        }
-
-        return `https://cdn.vuetifyjs.com/images/${this.value}`
-      }
-    }
+        return this.value.indexOf('http') > -1
+          ? this.value
+          : `https://cdn.vuetifyjs.com/images/${this.value}`
+      },
+    },
   }
 </script>

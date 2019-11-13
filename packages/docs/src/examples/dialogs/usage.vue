@@ -1,5 +1,5 @@
 <template>
-  <div class="text-xs-center">
+  <div class="text-center">
     <v-dialog
       v-model="dialog"
       width="500"
@@ -47,8 +47,8 @@
   export default {
     data () {
       return {
-        dialog: false
+        dialog: false,
       }
-    }
+    },
   }
 </script>

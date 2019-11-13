@@ -1,11 +1,22 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VImg",
   "mdSpec": {
     "version": "2",
     "link": "https://material.io/design/communication/imagery.html"
   },
   "children": [
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "alert",
+          "lang": "alert1",
+          "value": "info"
+        }
+      ]
+    },
     {
       "type": "section",
       "children": [
@@ -30,10 +41,12 @@
         {
           "type": "examples",
           "value": [
-            "containCover",
-            "maxHeight",
-            "ratio",
-            "gradients"
+            "simple/contain-cover",
+            "simple/max-height",
+            "simple/ratio",
+            "simple/placeholder",
+            "intermediate/gradients",
+            "intermediate/grid"
           ]
         }
       ]
@@ -44,8 +57,8 @@
         {
           "type": "up-next",
           "value": [
-            "framework/grid-lists",
-            "framework/aspect-ratios",
+            "components/grids",
+            "components/aspect-ratios",
             "components/parallax"
           ]
         }

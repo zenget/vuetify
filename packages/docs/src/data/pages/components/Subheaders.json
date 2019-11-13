@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VSubheader",
   "mdSpec": {
     "version": "1",
     "link": "https://material.io/archive/guidelines/components/subheaders.html"
@@ -28,11 +29,21 @@
       "type": "section",
       "children": [
         {
+          "type": "playground",
+          "value": "playground"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
           "type": "examples",
           "value": [
-            "grid",
-            "menu",
-            "social"
+            "simple/inset",
+            "simple/grid",
+            "simple/menu",
+            "intermediate/social"
           ]
         }
       ]
@@ -44,7 +55,7 @@
           "type": "up-next",
           "value": [
             "components/cards",
-            "framework/grid-lists",
+            "components/grids",
             "components/lists"
           ]
         }

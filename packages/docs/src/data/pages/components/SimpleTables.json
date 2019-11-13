@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VDataTable/VSimpleTable.ts",
   "mdSpec": {
     "version": "2",
     "link": "https://material.io/design/components/data-tables.html"
@@ -30,12 +31,21 @@
       "type": "section",
       "children": [
         {
+          "type": "playground",
+          "value": "playground"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
           "type": "examples",
           "value": [
-            "height",
-            "fixedHeader",
-            "dense",
-            "dark"
+            "simple/height",
+            "simple/fixed-header",
+            "simple/dense",
+            "simple/dark"
           ]
         }
       ]

@@ -10,7 +10,6 @@ const resolve = file => path.resolve(__dirname, file)
 const { createBundleRenderer } = require('vue-server-renderer')
 const Ouch = require('ouch')
 const redirects = require('./src/router/301.json')
-const rollbar = require('./src/util/rollbar')
 
 const isProd = process.env.NODE_ENV === 'production'
 const useMicroCache = process.env.MICRO_CACHE !== 'false'
@@ -28,12 +27,12 @@ function createRenderer (bundle, options) {
   // https://github.com/vuejs/vue/blob/dev/packages/vue-server-renderer/README.md#why-use-bundlerenderer
   return createBundleRenderer(bundle, Object.assign(options, {
     // for component caching
-    cache: LRU({
+    cache: new LRU({
       max: 1000,
-      maxAge: 1000 * 60 * 15
+      maxAge: 1000 * 60 * 15,
     }),
     // recommended for performance
-    runInNewContext: false
+    runInNewContext: false,
   }))
 }
 
@@ -52,7 +51,7 @@ if (isProd) {
   renderer = createRenderer(bundle, {
     template,
     clientManifest,
-    shouldPrefetch: () => false
+    shouldPrefetch: () => false,
   })
 } else {
   // In development: setup the dev server with watch and hot-reload,
@@ -67,12 +66,11 @@ if (isProd) {
 }
 
 const serve = (path, cache) => express.static(resolve(path), {
-  maxAge: cache && isProd ? 1000 * 60 * 60 * 24 * 30 : 0
+  maxAge: cache && isProd ? 1000 * 60 * 60 * 24 * 30 : 0,
 })
 
 app.use(express.json())
 app.use(cookieParser())
-rollbar.options.enabled && app.use(rollbar.errorHandler())
 app.use(compression({ threshold: 0 }))
 app.use(favicon('./src/public/favicon.ico'))
 app.use('/', serve('./src/public', true))
@@ -120,7 +118,7 @@ function render (req, res) {
   res.setHeader('Content-Type', 'text/html')
   res.setHeader('Server', serverInfo)
   res.cookie('currentLanguage', req.params[0], {
-    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   })
 
   const handleError = err => {
@@ -144,7 +142,8 @@ function render (req, res) {
     hreflangs: availableLanguages.reduce((acc, lang) => {
       return acc + `<link rel="alternate" hreflang="${lang}" href="https://${req.hostname}/${lang}${req.params[1]}" />`
     }, ''),
-    crowdin: ''
+    crowdin: '',
+    scripts: '',
   }
 
   if (context.lang === 'eo-UY') {

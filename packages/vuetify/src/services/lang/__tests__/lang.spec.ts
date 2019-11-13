@@ -1,13 +1,8 @@
 // Service
 import { Lang } from '../index'
 
-// Utilities
-import toHaveBeenWarnedInit from '../../../../test/util/to-have-been-warned'
-
 describe('$vuetify.lang', () => {
   let lang: Lang
-
-  toHaveBeenWarnedInit()
 
   beforeEach(() => {
     lang = new Lang()
@@ -36,8 +31,8 @@ describe('$vuetify.lang', () => {
     lang = new Lang({
       current: 'foreign',
       locales: {
-        foreign: { foo: 'foreignBar' }
-      }
+        foreign: { foo: 'foreignBar' },
+      },
     })
 
     expect(lang.t('$vuetify.foo')).toBe('foreignBar')
@@ -51,5 +46,13 @@ describe('$vuetify.lang', () => {
     lang.t('$vuetify.foobar', 'fizzbuzz')
 
     expect(translator).toHaveBeenCalledWith('$vuetify.foobar', 'fizzbuzz')
+  })
+
+  it('should replace params on a non-prefixed key', () => {
+    lang = new Lang({ t: str => str })
+
+    const translated = lang.t('{2} bar {0} foo {1}', 'hello', 'world', '!')
+
+    expect(translated).toBe('! bar hello foo world')
   })
 })

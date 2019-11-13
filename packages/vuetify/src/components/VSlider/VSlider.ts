@@ -12,7 +12,7 @@ import Loadable from '../../mixins/loadable'
 import ClickOutside from '../../directives/click-outside'
 
 // Helpers
-import { addOnceEventListener, deepEqual, keyCodes, createRange, convertToUnit } from '../../util/helpers'
+import { addOnceEventListener, deepEqual, keyCodes, createRange, convertToUnit, passiveSupported } from '../../util/helpers'
 import { consoleWarn } from '../../util/console'
 
 // Types
@@ -41,62 +41,53 @@ export default mixins<options &
   name: 'v-slider',
 
   directives: {
-    ClickOutside
+    ClickOutside,
   },
 
   mixins: [Loadable],
 
   props: {
-    color: {
-      type: String,
-      default: 'primary'
-    },
     disabled: Boolean,
     inverseLabel: Boolean,
-    min: {
-      type: [Number, String],
-      default: 0
-    },
     max: {
       type: [Number, String],
-      default: 100
+      default: 100,
+    },
+    min: {
+      type: [Number, String],
+      default: 0,
     },
     step: {
       type: [Number, String],
-      default: 1
+      default: 1,
     },
-    ticks: {
-      type: [Boolean, String],
-      default: false,
-      validator: (v: any) => typeof v === 'boolean' || v === 'always'
-    },
-    tickLabels: {
-      type: Array,
-      default: () => ([])
-    } as PropValidator<string[]>,
-    tickSize: {
-      type: [Number, String],
-      default: 2
-    },
-    thumbColor: {
-      type: String,
-      default: 'primary'
-    },
+    thumbColor: String,
     thumbLabel: {
       type: [Boolean, String],
       default: null,
-      validator: (v: any) => typeof v === 'boolean' || v === 'always'
-    },
+      validator: v => typeof v === 'boolean' || v === 'always',
+    } as PropValidator<boolean | 'always' | null>,
     thumbSize: {
       type: [Number, String],
-      default: 32
+      default: 32,
     },
-    trackColor: {
-      type: String,
-      default: 'primary lighten-3'
+    tickLabels: {
+      type: Array,
+      default: () => ([]),
+    } as PropValidator<string[]>,
+    ticks: {
+      type: [Boolean, String],
+      default: false,
+      validator: v => typeof v === 'boolean' || v === 'always',
+    } as PropValidator<boolean | 'always'>,
+    tickSize: {
+      type: [Number, String],
+      default: 2,
     },
+    trackColor: String,
+    trackFillColor: String,
     value: [Number, String],
-    vertical: Boolean
+    vertical: Boolean,
   },
 
   data: () => ({
@@ -105,33 +96,36 @@ export default mixins<options &
     keyPressed: 0,
     isFocused: false,
     isActive: false,
-    lazyValue: 0
+    lazyValue: 0,
+    noClick: false, // Prevent click event if dragging took place, hack for #7915
   }),
 
   computed: {
-    classes () {
+    classes (): object {
       return {
+        ...VInput.options.computed.classes.call(this),
         'v-input__slider': true,
         'v-input__slider--vertical': this.vertical,
-        'v-input__slider--inverse-label': this.inverseLabel
+        'v-input__slider--inverse-label': this.inverseLabel,
       }
     },
     internalValue: {
-      get () {
+      get (): number {
         return this.lazyValue
       },
       set (val: number) {
+        val = isNaN(val) ? this.minValue : val
         // Round value to ensure the
         // entire slider range can
         // be selected with step
-        const value = this.roundValue(Math.min(Math.max(val || this.minValue, this.minValue), this.maxValue))
+        const value = this.roundValue(Math.min(Math.max(val, this.minValue), this.maxValue))
 
         if (value === this.lazyValue) return
 
         this.lazyValue = value
 
         this.$emit('input', value)
-      }
+      },
     },
     trackTransition (): string {
       return this.keyPressed >= 2 ? 'none' : ''
@@ -150,23 +144,23 @@ export default mixins<options &
 
       return value
     },
-    trackFillStyles () {
+    trackFillStyles (): Partial<CSSStyleDeclaration> {
       const startDir = this.vertical ? 'bottom' : 'left'
       const endDir = this.vertical ? 'top' : 'right'
       const valueDir = this.vertical ? 'height' : 'width'
 
-      const start = this.$vuetify.rtl ? 'auto' : 0
-      const end = this.$vuetify.rtl ? 0 : 'auto'
+      const start = this.$vuetify.rtl ? 'auto' : '0'
+      const end = this.$vuetify.rtl ? '0' : 'auto'
       const value = this.disabled ? `calc(${this.inputWidth}% - 10px)` : `${this.inputWidth}%`
 
       return {
         transition: this.trackTransition,
         [startDir]: start,
         [endDir]: end,
-        [valueDir]: value
+        [valueDir]: value,
       }
     },
-    trackStyles () {
+    trackStyles (): Partial<CSSStyleDeclaration> {
       const startDir = this.vertical ? this.$vuetify.rtl ? 'bottom' : 'top' : this.$vuetify.rtl ? 'left' : 'right'
       const endDir = this.vertical ? 'height' : 'width'
 
@@ -176,35 +170,37 @@ export default mixins<options &
       return {
         transition: this.trackTransition,
         [startDir]: start,
-        [endDir]: end
+        [endDir]: end,
       }
     },
-    showTicks () {
+    showTicks (): boolean {
       return this.tickLabels.length > 0 ||
-        (!this.disabled && this.stepNumeric && !!this.ticks)
+        !!(!this.disabled && this.stepNumeric && this.ticks)
     },
-    numTicks () {
+    numTicks (): number {
       return Math.ceil((this.maxValue - this.minValue) / this.stepNumeric)
     },
-    showThumbLabel () {
-      return !this.disabled && (
-        !!this.thumbLabel ||
-        this.thumbLabel === '' ||
+    showThumbLabel (): boolean {
+      return !this.disabled && !!(
+        this.thumbLabel ||
         this.$scopedSlots['thumb-label']
       )
     },
-    computedColor () {
-      if (this.disabled) return false
-      return this.validationState || this.color
+    computedTrackColor (): string | undefined {
+      if (this.disabled) return undefined
+      if (this.trackColor) return this.trackColor
+      if (this.isDark) return this.validationState
+      return this.validationState || 'primary lighten-3'
     },
-    computedTrackColor () {
-      if (this.disabled) return false
-      return this.validationState || this.trackColor
+    computedTrackFillColor (): string | undefined {
+      if (this.disabled) return undefined
+      if (this.trackFillColor) return this.trackFillColor
+      return this.validationState || this.computedColor
     },
-    computedThumbColor () {
-      if (this.disabled) return false
-      return this.validationState || this.thumbColor || this.color
-    }
+    computedThumbColor (): string | undefined {
+      if (this.thumbColor) return this.thumbColor
+      return this.validationState || this.computedColor
+    },
   },
 
   watch: {
@@ -219,8 +215,8 @@ export default mixins<options &
     value: {
       handler (v: number) {
         this.internalValue = v
-      }
-    }
+      },
+    },
   },
 
   // If done in as immediate in
@@ -258,15 +254,15 @@ export default mixins<options &
           'v-slider--active': this.isActive,
           'v-slider--disabled': this.disabled,
           'v-slider--readonly': this.readonly,
-          ...this.themeClasses
+          ...this.themeClasses,
         },
         directives: [{
           name: 'click-outside',
-          value: this.onBlur
+          value: this.onBlur,
         }],
         on: {
-          click: this.onSliderClick
-        }
+          click: this.onSliderClick,
+        },
       }, this.genChildren())
     },
     genChildren (): VNodeChildrenArrayContents {
@@ -280,19 +276,21 @@ export default mixins<options &
           this.isActive,
           this.isFocused,
           this.onThumbMouseDown,
-          this.onFocus
-        )
+          this.onFocus,
+          this.onBlur,
+        ),
       ]
     },
     genInput (): VNode {
       return this.$createElement('input', {
         attrs: {
           value: this.internalValue,
+          id: this.computedId,
           disabled: this.disabled,
           readonly: true,
           tabindex: -1,
-          ...this.$attrs
-        }
+          ...this.$attrs,
+        },
         // on: this.genListeners(), // TODO: do we need to attach the listeners to input?
       })
     },
@@ -300,17 +298,17 @@ export default mixins<options &
       const children = [
         this.$createElement('div', this.setBackgroundColor(this.computedTrackColor, {
           staticClass: 'v-slider__track-background',
-          style: this.trackStyles
+          style: this.trackStyles,
         })),
-        this.$createElement('div', this.setBackgroundColor(this.computedColor, {
+        this.$createElement('div', this.setBackgroundColor(this.computedTrackFillColor, {
           staticClass: 'v-slider__track-fill',
-          style: this.trackFillStyles
-        }))
+          style: this.trackFillStyles,
+        })),
       ]
 
       return this.$createElement('div', {
         staticClass: 'v-slider__track-container',
-        ref: 'track'
+        ref: 'track',
       }, children)
     },
     genSteps (): VNode | null {
@@ -329,7 +327,7 @@ export default mixins<options &
 
         if (this.tickLabels[index]) {
           children.push(this.$createElement('div', {
-            staticClass: 'v-slider__tick-label'
+            staticClass: 'v-slider__tick-label',
           }, this.tickLabels[index]))
         }
 
@@ -340,22 +338,22 @@ export default mixins<options &
           key: i,
           staticClass: 'v-slider__tick',
           class: {
-            'v-slider__tick--filled': filled
+            'v-slider__tick--filled': filled,
           },
           style: {
             width: `${tickSize}px`,
             height: `${tickSize}px`,
             [direction]: `calc(${width}% - ${tickSize / 2}px)`,
-            [offsetDirection]: `calc(50% - ${tickSize / 2}px)`
-          }
+            [offsetDirection]: `calc(50% - ${tickSize / 2}px)`,
+          },
         }, children)
       })
 
       return this.$createElement('div', {
         staticClass: 'v-slider__ticks-container',
         class: {
-          'v-slider__ticks-container--always-show': this.ticks === 'always' || this.tickLabels.length > 0
-        }
+          'v-slider__ticks-container--always-show': this.ticks === 'always' || this.tickLabels.length > 0,
+        },
       }, ticks)
     },
     genThumbContainer (
@@ -365,6 +363,7 @@ export default mixins<options &
       isFocused: boolean,
       onDrag: Function,
       onFocus: Function,
+      onBlur: Function,
       ref = 'thumb'
     ): VNode {
       const children = [this.genThumb()]
@@ -378,7 +377,7 @@ export default mixins<options &
         class: {
           'v-slider__thumb-container--active': isActive,
           'v-slider__thumb-container--focused': isFocused,
-          'v-slider__thumb-container--show-label': this.showThumbLabel
+          'v-slider__thumb-container--show-label': this.showThumbLabel,
         },
         style: this.getThumbContainerStyles(valueWidth),
         attrs: {
@@ -390,16 +389,16 @@ export default mixins<options &
           'aria-valuenow': this.internalValue,
           'aria-readonly': String(this.readonly),
           'aria-orientation': this.vertical ? 'vertical' : 'horizontal',
-          ...this.$attrs
+          ...this.$attrs,
         },
         on: {
           focus: onFocus,
-          blur: this.onBlur,
+          blur: onBlur,
           keydown: this.onKeyDown,
           keyup: this.onKeyUp,
           touchstart: onDrag,
-          mousedown: onDrag
-        }
+          mousedown: onDrag,
+        },
       }), children)
     },
     genThumbLabelContent (value: number | string): ScopedSlotChildren {
@@ -415,29 +414,29 @@ export default mixins<options &
         : `translateY(-20%) translateY(-12px) translateX(-50%) rotate(45deg)`
 
       return this.$createElement(VScaleTransition, {
-        props: { origin: 'bottom center' }
+        props: { origin: 'bottom center' },
       }, [
         this.$createElement('div', {
           staticClass: 'v-slider__thumb-label-container',
           directives: [{
             name: 'show',
-            value: this.isFocused || this.isActive || this.thumbLabel === 'always'
-          }]
+            value: this.isFocused || this.isActive || this.thumbLabel === 'always',
+          }],
         }, [
           this.$createElement('div', this.setBackgroundColor(this.computedThumbColor, {
             staticClass: 'v-slider__thumb-label',
             style: {
               height: size,
               width: size,
-              transform
-            }
-          }), [this.$createElement('div', content)])
-        ])
+              transform,
+            },
+          }), [this.$createElement('div', content)]),
+        ]),
       ])
     },
     genThumb (): VNode {
       return this.$createElement('div', this.setBackgroundColor(this.computedThumbColor, {
-        staticClass: 'v-slider__thumb'
+        staticClass: 'v-slider__thumb',
       }))
     },
     getThumbContainerStyles (width: number): object {
@@ -447,44 +446,44 @@ export default mixins<options &
 
       return {
         transition: this.trackTransition,
-        [direction]: `${value}%`
+        [direction]: `${value}%`,
       }
     },
     onThumbMouseDown (e: MouseEvent) {
       this.oldValue = this.internalValue
       this.keyPressed = 2
-      const options = { passive: true }
       this.isActive = true
 
+      const mouseUpOptions = passiveSupported ? { passive: true, capture: true } : true
+      const mouseMoveOptions = passiveSupported ? { passive: true } : false
       if ('touches' in e) {
-        this.app.addEventListener('touchmove', this.onMouseMove, options)
-        addOnceEventListener(this.app, 'touchend', this.onSliderMouseUp)
+        this.app.addEventListener('touchmove', this.onMouseMove, mouseMoveOptions)
+        addOnceEventListener(this.app, 'touchend', this.onSliderMouseUp, mouseUpOptions)
       } else {
-        this.app.addEventListener('mousemove', this.onMouseMove, options)
-        addOnceEventListener(this.app, 'mouseup', this.onSliderMouseUp)
+        this.app.addEventListener('mousemove', this.onMouseMove, mouseMoveOptions)
+        addOnceEventListener(this.app, 'mouseup', this.onSliderMouseUp, mouseUpOptions)
       }
 
       this.$emit('start', this.internalValue)
     },
-    onSliderMouseUp () {
+    onSliderMouseUp (e: Event) {
+      e.stopPropagation()
       this.keyPressed = 0
-      const options = { passive: true }
-      this.app.removeEventListener('touchmove', this.onMouseMove, options)
-      this.app.removeEventListener('mousemove', this.onMouseMove, options)
+      const mouseMoveOptions = passiveSupported ? { passive: true } : false
+      this.app.removeEventListener('touchmove', this.onMouseMove, mouseMoveOptions)
+      this.app.removeEventListener('mousemove', this.onMouseMove, mouseMoveOptions)
 
       this.$emit('end', this.internalValue)
       if (!deepEqual(this.oldValue, this.internalValue)) {
         this.$emit('change', this.internalValue)
+        this.noClick = true
       }
 
       this.isActive = false
     },
     onMouseMove (e: MouseEvent) {
-      const { value, isInsideTrack } = this.parseMouseMove(e)
-
-      if (isInsideTrack) {
-        this.internalValue = value
-      }
+      const { value } = this.parseMouseMove(e)
+      this.internalValue = value
     },
     onKeyDown (e: KeyboardEvent) {
       if (this.disabled || this.readonly) return
@@ -500,6 +499,10 @@ export default mixins<options &
       this.keyPressed = 0
     },
     onSliderClick (e: MouseEvent) {
+      if (this.noClick) {
+        this.noClick = false
+        return
+      }
       const thumb = this.$refs.thumb as HTMLElement
       thumb.focus()
 
@@ -523,7 +526,7 @@ export default mixins<options &
 
       const {
         [start]: trackStart,
-        [length]: trackLength
+        [length]: trackLength,
       } = this.$refs.track.getBoundingClientRect() as any
       const clickOffset = 'touches' in e ? (e as any).touches[0][click] : e[click] // Can we get rid of any here?
 
@@ -580,6 +583,6 @@ export default mixins<options &
       const newValue = Math.round((value - offset) / this.stepNumeric) * this.stepNumeric + offset
 
       return parseFloat(Math.min(newValue, this.maxValue).toFixed(decimals))
-    }
-  }
+    },
+  },
 })

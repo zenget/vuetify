@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VButton",
   "mdSpec": {
     "version": "2",
     "link": "https://material.io/design/components/buttons.html"
@@ -10,8 +11,60 @@
       "type": "section",
       "children": [
         {
-          "type": "usage",
-          "value": "usage"
+          "type": "usage-new",
+          "value": {
+            "booleans": [
+              "disabled",
+              "loading",
+              "block"
+            ],
+            "sliders": [
+              {
+                "prop": "elevation",
+                "label": "Elevation",
+                "attrs": {
+                  "min": 0,
+                  "max": 24
+                }
+              }
+            ],
+            "selects": [
+              {
+                "prop": "color",
+                "label": "Colors",
+                "attrs": {
+                  "items": [
+                    "deep-purple accent-4",
+                    "primary",
+                    "secondary",
+                    "accent"
+                  ]
+                }
+              },
+              {
+                "prop": "size",
+                "label": "Sizes",
+                "attrs": {
+                  "items": [
+                    "x-small",
+                    "small",
+                    "large",
+                    "x-large"
+                  ]
+                }
+              }
+            ],
+            "tabs": [
+              "raised",
+              "depressed",
+              "outlined",
+              "rounded",
+              "text",
+              "fab",
+              "icon",
+              "tile"
+            ]
+          }
         }
       ]
     },
@@ -31,19 +84,25 @@
       "type": "section",
       "children": [
         {
+          "type": "alert",
+          "lang": "alert",
+          "value": "warning"
+        },
+        {
           "type": "examples",
           "value": [
-            "flat",
-            "raised",
-            "depressed",
-            "dropdown",
-            "icon",
-            "floating",
-            "loaders",
-            "sizing",
-            "outline",
-            "round",
-            "block"
+            "simple/flat",
+            "simple/raised",
+            "simple/depressed",
+            "simple/dropdown",
+            "simple/icon",
+            "simple/floating",
+            "simple/sizing",
+            "simple/outlined",
+            "simple/rounded",
+            "simple/tile",
+            "simple/block",
+            "intermediate/loaders"
           ]
         }
       ]

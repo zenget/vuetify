@@ -7,7 +7,7 @@ import VSlider from '../VSlider'
 // Helpers
 import {
   createRange,
-  deepEqual
+  deepEqual,
 } from '../../util/helpers'
 
 // Types
@@ -20,25 +20,26 @@ export default VSlider.extend({
   props: {
     value: {
       type: Array,
-      default: () => ([0, 0])
-    } as PropValidator<number[]>
+      default: () => ([0, 0]),
+    } as PropValidator<number[]>,
   },
 
   data () {
     return {
       activeThumb: null as null | number,
-      lazyValue: this.value
+      lazyValue: this.value,
     }
   },
 
   computed: {
-    classes () {
-      return Object.assign({}, {
-        'v-input--range-slider': true
-      }, VSlider.options.computed.classes.call(this))
+    classes (): object {
+      return {
+        ...VSlider.options.computed.classes.call(this),
+        'v-input--range-slider': true,
+      }
     },
     internalValue: {
-      get () {
+      get (): number[] {
         return this.lazyValue
       },
       set (val: number[]) {
@@ -61,14 +62,14 @@ export default VSlider.extend({
         if (!deepEqual(value, this.value)) this.$emit('input', value)
 
         this.validate()
-      }
+      },
     },
-    inputWidth () {
+    inputWidth (): number[] {
       return this.internalValue.map((v: number) => (
         this.roundValue(v) - this.minValue) / (this.maxValue - this.minValue) * 100
       )
     },
-    trackFillStyles () {
+    trackFillStyles (): Partial<CSSStyleDeclaration> {
       const styles = VSlider.options.computed.trackFillStyles.call(this)
       const fillPercent = Math.abs(this.inputWidth[0] - this.inputWidth[1])
       const dir = this.vertical ? 'height' : 'width'
@@ -78,7 +79,7 @@ export default VSlider.extend({
       styles[start] = `${this.inputWidth[0]}%`
 
       return styles
-    }
+    },
   },
 
   methods: {
@@ -92,7 +93,7 @@ export default VSlider.extend({
       return {
         transition: this.trackTransition,
         [startDir]: start,
-        [endDir]: end
+        [endDir]: end,
       }
     },
     getIndexOfClosestValue (arr: number[], v: number) {
@@ -118,31 +119,31 @@ export default VSlider.extend({
         const sections: [number, number, number, number][] = [
           [0, this.inputWidth[0], 0, -disabledPadding],
           [this.inputWidth[0], Math.abs(this.inputWidth[1] - this.inputWidth[0]), disabledPadding, disabledPadding * -2],
-          [this.inputWidth[1], Math.abs(100 - this.inputWidth[1]), disabledPadding, 0]
+          [this.inputWidth[1], Math.abs(100 - this.inputWidth[1]), disabledPadding, 0],
         ]
 
         if (this.$vuetify.rtl) sections.reverse()
 
         children.push(...sections.map(section => this.$createElement('div', this.setBackgroundColor(this.computedTrackColor, {
           staticClass: 'v-slider__track-background',
-          style: this.getTrackStyle(...section)
+          style: this.getTrackStyle(...section),
         }))))
       } else {
         children.push(
           this.$createElement('div', this.setBackgroundColor(this.computedTrackColor, {
             staticClass: 'v-slider__track-background',
-            style: this.getTrackStyle(0, 100)
+            style: this.getTrackStyle(0, 100),
           })),
           this.$createElement('div', this.setBackgroundColor(this.computedColor, {
             staticClass: 'v-slider__track-fill',
-            style: this.trackFillStyles
+            style: this.trackFillStyles,
           }))
         )
       }
 
       return this.$createElement('div', {
         staticClass: 'v-slider__track-container',
-        ref: 'track'
+        ref: 'track',
       }, children)
     },
     genChildren () {
@@ -160,42 +161,54 @@ export default VSlider.extend({
           const onFocus = (e: Event) => {
             this.isFocused = true
             this.activeThumb = index
+
+            this.$emit('focus', e)
+          }
+
+          const onBlur = (e: Event) => {
+            this.isFocused = false
+            this.activeThumb = null
+
+            this.$emit('blur', e)
           }
 
           const valueWidth = this.inputWidth[index]
           const isActive = this.isActive && this.activeThumb === index
           const isFocused = this.isFocused && this.activeThumb === index
 
-          return this.genThumbContainer(value, valueWidth, isActive, isFocused, onDrag, onFocus, `thumb_${index}`)
-        })
+          return this.genThumbContainer(value, valueWidth, isActive, isFocused, onDrag, onFocus, onBlur, `thumb_${index}`)
+        }),
       ]
-    },
-    onFocus (index: number) {
-      this.isFocused = true
-      this.activeThumb = index
-    },
-    onBlur () {
-      this.isFocused = false
-      this.activeThumb = null
     },
     onSliderClick (e: MouseEvent) {
       if (!this.isActive) {
-        // It doesn't seem to matter if we focus on the wrong thumb here
-        const thumb = this.$refs.thumb_1 as HTMLElement
-        thumb.focus()
+        if (this.noClick) {
+          this.noClick = false
+          return
+        }
 
-        this.onMouseMove(e, true)
+        const { value, isInsideTrack } = this.parseMouseMove(e)
+
+        if (isInsideTrack) {
+          this.activeThumb = this.getIndexOfClosestValue(this.internalValue, value)
+          const refName = `thumb_${this.activeThumb}`
+          const thumbRef = this.$refs[refName] as HTMLElement
+          thumbRef.focus()
+        }
+
+        this.setInternalValue(value)
+
         this.$emit('change', this.internalValue)
       }
     },
-    onMouseMove (e: MouseEvent, trackClick = false) {
+    onMouseMove (e: MouseEvent) {
       const { value, isInsideTrack } = this.parseMouseMove(e)
 
-      if (isInsideTrack) {
-        if (trackClick) this.activeThumb = this.getIndexOfClosestValue(this.internalValue, value)
-
-        this.setInternalValue(value)
+      if (isInsideTrack && this.activeThumb === null) {
+        this.activeThumb = this.getIndexOfClosestValue(this.internalValue, value)
       }
+
+      this.setInternalValue(value)
     },
     onKeyDown (e: KeyboardEvent) {
       if (this.activeThumb === null) return
@@ -205,13 +218,13 @@ export default VSlider.extend({
       if (value == null) return
 
       this.setInternalValue(value)
-      this.$emit('change', value)
+      this.$emit('change', this.internalValue)
     },
     setInternalValue (value: number) {
       this.internalValue = this.internalValue.map((v: number, i: number) => {
         if (i === this.activeThumb) return value
         else return Number(v)
       })
-    }
-  }
+    },
+  },
 })

@@ -3,6 +3,7 @@ import Colorable from '../colorable'
 
 // Utilities
 import mixins from '../../util/mixins'
+import { kebabCase } from '../../util/helpers'
 
 // Types
 import { VNodeChildren } from 'vue'
@@ -22,17 +23,17 @@ export default mixins(
       const active = (this as any)[prop] === value
       const click = (event: Event) => {
         event.stopPropagation()
-        this.$emit(`update:${prop}`, value)
+        this.$emit(`update:${kebabCase(prop)}`, value)
       }
 
       return this.$createElement('div', {
         staticClass: `v-picker__title__btn ${staticClass}`.trim(),
-        'class': {
+        class: {
           'v-picker__title__btn--active': active,
-          'v-picker__title__btn--readonly': readonly
+          'v-picker__title__btn--readonly': readonly,
         },
-        on: (active || readonly) ? undefined : { click }
+        on: (active || readonly) ? undefined : { click },
       }, Array.isArray(content) ? content : [content])
-    }
-  }
+    },
+  },
 })

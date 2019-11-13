@@ -14,13 +14,11 @@ import Colorable from '../../mixins/colorable'
 import { factory as GroupableFactory } from '../../mixins/groupable'
 import Themeable from '../../mixins/themeable'
 import { factory as ToggleableFactory } from '../../mixins/toggleable'
+import Routable from '../../mixins/routable'
 import Sizeable from '../../mixins/sizeable'
 
-// Directives
-import Ripple from '../../directives/ripple'
-
 // Utilities
-import { deprecate } from '../../util/console'
+import { breaking } from '../../util/console'
 
 // Types
 import { PropValidator } from 'vue/types/options'
@@ -28,81 +26,105 @@ import { PropValidator } from 'vue/types/options'
 /* @vue/component */
 export default mixins(
   Colorable,
-  GroupableFactory('chipGroup'),
   Sizeable,
+  Routable,
   Themeable,
+  GroupableFactory('chipGroup'),
   ToggleableFactory('inputValue')
 ).extend({
   name: 'v-chip',
 
-  directives: { Ripple },
-
   props: {
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    activeClass: {
+      type: String,
+      default (): string | undefined {
+        if (!this.chipGroup) return ''
+
+        return this.chipGroup.activeClass
+      },
+    } as any as PropValidator<string>,
     close: Boolean,
     closeIcon: {
       type: String,
-      default: '$vuetify.icons.delete'
+      default: '$delete',
     },
     disabled: Boolean,
     draggable: Boolean,
     filter: Boolean,
     filterIcon: {
       type: String,
-      default: '$vuetify.icons.complete'
+      default: '$complete',
     },
     label: Boolean,
     link: Boolean,
-    outline: Boolean,
     outlined: Boolean,
     pill: Boolean,
-    ripple: {
-      type: [Boolean, Object],
-      default: null
+    tag: {
+      type: String,
+      default: 'span',
     },
-    // Used for selects/tagging
-    selected: Boolean,
     textColor: String,
-    value: null as any as PropValidator<any>
+    value: null as any as PropValidator<any>,
   },
+
+  data: () => ({
+    proxyClass: 'v-chip--active',
+  }),
 
   computed: {
     classes (): object {
       return {
+        'v-chip': true,
+        ...Routable.options.computed.classes.call(this),
         'v-chip--clickable': this.isClickable,
         'v-chip--disabled': this.disabled,
         'v-chip--draggable': this.draggable,
         'v-chip--label': this.label,
+        'v-chip--link': this.isLink,
         'v-chip--no-color': !this.color,
-        'v-chip--outlined': this.hasOutline,
+        'v-chip--outlined': this.outlined,
         'v-chip--pill': this.pill,
         'v-chip--removable': this.hasClose,
-        'v-chip--selected': !this.disabled && this.isActive,
         ...this.themeClasses,
         ...this.sizeableClasses,
-        ...this.groupClasses
+        ...this.groupClasses,
       }
     },
     hasClose (): boolean {
-      return Boolean(
-        this.close ||
-        this.$listeners['click:close']
-      )
-    },
-    hasOutline (): boolean {
-      return this.outline || this.outlined
+      return Boolean(this.close)
     },
     isClickable (): boolean {
       return Boolean(
-        this.link ||
-        this.chipGroup ||
-        this.$listeners.click ||
-        this.$listeners['!click'] ||
-        this.$attrs.tabindex
+        Routable.options.computed.isClickable.call(this) ||
+        this.chipGroup
       )
-    }
+    },
+  },
+
+  created () {
+    const breakingProps = [
+      ['outline', 'outlined'],
+      ['selected', 'input-value'],
+      ['value', 'active'],
+      ['@input', '@active.sync'],
+    ]
+
+    /* istanbul ignore next */
+    breakingProps.forEach(([original, replacement]) => {
+      if (this.$attrs.hasOwnProperty(original)) breaking(original, replacement, this)
+    })
   },
 
   methods: {
+    click (e: MouseEvent): void {
+      this.$emit('click', e)
+
+      this.chipGroup && this.toggle()
+    },
     genFilter (): VNode {
       const children = []
 
@@ -110,7 +132,7 @@ export default mixins(
         children.push(
           this.$createElement(VIcon, {
             staticClass: 'v-chip__filter',
-            props: { left: true }
+            props: { left: true },
           }, this.filterIcon)
         )
       }
@@ -121,59 +143,46 @@ export default mixins(
       return this.$createElement(VIcon, {
         staticClass: 'v-chip__close',
         props: {
-          right: true
+          right: true,
         },
         on: {
           click: (e: Event) => {
             e.stopPropagation()
 
             this.$emit('click:close')
-          }
-        }
+            this.$emit('update:active', false)
+          },
+        },
       }, this.closeIcon)
     },
     genContent (): VNode {
       return this.$createElement('span', {
-        staticClass: 'v-chip__content'
+        staticClass: 'v-chip__content',
       }, [
         this.filter && this.genFilter(),
         this.$slots.default,
-        this.hasClose && this.genClose()
+        this.hasClose && this.genClose(),
       ])
-    }
-  },
-
-  created () {
-    if (this.outline) deprecate('outline', 'outlined', this)
-    if (this.selected) deprecate('selected', 'value', this)
+    },
   },
 
   render (h): VNode {
-    const data = this.setBackgroundColor(this.color, {
-      staticClass: 'v-chip',
-      class: this.classes,
-      attrs: {
-        ...this.$attrs,
-        draggable: this.draggable ? 'true' : undefined,
-        tabindex: this.disabled ? -1 : this.$attrs.tabindex || +this.isClickable - 1
-      },
-      directives: [{
-        name: 'ripple',
-        value: this.ripple != null ? this.ripple : !this.disabled
-      }],
-      on: this.$listeners
-    })
+    const children = [this.genContent()]
+    let { tag, data } = this.generateRouteLink()
 
-    const color = this.textColor || (this.hasOutline && this.color)
-
-    if (!this.disabled && this.chipGroup) {
-      this._g(data, { click: this.toggle })
+    data.attrs = {
+      ...data.attrs,
+      draggable: this.draggable ? 'true' : undefined,
+      tabindex: this.chipGroup && !this.disabled ? 0 : data.attrs!.tabindex,
     }
+    data.directives!.push({
+      name: 'show',
+      value: this.active,
+    })
+    data = this.setBackgroundColor(this.color, data)
 
-    return h(
-      'span',
-      this.setTextColor(color, data),
-      [this.genContent()]
-    )
-  }
+    const color = this.textColor || (this.outlined && this.color)
+
+    return h(tag, this.setTextColor(color, data), children)
+  },
 })

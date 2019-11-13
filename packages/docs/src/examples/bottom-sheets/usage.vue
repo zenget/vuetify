@@ -1,5 +1,5 @@
 <template>
-  <div class="text-xs-center">
+  <div class="text-center">
     <v-bottom-sheet v-model="sheet">
       <template v-slot:activator="{ on }">
         <v-btn
@@ -7,27 +7,18 @@
           dark
           v-on="on"
         >
-          Click me
+          Open Usage
         </v-btn>
       </template>
-      <v-list>
-        <v-subheader>Open in</v-subheader>
-        <v-list-item
-          v-for="tile in tiles"
-          :key="tile.title"
-          @click="sheet = false"
-        >
-          <v-list-item-avatar>
-            <v-avatar size="32px" tile>
-              <img
-                :src="`https://cdn.vuetifyjs.com/images/bottom-sheets/${tile.img}`"
-                :alt="tile.title"
-              >
-            </v-avatar>
-          </v-list-item-avatar>
-          <v-list-item-title>{{ tile.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
+      <v-sheet class="text-center" height="200px">
+        <v-btn
+          class="mt-6"
+          flat
+          color="red"
+          @click="sheet = !sheet"
+        >close</v-btn>
+        <div>The basic usage of v-bottom-sheet. Almost any content can be placed inside this component</div>
+      </v-sheet>
     </v-bottom-sheet>
   </div>
 </template>
@@ -36,13 +27,6 @@
   export default {
     data: () => ({
       sheet: false,
-      tiles: [
-        { img: 'keep.png', title: 'Keep' },
-        { img: 'inbox.png', title: 'Inbox' },
-        { img: 'hangouts.png', title: 'Hangouts' },
-        { img: 'messenger.png', title: 'Messenger' },
-        { img: 'google.png', title: 'Google+' }
-      ]
-    })
+    }),
   }
 </script>

@@ -1,10 +1,10 @@
 <template>
   <v-flex :id="id" align-self-center>
-    <h4 class="title grey--text mb-4 mt-5">
+    <h4 class="title grey--text mb-6 mt-12">
       <slot>Title</slot>
       <a
         :href="`#${id}`"
-        class="primary--text mb-3"
+        class="primary--text mb-4"
         style="text-decoration: none"
         @click.stop.prevent="$router.push(`#${id}`)"
       >
@@ -21,7 +21,7 @@
     computed: {
       id () {
         return this.$slots.default[0].text.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').replace('+', '-').replace(/\s:/g, '-').toLowerCase()
-      }
-    }
+      },
+    },
   }
 </script>

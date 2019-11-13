@@ -11,10 +11,10 @@ import VChip from '../VChip'
 import {
   createLocalVue,
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 
-describe('VBtn.ts', () => {
+describe('VChip.ts', () => {
   let mountFunction: (options?: object) => Wrapper<Vue>
   let router: Router
   let localVue: typeof Vue
@@ -26,9 +26,11 @@ describe('VBtn.ts', () => {
 
     mountFunction = (options = {}) => {
       return mount(VChip, {
+        // https://github.com/vuejs/vue-test-utils/issues/1130
+        sync: false,
         localVue,
         router,
-        ...options
+        ...options,
       })
     }
   })
@@ -42,7 +44,7 @@ describe('VBtn.ts', () => {
 
   it('should be removable', () => {
     const wrapper = mountFunction({
-      propsData: { close: true }
+      propsData: { close: true },
     })
 
     const close = wrapper.find('.v-chip__close')
@@ -60,26 +62,27 @@ describe('VBtn.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         color: 'blue',
-        textColor: 'green'
-      }
+        textColor: 'green',
+      },
     })
 
     expect(wrapper.element.classList).toContain('blue')
     expect(wrapper.element.classList).toContain('green--text')
   })
 
-  it('should render a disabled chip', () => {
+  it('should render a disabled chip', async () => {
     const wrapper = mountFunction({
       propsData: {
-        disabled: true
-      }
+        disabled: true,
+      },
     })
 
     expect(wrapper.element.classList).toContain('v-chip--disabled')
 
     wrapper.setProps({
-      close: true
+      close: true,
     })
+    await wrapper.vm.$nextTick()
     expect(wrapper.findAll('.v-chip__close')).toHaveLength(1)
   })
 
@@ -87,8 +90,8 @@ describe('VBtn.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         outlined: true,
-        color: 'blue'
-      }
+        color: 'blue',
+      },
     })
 
     expect(wrapper.element.classList).toContain('blue')
@@ -100,8 +103,8 @@ describe('VBtn.ts', () => {
       propsData: {
         outlined: true,
         color: 'blue',
-        textColor: 'green'
-      }
+        textColor: 'green',
+      },
     })
 
     expect(wrapper.element.classList).toContain('blue')
@@ -112,8 +115,8 @@ describe('VBtn.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         filter: true,
-        inputValue: true
-      }
+        inputValue: true,
+      },
     })
 
     expect(wrapper.findAll('.v-chip__filter')).toHaveLength(1)
@@ -125,12 +128,35 @@ describe('VBtn.ts', () => {
     const toggle = jest.fn()
     const wrapper = mountFunction({
       provide: {
-        chipGroup: { register, unregister }
+        chipGroup: { register, unregister },
       },
-      methods: { toggle }
+      methods: { toggle },
     })
 
     wrapper.trigger('click')
     expect(toggle).toHaveBeenCalled()
+  })
+
+  it('should conditionally show based on active prop', async () => {
+    const active = jest.fn()
+    const wrapper = mountFunction({
+      propsData: { close: true },
+    })
+    const close = wrapper.find('.v-chip__close')
+
+    wrapper.vm.$on('update:active', active)
+
+    expect(wrapper.isVisible()).toBe(true)
+
+    close.trigger('click')
+
+    expect(active).toHaveBeenCalledTimes(1)
+
+    // Simulate active.sync behavior
+    wrapper.setProps({ active: false })
+
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.isVisible()).toBe(false)
   })
 })

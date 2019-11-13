@@ -1,6 +1,5 @@
-
 // Utilities
-import { breaking } from '../../util/console'
+import { removed } from '../../util/console'
 
 // Types
 import Vue, { VNode } from 'vue'
@@ -21,34 +20,35 @@ export default Vue.extend<Vue & Toggleable>().extend({
   name: 'bootable',
 
   props: {
-    eager: Boolean
+    eager: Boolean,
   },
 
   data: () => ({
-    isBooted: false
+    isBooted: false,
   }),
 
   computed: {
     hasContent (): boolean | undefined {
       return this.isBooted || this.eager || this.isActive
-    }
+    },
   },
 
   watch: {
     isActive () {
       this.isBooted = true
-    }
+    },
   },
 
   created () {
+    /* istanbul ignore next */
     if ('lazy' in this.$attrs) {
-      breaking('lazy', 'eager', this)
+      removed('lazy', this)
     }
   },
 
   methods: {
     showLazyContent (content?: VNode[]): VNode[] | undefined {
       return this.hasContent ? content : undefined
-    }
-  }
+    },
+  },
 })

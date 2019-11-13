@@ -8,26 +8,29 @@ import VListItem from './VListItem'
 import VListItemIcon from './VListItemIcon'
 
 // Mixins
+import BindsAttrs from '../../mixins/binds-attrs'
 import Bootable from '../../mixins/bootable'
+import Colorable from '../../mixins/colorable'
 import Toggleable from '../../mixins/toggleable'
 import { inject as RegistrableInject } from '../../mixins/registrable'
 
 // Directives
-import Ripple from '../../directives/ripple'
+import ripple from '../../directives/ripple'
 
 // Transitions
 import { VExpandTransition } from '../transitions'
 
 // Utils
 import mixins, { ExtractVue } from '../../util/mixins'
-import { keyCodes } from '../../util/helpers'
 
 // Types
 import { VNode } from 'vue'
 import { Route } from 'vue-router'
 
 const baseMixins = mixins(
+  BindsAttrs,
   Bootable,
+  Colorable,
   RegistrableInject('list'),
   Toggleable
 )
@@ -45,16 +48,20 @@ interface options extends ExtractVue<typeof baseMixins> {
 export default baseMixins.extend<options>().extend({
   name: 'v-list-group',
 
-  directives: { Ripple },
+  directives: { ripple },
 
   props: {
     activeClass: {
       type: String,
-      default: 'primary--text'
+      default: '',
     },
     appendIcon: {
       type: String,
-      default: '$vuetify.icons.expand'
+      default: '$expand',
+    },
+    color: {
+      type: String,
+      default: 'primary',
     },
     disabled: Boolean,
     group: String,
@@ -62,9 +69,9 @@ export default baseMixins.extend<options>().extend({
     prependIcon: String,
     ripple: {
       type: [Boolean, Object],
-      default: true
+      default: true,
     },
-    subGroup: Boolean
+    subGroup: Boolean,
   },
 
   computed: {
@@ -73,9 +80,9 @@ export default baseMixins.extend<options>().extend({
         'v-list-group--active': this.isActive,
         'v-list-group--disabled': this.disabled,
         'v-list-group--no-action': this.noAction,
-        'v-list-group--sub-group': this.subGroup
+        'v-list-group--sub-group': this.subGroup,
       }
-    }
+    },
   },
 
   watch: {
@@ -85,7 +92,7 @@ export default baseMixins.extend<options>().extend({
         this.list && this.list.listClick(this._uid)
       }
     },
-    $route: 'onRouteChange'
+    $route: 'onRouteChange',
   },
 
   created () {
@@ -104,11 +111,12 @@ export default baseMixins.extend<options>().extend({
   },
 
   methods: {
-    click () {
+    click (e: Event) {
       if (this.disabled) return
 
       this.isBooted = true
 
+      this.$emit('click', e)
       this.$nextTick(() => (this.isActive = !this.isActive))
     },
     genIcon (icon: string | false): VNode {
@@ -120,33 +128,36 @@ export default baseMixins.extend<options>().extend({
       if (!icon && !this.$slots.appendIcon) return null
 
       return this.$createElement(VListItemIcon, {
-        staticClass: 'v-list-group__header__append-icon'
+        staticClass: 'v-list-group__header__append-icon',
       }, [
-        this.$slots.appendIcon || this.genIcon(icon)
+        this.$slots.appendIcon || this.genIcon(icon),
       ])
     },
     genHeader (): VNode {
       return this.$createElement(VListItem, {
         staticClass: 'v-list-group__header',
+        attrs: {
+          'aria-expanded': String(this.isActive),
+          role: 'button',
+        },
         class: {
-          [this.activeClass]: this.isActive
+          [this.activeClass]: this.isActive,
+        },
+        props: {
+          inputValue: this.isActive,
         },
         directives: [{
           name: 'ripple',
-          value: this.ripple
+          value: this.ripple,
         }],
         on: {
-          ...this.$listeners,
+          ...this.listeners$,
           click: this.click,
-          keydown: (e: KeyboardEvent) => {
-            /* istanbul ignore else */
-            if (e.keyCode === keyCodes.enter) this.click()
-          }
-        }
+        },
       }, [
         this.genPrependIcon(),
         this.$slots.activator,
-        this.genAppendIcon()
+        this.genAppendIcon(),
       ])
     },
     genItems (): VNode {
@@ -154,25 +165,25 @@ export default baseMixins.extend<options>().extend({
         staticClass: 'v-list-group__items',
         directives: [{
           name: 'show',
-          value: this.isActive
-        }]
+          value: this.isActive,
+        }],
       }, this.showLazyContent([
-        this.$createElement('div', this.$slots.default)
+        this.$createElement('div', this.$slots.default),
       ]))
     },
     genPrependIcon (): VNode | null {
       const icon = this.prependIcon
         ? this.prependIcon
         : this.subGroup
-          ? '$vuetify.icons.subgroup'
+          ? '$subgroup'
           : false
 
       if (!icon && !this.$slots.prependIcon) return null
 
       return this.$createElement(VListItemIcon, {
-        staticClass: 'v-list-group__header__prepend-icon'
+        staticClass: 'v-list-group__header__prepend-icon',
       }, [
-        this.$slots.prependIcon || this.genIcon(icon)
+        this.$slots.prependIcon || this.genIcon(icon),
       ])
     },
     onRouteChange (to: Route) {
@@ -196,16 +207,16 @@ export default baseMixins.extend<options>().extend({
     },
     matchRoute (to: string) {
       return to.match(this.group) !== null
-    }
+    },
   },
 
   render (h): VNode {
-    return h('div', {
+    return h('div', this.setTextColor(this.isActive && this.color, {
       staticClass: 'v-list-group',
-      class: this.classes
-    }, [
+      class: this.classes,
+    }), [
       this.genHeader(),
-      h(VExpandTransition, [this.genItems()])
+      h(VExpandTransition, [this.genItems()]),
     ])
-  }
+  },
 })

@@ -40,7 +40,6 @@
     divider: 'mdi-view-headline',
     expansionPanel: 'mdi-view-day',
     forms: 'mdi-format-list-bulleted-type',
-    gridList: 'mdi-view-dashboard',
     icon: 'mdi-material-design',
     input: 'mdi-format-title',
     list: 'mdi-format-list-numbered',
@@ -59,21 +58,21 @@
     tabs: 'mdi-table-row',
     toolbar: 'mdi-format-float-left',
     tooltip: 'mdi-information',
-    tree: 'mdi-file-tree'
+    tree: 'mdi-file-tree',
   }
 
   export default {
     props: {
       value: {
         type: Object,
-        default: () => ({})
-      }
+        default: () => ({}),
+      },
     },
 
     computed: {
       icon () {
         return ICON_MAP[camelCase(this.value.title)]
-      }
-    }
+      },
+    },
   }
 </script>

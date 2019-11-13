@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-xs-center py-4">
+    <div class="text-center py-6">
       <v-chip
         :close-icon="close === 'custom' ? 'mdi-close-outline' : undefined"
         :close="!!close"
@@ -13,7 +13,7 @@
         :input-value="value"
       >
         <v-avatar
-          v-if="avatar !== ''"
+          v-if="avatar != ''"
           :color="avatar === 'letter' ? 'secondary' : ''"
           left
         >
@@ -100,7 +100,7 @@
         <v-select
           v-model="variant"
           :items="['outlined', 'label', 'pill', 'filter', 'link']"
-          box
+          filled
           chips
           deletable-chips
           label="Variants"
@@ -125,7 +125,7 @@
       color: '',
       icon: '',
       value: false,
-      variant: []
+      variant: [],
     }),
 
     watch: {
@@ -133,7 +133,7 @@
         if (val.includes('filter')) {
           this.value = true
         }
-      }
-    }
+      },
+    },
   }
 </script>

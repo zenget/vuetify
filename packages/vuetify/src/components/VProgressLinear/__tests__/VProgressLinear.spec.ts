@@ -4,7 +4,7 @@ import VProgressLinear from '../VProgressLinear'
 // Utilities
 import {
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 import { compileToFunctions } from 'vue-template-compiler'
 
@@ -15,7 +15,12 @@ describe('VProgressLinear.ts', () => {
   beforeEach(() => {
     mountFunction = (options = {}) => {
       return mount(VProgressLinear, {
-        ...options
+        mocks: {
+          $vuetify: {
+            rtl: false,
+          },
+        },
+        ...options,
       })
     }
   })
@@ -23,8 +28,8 @@ describe('VProgressLinear.ts', () => {
   it('should render component and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        value: 33
-      }
+        value: 33,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -66,8 +71,23 @@ describe('VProgressLinear.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        active: false
-      }
+        active: false,
+      },
+    })
+
+    expect(wrapper.html()).toMatchSnapshot()
+  })
+
+  it('should render component in RTL mode', () => {
+    const wrapper = mountFunction({
+      propsData: {
+        value: 33,
+      },
+      mocks: {
+        $vuetify: {
+          rtl: true,
+        },
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -77,8 +97,8 @@ describe('VProgressLinear.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        color: 'orange'
-      }
+        color: 'orange',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -88,8 +108,8 @@ describe('VProgressLinear.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        color: '#336699'
-      }
+        color: '#336699',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -100,8 +120,8 @@ describe('VProgressLinear.ts', () => {
       propsData: {
         value: 33,
         color: 'orange',
-        backgroundOpacity: 0.5
-      }
+        backgroundOpacity: 0.5,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -112,8 +132,8 @@ describe('VProgressLinear.ts', () => {
       propsData: {
         value: 33,
         color: 'orange',
-        backgroundColor: 'blue'
-      }
+        backgroundColor: 'blue',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -125,8 +145,8 @@ describe('VProgressLinear.ts', () => {
         value: 33,
         color: 'orange',
         backgroundColor: 'blue',
-        backgroundOpacity: 0.5
-      }
+        backgroundOpacity: 0.5,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -135,8 +155,8 @@ describe('VProgressLinear.ts', () => {
   it('should render indeterminate progress and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        indeterminate: true
-      }
+        indeterminate: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -145,8 +165,8 @@ describe('VProgressLinear.ts', () => {
   it('should render indeterminate progress with query prop and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        indeterminate: true
-      }
+        indeterminate: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -156,14 +176,14 @@ describe('VProgressLinear.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 33,
-        bufferValue: 80
-      }
+        bufferValue: 80,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({
-      bufferValue: 0
+      bufferValue: 0,
     })
     await wrapper.vm.$nextTick()
     expect(wrapper.html()).toMatchSnapshot()
@@ -173,8 +193,8 @@ describe('VProgressLinear.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 90,
-        bufferValue: 80
-      }
+        bufferValue: 80,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -184,14 +204,48 @@ describe('VProgressLinear.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         value: 90,
-        bufferValue: 80
+        bufferValue: 80,
       },
       slots: {
-        default: [compileToFunctions('<div class="foobar">content</div>')]
-      }
+        default: [compileToFunctions('<div class="foobar">content</div>')],
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
     expect(wrapper.findAll('.foobar')).toHaveLength(1)
+  })
+
+  it('should respond to click events', () => {
+    const change = jest.fn()
+    const wrapper = mountFunction({
+      attachToDocument: true,
+      propsData: {
+        value: 0,
+      },
+      listeners: { change },
+    })
+
+    const rect = wrapper.vm.$el.getBoundingClientRect()
+
+    wrapper.vm.$el.getBoundingClientRect = () => ({
+      ...rect,
+      width: 1000,
+    })
+
+    expect(wrapper.vm.internalLazyValue).toBe(0)
+
+    wrapper.trigger('click', { offsetX: 200 })
+
+    expect(wrapper.vm.internalLazyValue).toBe(20)
+  })
+
+  it('should render a stream component', () => {
+    const wrapper = mountFunction({
+      propsData: {
+        stream: true,
+      },
+    })
+
+    expect(wrapper.find('.v-progress-linear__stream')).toBeTruthy()
   })
 })

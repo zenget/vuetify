@@ -1,5 +1,5 @@
 <template>
-  <div class="text-xs-center">
+  <div class="text-center">
     <v-btn
       color="error"
       @click="overlay = !overlay"
@@ -21,7 +21,7 @@
 <script>
   export default {
     data: () => ({
-      overlay: false
-    })
+      overlay: false,
+    }),
   }
 </script>

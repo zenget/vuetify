@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VBtnToggle",
   "mdSpec": {
     "version": "2",
     "link": "https://material.io/design/components/buttons.html#toggle-button"
@@ -20,7 +21,10 @@
       "children": [
         {
           "type": "api",
-          "value": ["v-btn-toggle"]
+          "value": [
+            "v-btn-toggle",
+            "v-btn"
+          ]
         }
       ]
     },
@@ -30,9 +34,11 @@
         {
           "type": "examples",
           "value": [
-            "appBar",
-            "qwerty",
-            "togglePictures"
+            "simple/rounded",
+            "simple/mandatory",
+            "simple/multiple",
+            "intermediate/app-bar",
+            "intermediate/qwerty"
           ]
         }
       ]

@@ -13,7 +13,7 @@ import { factory as ToggleableFactory } from '../../mixins/toggleable'
 
 // Utilities
 import mixins from '../../util/mixins'
-import { deprecate } from '../../util/console'
+import { breaking } from '../../util/console'
 
 // Types
 import { VNode } from 'vue'
@@ -21,7 +21,7 @@ import { VNode } from 'vue'
 export default mixins(
   Applicationable('bottom', [
     'height',
-    'inputValue'
+    'inputValue',
   ]),
   Colorable,
   Measurable,
@@ -34,29 +34,29 @@ export default mixins(
   name: 'v-bottom-navigation',
 
   props: {
-    active: [Number, String],
     activeClass: {
       type: String,
-      default: 'v-btn--active'
+      default: 'v-btn--active',
     },
+    backgroundColor: String,
     grow: Boolean,
-    hideOnScroll: Boolean,
-    horizontal: Boolean,
-    mandatory: Boolean,
     height: {
       type: [Number, String],
-      default: 56
+      default: 56,
     },
-    shift: Boolean,
+    hideOnScroll: Boolean,
+    horizontal: Boolean,
     inputValue: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
+    mandatory: Boolean,
+    shift: Boolean,
   },
 
   data () {
     return {
-      isActive: this.inputValue
+      isActive: this.inputValue,
     }
   },
 
@@ -76,28 +76,28 @@ export default mixins(
         'v-bottom-navigation--grow': this.grow,
         'v-bottom-navigation--fixed': !this.absolute && (this.app || this.fixed),
         'v-bottom-navigation--horizontal': this.horizontal,
-        'v-bottom-navigation--shift': this.shift
+        'v-bottom-navigation--shift': this.shift,
       }
     },
     styles (): object {
       return {
         ...this.measurableStyles,
-        transform: this.isActive ? 'none' : 'translateY(100%)'
+        transform: this.isActive ? 'none' : 'translateY(100%)',
       }
-    }
+    },
   },
 
   created () {
     /* istanbul ignore next */
-    if (this.active != null) {
-      deprecate('active.sync', 'value or v-model')
+    if (this.$attrs.hasOwnProperty('active')) {
+      breaking('active.sync', 'value or v-model', this)
     }
   },
 
   methods: {
     thresholdMet () {
       this.isActive = !this.isScrollingUp
-      this.$emit('update:inputValue', this.isActive)
+      this.$emit('update:input-value', this.isActive)
     },
     updateApplication (): number {
       return this.$el
@@ -105,12 +105,12 @@ export default mixins(
         : 0
     },
     updateValue (val: any) {
-      this.$emit('update:active', val)
-    }
+      this.$emit('change', val)
+    },
   },
 
   render (h): VNode {
-    const data = this.setBackgroundColor(this.color, {
+    const data = this.setBackgroundColor(this.backgroundColor, {
       staticClass: 'v-bottom-navigation',
       class: this.classes,
       style: this.styles,
@@ -118,12 +118,11 @@ export default mixins(
         activeClass: this.activeClass,
         mandatory: Boolean(
           this.mandatory ||
-          this.value !== undefined ||
-          this.active !== undefined
+          this.value !== undefined
         ),
-        value: this.internalValue || this.active
+        value: this.internalValue,
       },
-      on: { change: this.updateValue }
+      on: { change: this.updateValue },
     })
 
     if (this.canScroll) {
@@ -132,10 +131,10 @@ export default mixins(
       data.directives.push({
         arg: this.scrollTarget,
         name: 'scroll',
-        value: this.onScroll
+        value: this.onScroll,
       })
     }
 
-    return h(ButtonGroup, data, this.$slots.default)
-  }
+    return h(ButtonGroup, this.setTextColor(this.color, data), this.$slots.default)
+  },
 })

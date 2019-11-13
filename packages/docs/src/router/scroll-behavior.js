@@ -15,13 +15,19 @@ export default async function (to, from, savedPosition) {
 
   return new Promise(resolve => {
     setTimeout(() => {
-      try {
-        goTo(scrollTo, options)
-      } catch (err) {
-        console.log(err)
+      if (typeof window === 'undefined') {
+        return resolve()
       }
 
-      resolve()
-    }, 100)
+      window.requestAnimationFrame(() => {
+        try {
+          goTo(scrollTo, options)
+        } catch (err) {
+          console.log(err)
+        }
+
+        resolve()
+      })
+    }, 200)
   })
 }

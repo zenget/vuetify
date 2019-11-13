@@ -1,6 +1,7 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VDataIterator",
   "children": [
     {
       "type": "section",
@@ -30,7 +31,8 @@
           "type": "examples",
           "value": [
             "slots",
-            "expand"
+            "expand",
+            "filter"
           ]
         }
       ]
@@ -42,7 +44,7 @@
           "type": "up-next",
           "value": [
             "components/data-tables",
-            "components/footer",
+            "components/simple-tables",
             "components/toolbars"
           ]
         }

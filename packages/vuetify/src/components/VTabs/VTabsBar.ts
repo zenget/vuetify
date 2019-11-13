@@ -27,7 +27,7 @@ export default mixins(
 
   provide () {
     return {
-      tabsBar: this
+      tabsBar: this,
     }
   },
 
@@ -36,15 +36,18 @@ export default mixins(
       return {
         ...BaseSlideGroup.options.computed.classes.call(this),
         'v-tabs-bar': true,
-        ...this.themeClasses
+        'v-tabs-bar--is-mobile': this.isMobile,
+        // TODO: Remove this and move to v-slide-group
+        'v-tabs-bar--show-arrows': this.showArrows,
+        ...this.themeClasses,
       }
-    }
+    },
   },
 
   watch: {
     items: 'callSlider',
     internalValue: 'callSlider',
-    $route: 'onRouteChange'
+    $route: 'onRouteChange',
   },
 
   methods: {
@@ -83,16 +86,16 @@ export default mixins(
       // it's assumed that the user navigated to
       // a path that is not present in the items
       if (!hasNew && hasOld) this.internalValue = undefined
-    }
+    },
   },
 
   render (h): VNode {
     const render = BaseSlideGroup.options.render.call(this, h)
 
     render.data!.attrs = {
-      role: 'tablist'
+      role: 'tablist',
     }
 
     return render
-  }
+  },
 })

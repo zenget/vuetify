@@ -4,14 +4,14 @@ import VDialog from '../VDialog'
 // Utilities
 import {
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 
+// eslint-disable-next-line max-statements
 describe('VDialog.ts', () => {
   type Instance = InstanceType<typeof VDialog>
   let mountFunction: (options?: object) => Wrapper<Instance>
   let el
-  (global as any).requestAnimationFrame = cb => cb()
 
   beforeEach(() => {
     el = document.createElement('div')
@@ -22,10 +22,10 @@ describe('VDialog.ts', () => {
         mocks: {
           $vuetify: {
             theme: {},
-            breakpoint: {}
-          }
+            breakpoint: {},
+          },
         },
-        ...options
+        ...options,
       })
     }
   })
@@ -43,8 +43,8 @@ describe('VDialog.ts', () => {
   it('should render a disabled component and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        disabled: true
-      }
+        disabled: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -53,8 +53,8 @@ describe('VDialog.ts', () => {
   it('should render a persistent component and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        persistent: true
-      }
+        persistent: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -63,8 +63,8 @@ describe('VDialog.ts', () => {
   it('should render a fullscreen component and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        fullscreen: true
-      }
+        fullscreen: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -73,8 +73,8 @@ describe('VDialog.ts', () => {
   it('should render a eager component and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        eager: true
-      }
+        eager: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -83,8 +83,8 @@ describe('VDialog.ts', () => {
   it('should render a scrollable component and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        scrollable: true
-      }
+        scrollable: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -93,8 +93,8 @@ describe('VDialog.ts', () => {
   it('should render component with custom origin and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        origin: 'top right'
-      }
+        origin: 'top right',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -103,8 +103,8 @@ describe('VDialog.ts', () => {
   it('should render component with custom width (max-width) and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        maxWidth: 100
-      }
+        maxWidth: 100,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -113,8 +113,8 @@ describe('VDialog.ts', () => {
   it('should render component with custom width and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        width: '50%'
-      }
+        width: '50%',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -123,8 +123,8 @@ describe('VDialog.ts', () => {
   it('should render component with custom transition and match snapshot', () => {
     const wrapper = mountFunction({
       propsData: {
-        transition: 'fade-transition'
-      }
+        transition: 'fade-transition',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -133,15 +133,20 @@ describe('VDialog.ts', () => {
   it('should open dialog on activator click', async () => {
     const input = jest.fn()
     const wrapper = mountFunction({
-      slots: {
-        activator: ['<span>activator</span>']
-      }
+      scopedSlots: {
+        activator ({ on }) {
+          return this.$createElement('div', {
+            staticClass: 'activator',
+            on,
+          })
+        },
+      },
     })
 
     wrapper.vm.$on('input', input)
 
     expect(wrapper.vm.isActive).toBe(false)
-    wrapper.find('.v-dialog__activator').trigger('click')
+    wrapper.find('div.activator').trigger('click')
     expect(wrapper.vm.isActive).toBe(true)
     await wrapper.vm.$nextTick()
     expect(input).toHaveBeenCalledWith(true)
@@ -151,17 +156,22 @@ describe('VDialog.ts', () => {
     const input = jest.fn()
     const wrapper = mountFunction({
       propsData: {
-        disabled: true
+        disabled: true,
       },
-      slots: {
-        activator: ['<span>activator</span>']
-      }
+      scopedSlots: {
+        activator ({ on }) {
+          return this.$createElement('div', {
+            staticClass: 'activator',
+            on,
+          })
+        },
+      },
     })
 
     wrapper.vm.$on('input', input)
 
     expect(wrapper.vm.isActive).toBe(false)
-    wrapper.find('.v-dialog__activator').trigger('click')
+    wrapper.find('div.activator').trigger('click')
     expect(wrapper.vm.isActive).toBe(false)
     await wrapper.vm.$nextTick()
     expect(input).not.toHaveBeenCalled()
@@ -170,23 +180,23 @@ describe('VDialog.ts', () => {
   it('not change state on v-model update', async () => {
     const wrapper = mountFunction({
       propsData: {
-        value: false
+        value: false,
       },
-      slots: {
-        activator: ['<span>activator</span>']
-      }
+      scopedSlots: {
+        activator: '<span>activator</span>',
+      },
     })
 
     expect(wrapper.vm.isActive).toBe(false)
 
     wrapper.setProps({
-      value: true
+      value: true,
     })
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.isActive).toBe(true)
 
     wrapper.setProps({
-      value: false
+      value: false,
     })
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.isActive).toBe(false)
@@ -195,7 +205,7 @@ describe('VDialog.ts', () => {
   it('should emit keydown event', async () => {
     const keydown = jest.fn()
     const wrapper = mountFunction({
-      propsData: { value: true }
+      propsData: { value: true },
     })
     wrapper.vm.$on('keydown', keydown)
 
@@ -221,46 +231,25 @@ describe('VDialog.ts', () => {
     expect(document.documentElement.className).toContain('overflow-y-hidden')
   })
 
-  it('should not attach event handlers to the activator container if disabled', async () => {
+  it('should not respond to events if disabled', async () => {
     const wrapper = mountFunction({
       propsData: {
-        disabled: true
+        disabled: true,
       },
-      slots: {
-        activator: ['<button></button>']
-      }
+      scopedSlots: {
+        activator ({ on }) {
+          return this.$createElement('div', {
+            staticClass: 'activator',
+            on,
+          })
+        },
+      },
     })
 
-    const activator = wrapper.find('.v-dialog__activator')
+    const activator = wrapper.find('div.activator')
     activator.trigger('click')
 
     expect(wrapper.vm.isActive).toBe(false)
-  })
-
-  // https://github.com/vuetifyjs/vuetify/issues/6115
-  it('should have activator', () => {
-    const wrapper = mountFunction()
-    expect(wrapper.vm.hasActivator).toBe(false)
-    expect(wrapper.element.style.display).toBe('block')
-
-    const wrapper2 = mountFunction({
-      slots: {
-        activator: ['<div></div>']
-      }
-    })
-    expect(wrapper2.element.style.display).toBe('inline-block')
-    expect(wrapper2.vm.hasActivator).toBe(true)
-
-    const wrapper3 = mountFunction({
-      scopedSlots: {
-        activator () {
-          return this.$createElement('span')
-        }
-      }
-    })
-    const dialog = wrapper3.find(VDialog)
-    expect(wrapper2.element.style.display).toBe('inline-block')
-    expect(dialog.vm.hasActivator).toBe(true)
   })
 
   // https://github.com/vuetifyjs/vuetify/issues/5533
@@ -268,16 +257,21 @@ describe('VDialog.ts', () => {
     const input = jest.fn()
     const clickOutside = jest.fn()
     const wrapper = mountFunction({
-      slots: {
-        activator: ['<span>activator</span>']
-      }
+      scopedSlots: {
+        activator ({ on }) {
+          return this.$createElement('div', {
+            staticClass: 'activator',
+            on,
+          })
+        },
+      },
     })
 
     wrapper.vm.$on('input', input)
     wrapper.vm.$on('click:outside', clickOutside)
 
     expect(wrapper.vm.isActive).toBe(false)
-    wrapper.find('.v-dialog__activator').trigger('click')
+    wrapper.find('div.activator').trigger('click')
     expect(wrapper.vm.isActive).toBe(true)
     await wrapper.vm.$nextTick()
     expect(input).toHaveBeenCalledWith(true)
@@ -288,9 +282,66 @@ describe('VDialog.ts', () => {
   // Ensure dialog opens up when provided a default value
   it('should set model active before mounted', () => {
     const wrapper = mountFunction({
-      propsData: { value: true }
+      propsData: { value: true },
     })
 
+    expect(wrapper.vm.isActive).toBe(true)
+  })
+
+  it('should close dialog on escape keydown', () => {
+    const wrapper = mountFunction({
+      propsData: { value: true },
+    })
+
+    expect(wrapper.vm.isActive).toBe(true)
+    const content = wrapper.find('.v-dialog__content')
+    content.trigger('keydown.esc')
+    expect(wrapper.vm.isActive).toBe(false)
+  })
+
+  it('should only set tabindex if active', () => {
+    const wrapper = mountFunction()
+
+    const content = wrapper.find('.v-dialog__content')
+
+    expect(content.html()).toMatchSnapshot()
+    expect(content.element.tabIndex).toBe(-1)
+
+    wrapper.setData({ isActive: true })
+
+    expect(content.element.tabIndex).toBe(0)
+    expect(content.html()).toMatchSnapshot()
+  })
+
+  // https://github.com/vuetifyjs/vuetify/issues/8697
+  it('should not close if persistent and hide-overly when click outside', async () => {
+    const input = jest.fn()
+    const clickOutside = jest.fn()
+    const wrapper = mountFunction({
+      propsData: {
+        persistent: true,
+        hideOverlay: true,
+      },
+      scopedSlots: {
+        activator ({ on }) {
+          return this.$createElement('div', {
+            staticClass: 'activator',
+            on,
+          })
+        },
+      },
+    })
+
+    wrapper.vm.$on('input', input)
+    wrapper.vm.$on('click:outside', clickOutside)
+
+    expect(wrapper.vm.isActive).toBe(false)
+    wrapper.find('div.activator').trigger('click')
+    expect(wrapper.vm.isActive).toBe(true)
+    await wrapper.vm.$nextTick()
+    expect(input).toHaveBeenCalledWith(true)
+    wrapper.vm.closeConditional(new Event('click'))
+    expect(clickOutside).toHaveBeenCalled()
     expect(wrapper.vm.isActive).toBe(true)
   })
 })

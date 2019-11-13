@@ -1,9 +1,12 @@
-@import '../../styles/styles.sass'
 @import './_variables.scss'
 
 // Theme
 +theme(v-list-item) using ($material)
-  color: map-deep-get($material, 'text', 'primary')
+  &--disabled
+    color: map-deep-get($material, 'text', 'disabled')
+
+  &:not(.v-list-item--active):not(.v-list-item--disabled)
+    color: map-deep-get($material, 'text', 'primary') !important
 
   .v-list-item__mask
     color: map-deep-get($material, 'text', 'disabled')
@@ -13,11 +16,18 @@
   .v-list-item__action-text
     color: map-deep-get($material, 'text', 'secondary')
 
+  +states($material)
+
+  &.v-list-item--highlighted
+    &::before
+      opacity: map-deep-get($material, 'states', 'pressed')
+
 // Block
 .v-list-item
   align-items: center
   display: flex
   flex: 1 1 100%
+  letter-spacing: normal
   min-height: $list-item-min-height
   outline: none
   padding: 0 16px
@@ -25,16 +35,11 @@
   text-decoration: none
   user-select: none
 
-  &:before
-    background-color: currentColor
-    bottom: 0
-    content: ''
-    left: 0
-    opacity: 0
-    position: absolute
-    right: 0
-    top: 0
-    transition: $primary-transition
+  &--disabled
+    pointer-events: none
+
+  &--selectable
+    user-select: auto
 
 // Element
 .v-list-item__action
@@ -71,10 +76,16 @@
     margin-top: 8px
 
     &:first-child
-      margin-left: $list-item-avatar-horizontal-margin-x
+      +ltr()
+        margin-left: $list-item-avatar-horizontal-margin-x
+      +rtl()
+        margin-right: $list-item-avatar-horizontal-margin-x
 
     &:last-child
-      margin-left: $list-item-avatar-horizontal-margin-x
+      +ltr()
+        margin-left: $list-item-avatar-horizontal-margin-x
+      +rtl()
+        margin-right: $list-item-avatar-horizontal-margin-x
 
 .v-list-item__content
   align-items: center
@@ -83,7 +94,7 @@
   flex-wrap: wrap
   flex: 1 1
   overflow: hidden
-  padding: 16px 0
+  padding: 12px 0
 
   > *
     line-height: 1.1
@@ -96,20 +107,30 @@
   align-self: flex-start
   margin: 16px 0
 
+// https://github.com/vuetifyjs/vuetify/issues/7930
+.v-list-item__action,
+.v-list-item__avatar,
+.v-list-item__icon
+  &:last-of-type:not(:only-child)
+    +ltr()
+      margin-left: 16px
+    +rtl()
+      margin-right: 16px
+
 .v-list-item__avatar
   &:first-child
-    margin-right: 16px
-
-  &:last-child:not(:only-child)
-    margin-left: 16px
+    +ltr()
+      margin-right: 24px
+    +rtl()
+      margin-left: 24px
 
 .v-list-item__action,
 .v-list-item__icon
   &:first-child
-    margin-right: 32px
-
-  &:last-of-type:not(:only-child)
-    margin-left: 16px
+    +ltr()
+      margin-right: 32px
+    +rtl()
+      margin-left: 32px
 
 .v-list-item__action,
 .v-list-item__avatar,
@@ -136,16 +157,19 @@
   align-self: center
   font-size: $list-item-title-font-size
 
+  > .v-badge
+    margin-top: 16px
+
 .v-list-item__subtitle
   font-size: $list-item-subtitle-font-size
 
 // Modifier
 .v-list-item--dense,
 .v-list--dense .v-list-item
-  padding: 0 8px
   min-height: 40px
 
   .v-list-item__icon
+    height: 24px
     margin-top: 8px
     margin-bottom: 8px
 
@@ -167,25 +191,24 @@
 .v-list-item--link
   cursor: pointer
 
-.v-list-item--link,
-.v-list-group__header
-  &:hover:before
-    opacity: 0.04
+  &:before
+    background-color: currentColor
+    bottom: 0
+    content: ''
+    left: 0
+    opacity: 0
+    pointer-events: none
+    position: absolute
+    right: 0
+    top: 0
+    transition: $primary-transition
 
-  &:focus:before
-    opacity: 0.12
+// https://github.com/vuetifyjs/vuetify/issues/8327
+.v-list .v-list-item--active
+  color: inherit
 
-.v-list-item--active
   .v-icon
     color: inherit
-
-  &:before
-    opacity: 0.12
-
-  &:hover,
-  &:focus
-    &:before
-      opacity: 0.2
 
 .v-list-item__action--stack
   align-items: flex-end

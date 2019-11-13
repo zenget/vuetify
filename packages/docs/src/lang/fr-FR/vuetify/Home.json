@@ -1,0 +1,24 @@
+{
+  "becomeSponsor": "Supporter Vuetify",
+  "features": {
+    "community": {
+      "text": "Lorsque vous rencontrez un problème sur la route, vous avez besoin d'aide immédiatement. Vuetify offre du support via notre immense communauté sur Discord.",
+      "title": "Communauté vibrante"
+    },
+    "components": {
+      "text": "Soyez prêt pour une armada de composants spécialisés à votre disposition. Avec plus de 80 au total, il existe une solution à n'importe quelle situation.",
+      "title": "Composants sémantiques Material"
+    },
+    "scaffolding": {
+      "text": "Vuetify supporte le futur de Vue via son plugin sur Vue CLI 3. Avec une seule commande, vous êtes prêt à développer votre prochaine bonne idée.",
+      "title": "Des projets prêts à l'emploi"
+    }
+  },
+  "getHelp": "Obtenir de l'aide",
+  "getStarted": "Commencer",
+  "github": "Github",
+  "materialDesign": "Material Design",
+  "mit": "Licence MIT",
+  "seeMoreThemes": "Voir plus de thèmes",
+  "whyVuetifyText2": "Pourquoi Vuetify ?"
+}

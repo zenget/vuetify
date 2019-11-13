@@ -1,5 +1,4 @@
 // Imports
-@import '../../styles/styles.sass'
 @import './_variables.scss'
 
 // Theme
@@ -14,9 +13,13 @@
     color: map-deep-get($material-dark, 'text', 'primary')
 
 +theme(v-chip) using ($material)
-  background: map-get($material, 'chips')
   border-color: map-get($material, 'dividers')
   color: map-deep-get($material, 'text', 'primary')
+
+  &:not(.v-chip--active)
+    background: map-get($material, 'chips')
+
+  +states($material)
 
 // Block
 .v-chip
@@ -24,15 +27,19 @@
   cursor: default
   display: inline-flex
   line-height: 20px
+  max-width: 100%
   outline: none
+  overflow: hidden
   padding: 0 12px
   position: relative
+  text-decoration: none
   transition-duration: $chip-transition-duration
-  transition-property: box-shadow, opacity, background
+  transition-property: box-shadow, opacity
   transition-timing-function: $chip-transition-fn
   vertical-align: middle
+  white-space: nowrap
 
-  &:after
+  &:before
     background-color: currentColor
     bottom: 0
     border-radius: inherit
@@ -43,11 +50,11 @@
     pointer-events: none
     right: 0
     top: 0
-    transition: $chip-after-transition
 
   // Important is needed to account for new avatar structure
   .v-avatar
     height: $chip-avatar-size !important
+    min-width: $chip-avatar-size !important
     width: $chip-avatar-size !important
 
   .v-icon
@@ -99,16 +106,22 @@
   align-items: center
   display: inline-flex
   height: 100%
+  max-width: 100%
 
 // Modifiers
+.v-chip--active
+  .v-icon
+    color: inherit
+
+.v-chip--link
+  &::before
+    transition: opacity $primary-transition
+
+  &:focus::before
+    opacity: $chip-link-focus-opacity
+
 .v-chip--clickable
   cursor: pointer
-
-  &:focus:after
-    opacity: .36
-
-  &:hover:after
-    opacity: .18
 
   &:active
     +elevation(2)
@@ -160,12 +173,21 @@
   border-radius: $chip-label-border-radius !important
 
 .v-chip.v-chip--outlined
-  background-color: transparent !important
   border-width: $icon-outlined-border-width
   border-style: solid
 
+  &:not(.v-chip--active):before
+    opacity: 0
+
+  &.v-chip--active:before
+    opacity: 0.08
+
   .v-icon
     color: inherit
+
+  // Needs increased specificity
+  &.v-chip.v-chip
+    background-color: transparent !important
 
 // Needs increased specificity
 // to overwrite theme color

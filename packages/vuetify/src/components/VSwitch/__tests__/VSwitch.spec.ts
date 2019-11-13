@@ -4,7 +4,8 @@ import VSwitch from '../VSwitch'
 // Utilities
 import {
   mount,
-  Wrapper
+  MountOptions,
+  Wrapper,
 } from '@vue/test-utils'
 import { touch } from '../../../../test'
 
@@ -13,13 +14,11 @@ import { ExtractVue } from '../../../util/mixins'
 
 describe('VSwitch.ts', () => {
   type Instance = ExtractVue<typeof VSwitch>
-  let mountFunction: (options?: object) => Wrapper<Instance>
+  let mountFunction: (options?: MountOptions<Instance>) => Wrapper<Instance>
 
   beforeEach(() => {
     mountFunction = (options = {}) => {
-      return mount(VSwitch, {
-        ...options
-      })
+      return mount(VSwitch, options)
     }
   })
 
@@ -27,8 +26,8 @@ describe('VSwitch.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         inputValue: false,
-        ripple: false
-      }
+        ripple: false,
+      },
     })
 
     expect(wrapper.findAll('.v-input--selection-controls__ripple').wrappers).toHaveLength(0)
@@ -45,9 +44,9 @@ describe('VSwitch.ts', () => {
 
   it('should emit change event on swipe', async () => {
     const wrapper = mountFunction({
-      props: {
-        inputValue: false
-      }
+      propsData: {
+        inputValue: false,
+      },
     })
 
     const change = jest.fn()
@@ -64,9 +63,9 @@ describe('VSwitch.ts', () => {
 
   it('should emit change event on key events', async () => {
     const wrapper = mountFunction({
-      props: {
-        inputValue: false
-      }
+      propsData: {
+        inputValue: false,
+      },
     })
 
     const change = jest.fn()
@@ -90,9 +89,9 @@ describe('VSwitch.ts', () => {
 
   it('should not emit change event on swipe when not active', async () => {
     const wrapper = mountFunction({
-      props: {
-        inputValue: false
-      }
+      propsData: {
+        inputValue: false,
+      },
     })
 
     const change = jest.fn()
@@ -107,9 +106,9 @@ describe('VSwitch.ts', () => {
 
   it('should render element with loader and match the snapshot', async () => {
     const wrapper = mountFunction({
-      props: {
-        loading: true
-      }
+      propsData: {
+        loading: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()

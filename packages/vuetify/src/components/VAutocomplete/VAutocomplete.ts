@@ -5,143 +5,128 @@ import './VAutocomplete.sass'
 import VSelect, { defaultMenuProps as VSelectMenuProps } from '../VSelect/VSelect'
 import VTextField from '../VTextField/VTextField'
 
-// Components
-import VMenu from '../VMenu/VMenu'
-
 // Utilities
 import { keyCodes } from '../../util/helpers'
-import mixins, { ExtractVue } from '../../util/mixins'
+
+// Types
+import { PropType } from 'vue'
 
 const defaultMenuProps = {
   ...VSelectMenuProps,
   offsetY: true,
   offsetOverflow: true,
-  transition: false
-}
-
-// Types
-const baseMixins = mixins(VSelect)
-
-interface options extends ExtractVue<typeof baseMixins> {
-  $refs: {
-    menu: InstanceType<typeof VMenu>
-    input: HTMLInputElement
-    prefix: HTMLElement
-    suffix: HTMLElement
-  }
+  transition: false,
 }
 
 /* @vue/component */
-export default baseMixins.extend<options>().extend({
+export default VSelect.extend({
   name: 'v-autocomplete',
 
   props: {
     allowOverflow: {
       type: Boolean,
-      default: true
+      default: true,
     },
-    browserAutocomplete: {
-      type: String,
-      default: 'off'
+    autoSelectFirst: {
+      type: Boolean,
+      default: false,
     },
     filter: {
       type: Function,
       default: (item: any, queryText: string, itemText: string) => {
         return itemText.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
-      }
+      },
     },
     hideNoData: Boolean,
-    noFilter: Boolean,
-    searchInput: {
-      default: undefined
-    },
     menuProps: {
       type: VSelect.options.props.menuProps.type,
-      default: () => defaultMenuProps
+      default: () => defaultMenuProps,
     },
-    autoSelectFirst: {
-      type: Boolean,
-      default: false
-    }
+    noFilter: Boolean,
+    searchInput: {
+      type: String as PropType<string | undefined>,
+      default: undefined,
+    },
   },
 
   data () {
     return {
-      attrsInput: null,
-      lazySearch: this.searchInput as null | undefined
+      lazySearch: this.searchInput,
     }
   },
 
   computed: {
     classes (): object {
-      return Object.assign({}, VSelect.options.computed.classes.call(this), {
+      return {
+        ...VSelect.options.computed.classes.call(this),
         'v-autocomplete': true,
-        'v-autocomplete--is-selecting-index': this.selectedIndex > -1
-      })
+        'v-autocomplete--is-selecting-index': this.selectedIndex > -1,
+      }
     },
-    computedItems () {
+    computedItems (): object[] {
       return this.filteredItems
     },
-    selectedValues () {
+    selectedValues (): object[] {
       return this.selectedItems.map(item => this.getValue(item))
     },
-    hasDisplayedItems () {
+    hasDisplayedItems (): boolean {
       return this.hideSelected
         ? this.filteredItems.some(item => !this.hasItem(item))
         : this.filteredItems.length > 0
     },
-    currentRange () {
+    currentRange (): number {
       if (this.selectedItem == null) return 0
 
-      return this.getText(this.selectedItem).toString().length
+      return String(this.getText(this.selectedItem)).length
     },
-    filteredItems () {
+    filteredItems (): object[] {
       if (!this.isSearching || this.noFilter || this.internalSearch == null) return this.allItems
 
-      return this.allItems.filter(item => this.filter(item, this.internalSearch.toString(), this.getText(item).toString()))
+      return this.allItems.filter(item => this.filter(item, String(this.internalSearch), String(this.getText(item))))
     },
     internalSearch: {
-      get () {
+      get (): string | undefined {
         return this.lazySearch
       },
       set (val: any) {
         this.lazySearch = val
 
-        this.$emit('update:searchInput', val)
-      }
+        this.$emit('update:search-input', val)
+      },
     },
-    isAnyValueAllowed () {
+    isAnyValueAllowed (): boolean {
       return false
     },
-    isDirty () {
+    isDirty (): boolean {
       return this.searchIsDirty || this.selectedItems.length > 0
     },
-    isSearching () {
-      if (this.multiple) return this.searchIsDirty
-
+    isSearching (): boolean {
       return (
+        this.multiple &&
+        this.searchIsDirty
+      ) || (
         this.searchIsDirty &&
         this.internalSearch !== this.getText(this.selectedItem)
       )
     },
-    menuCanShow () {
+    menuCanShow (): boolean {
       if (!this.isFocused) return false
 
       return this.hasDisplayedItems || !this.hideNoData
     },
-    $_menuProps () {
-      const props = VSelect.options.computed.$_menuProps.call(this)
-      props.contentClass = `v-autocomplete__content ${props.contentClass || ''}`.trim()
+    $_menuProps (): object {
+      const props = VSelect.options.computed.$_menuProps.call(this);
+      (props as any).contentClass = `v-autocomplete__content ${(props as any).contentClass || ''}`.trim()
       return {
         ...defaultMenuProps,
-        ...props
+        ...props,
       }
     },
-    searchIsDirty () {
+    searchIsDirty (): boolean {
       return this.internalSearch != null &&
         this.internalSearch !== ''
     },
-    selectedItem () {
+    selectedItem (): any {
       if (this.multiple) return null
 
       return this.selectedItems.find(i => {
@@ -151,18 +136,19 @@ export default baseMixins.extend<options>().extend({
     listData () {
       const data = VSelect.options.computed.listData.call(this) as any
 
-      Object.assign(data.props, {
+      data.props = {
+        ...data.props,
         items: this.virtualizedItems,
         noFilter: (
           this.noFilter ||
           !this.isSearching ||
           !this.filteredItems.length
         ),
-        searchInput: this.internalSearch
-      })
+        searchInput: this.internalSearch,
+      }
 
       return data
-    }
+    },
   },
 
   watch: {
@@ -170,16 +156,17 @@ export default baseMixins.extend<options>().extend({
     internalValue: 'setSearch',
     isFocused (val) {
       if (val) {
-        this.$refs.input &&
-          this.$refs.input.select()
+        document.addEventListener('copy', this.onCopy)
+        this.$refs.input && this.$refs.input.select()
       } else {
+        document.removeEventListener('copy', this.onCopy)
         this.updateSelf()
       }
     },
     isMenuActive (val) {
       if (val || !this.hasSlot) return
 
-      this.lazySearch = null
+      this.lazySearch = undefined
     },
     items (val, oldVal) {
       // If we are focused, the menu
@@ -195,11 +182,11 @@ export default baseMixins.extend<options>().extend({
         val.length
       ) this.activateMenu()
     },
-    searchInput (val) {
+    searchInput (val: string) {
       this.lazySearch = val
     },
     internalSearch: 'onInternalSearchChanged',
-    itemText: 'updateSelf'
+    itemText: 'updateSelf',
   },
 
   created () {
@@ -207,48 +194,59 @@ export default baseMixins.extend<options>().extend({
   },
 
   methods: {
-    onFilteredItemsChanged (val: never[]) {
+    onFilteredItemsChanged (val: never[], oldVal: never[]) {
+      // TODO: How is the watcher triggered
+      // for duplicate items? no idea
+      if (val === oldVal) return
+
       this.setMenuIndex(-1)
 
       this.$nextTick(() => {
-        this.setMenuIndex(val.length > 0 && (val.length === 1 || this.autoSelectFirst) ? 0 : -1)
+        if (
+          !this.internalSearch ||
+          (val.length !== 1 &&
+            !this.autoSelectFirst)
+        ) return
+
+        this.$refs.menu.getTiles()
+        this.setMenuIndex(0)
       })
     },
     onInternalSearchChanged () {
       this.updateMenuDimensions()
     },
     updateMenuDimensions () {
-      if (this.isMenuActive &&
-        this.$refs.menu
-      ) {
-        // Type from menuable is not making it through
-        (this.$refs.menu as any).updateDimensions()
-      }
+      // Type from menuable is not making it through
+      this.isMenuActive && this.$refs.menu && this.$refs.menu.updateDimensions()
     },
     changeSelectedIndex (keyCode: number) {
       // Do not allow changing of selectedIndex
       // when search is dirty
-      if (this.searchIsDirty) return
+      if (this.searchIsDirty || !this.multiple) return
 
       if (![
         keyCodes.backspace,
         keyCodes.left,
         keyCodes.right,
-        keyCodes.delete
+        keyCodes.delete,
       ].includes(keyCode)) return
 
-      const indexes = this.selectedItems.length - 1
+      const index = this.selectedItems.length - 1
 
       if (keyCode === keyCodes.left) {
-        this.selectedIndex = this.selectedIndex === -1
-          ? indexes
-          : this.selectedIndex - 1
+        if (this.selectedIndex === -1) {
+          this.selectedIndex = index
+        } else {
+          this.selectedIndex--
+        }
       } else if (keyCode === keyCodes.right) {
-        this.selectedIndex = this.selectedIndex >= indexes
-          ? -1
-          : this.selectedIndex + 1
+        if (this.selectedIndex >= index) {
+          this.selectedIndex = -1
+        } else {
+          this.selectedIndex++
+        }
       } else if (this.selectedIndex === -1) {
-        this.selectedIndex = indexes
+        this.selectedIndex = index
         return
       }
 
@@ -256,11 +254,11 @@ export default baseMixins.extend<options>().extend({
 
       if ([
         keyCodes.backspace,
-        keyCodes.delete
+        keyCodes.delete,
       ].includes(keyCode) &&
         !this.getDisabled(currentItem)
       ) {
-        const newIndex = this.selectedIndex === indexes
+        const newIndex = this.selectedIndex === index
           ? this.selectedIndex - 1
           : this.selectedItems[this.selectedIndex + 1]
             ? this.selectedIndex
@@ -285,12 +283,19 @@ export default baseMixins.extend<options>().extend({
 
       input.data = input.data || {}
       input.data.attrs = input.data.attrs || {}
-      input.data.domProps = input.data.domProps || {}
+      input.data.attrs.autocomplete = input.data.attrs.autocomplete || 'disabled'
 
-      input.data.attrs.role = 'combobox'
+      input.data.domProps = input.data.domProps || {}
       input.data.domProps.value = this.internalSearch
 
       return input
+    },
+    genInputSlot () {
+      const slot = VSelect.options.methods.genInputSlot.call(this)
+
+      slot.data!.attrs!.role = 'combobox'
+
+      return slot
     },
     genSelections () {
       return this.hasSlot || this.multiple
@@ -306,11 +311,6 @@ export default baseMixins.extend<options>().extend({
 
       this.activateMenu()
     },
-    onEnterDown () {
-      // Avoid invoking this method
-      // will cause updateSelf to
-      // be called emptying search
-    },
     onInput (e: Event) {
       if (
         this.selectedIndex > -1 ||
@@ -321,12 +321,8 @@ export default baseMixins.extend<options>().extend({
       const value = target.value
 
       // If typing and menu is not currently active
-      if (target.value) {
-        this.activateMenu()
-        if (!this.isAnyValueAllowed) this.setMenuIndex(0)
-      }
+      if (target.value) this.activateMenu()
 
-      this.mask && this.resetSelections(target)
       this.internalSearch = value
       this.badInput = target.validity && target.validity.badInput
     },
@@ -341,9 +337,20 @@ export default baseMixins.extend<options>().extend({
       // proper location
       this.changeSelectedIndex(keyCode)
     },
+    onSpaceDown (e: KeyboardEvent) { /* noop */ },
     onTabDown (e: KeyboardEvent) {
       VSelect.options.methods.onTabDown.call(this, e)
       this.updateSelf()
+    },
+    onUpDown () {
+      // For autocomplete / combobox, cycling
+      // interfers with native up/down behavior
+      // instead activate the menu
+      this.activateMenu()
+    },
+    selectItem (item: object) {
+      VSelect.options.methods.selectItem.call(this, item)
+      this.setSearch()
     },
     setSelectedItems () {
       VSelect.options.methods.setSelectedItems.call(this)
@@ -356,25 +363,22 @@ export default baseMixins.extend<options>().extend({
       // Wait for nextTick so selectedItem
       // has had time to update
       this.$nextTick(() => {
-        this.internalSearch = (
-          this.multiple &&
-          this.internalSearch &&
-          this.isMenuActive
-        )
-          ? this.internalSearch
-          : (
+        if (
+          !this.multiple ||
+          !this.internalSearch ||
+          !this.isMenuActive
+        ) {
+          this.internalSearch = (
             !this.selectedItems.length ||
             this.multiple ||
             this.hasSlot
           )
             ? null
             : this.getText(this.selectedItem)
+        }
       })
     },
     updateSelf () {
-      this.updateAutocomplete()
-    },
-    updateAutocomplete () {
       if (!this.searchIsDirty &&
         !this.internalValue
       ) return
@@ -388,6 +392,15 @@ export default baseMixins.extend<options>().extend({
     },
     hasItem (item: any) {
       return this.selectedValues.indexOf(this.getValue(item)) > -1
-    }
-  }
+    },
+    onCopy (event: ClipboardEvent) {
+      if (this.selectedIndex === -1) return
+
+      const currentItem = this.selectedItems[this.selectedIndex]
+      const currentItemText = this.getText(currentItem)
+      event.clipboardData!.setData('text/plain', currentItemText)
+      event.clipboardData!.setData('text/vnd.vuetify.autocomplete.item+plain', currentItemText)
+      event.preventDefault()
+    },
+  },
 })

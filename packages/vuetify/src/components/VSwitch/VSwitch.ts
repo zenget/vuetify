@@ -1,8 +1,10 @@
+// Styles
 import '../../styles/components/_selection-controls.sass'
 import './VSwitch.sass'
 
 // Mixins
 import Selectable from '../../mixins/selectable'
+import VInput from '../VInput'
 
 // Directives
 import Touch from '../../directives/touch'
@@ -27,68 +29,78 @@ export default Selectable.extend({
     inset: Boolean,
     loading: {
       type: [Boolean, String],
-      default: false
+      default: false,
     },
     flat: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   computed: {
     classes (): object {
       return {
+        ...VInput.options.computed.classes.call(this),
         'v-input--selection-controls v-input--switch': true,
         'v-input--switch--flat': this.flat,
-        'v-input--switch--inset': this.inset
+        'v-input--switch--inset': this.inset,
       }
     },
     attrs (): object {
       return {
         'aria-checked': String(this.isActive),
         'aria-disabled': String(this.disabled),
-        'role': 'switch'
+        role: 'switch',
       }
     },
+    // Do not return undefined if disabled,
+    // according to spec, should still show
+    // a color when disabled and active
+    validationState (): string | undefined {
+      if (this.hasError && this.shouldValidate) return 'error'
+      if (this.hasSuccess) return 'success'
+      if (this.hasColor !== null) return this.computedColor
+      return undefined
+    },
     switchData (): VNodeData {
-      return this.setTextColor(this.loading ? undefined : this.computedColor, {
-        class: this.themeClasses
+      return this.setTextColor(this.loading ? undefined : this.validationState, {
+        class: this.themeClasses,
       })
-    }
+    },
   },
 
   methods: {
     genDefaultSlot (): (VNode | null)[] {
       return [
         this.genSwitch(),
-        this.genLabel()
+        this.genLabel(),
       ]
     },
     genSwitch (): VNode {
       return this.$createElement('div', {
-        staticClass: 'v-input--selection-controls__input'
+        staticClass: 'v-input--selection-controls__input',
       }, [
         this.genInput('checkbox', {
-          ...this.$attrs,
-          ...this.attrs
+          ...this.attrs,
+          ...this.attrs$,
         }),
-        this.genRipple(this.setTextColor(this.computedColor, {
+        this.genRipple(this.setTextColor(this.validationState, {
           directives: [{
             name: 'touch',
             value: {
               left: this.onSwipeLeft,
-              right: this.onSwipeRight
-            }
-          }]
+              right: this.onSwipeRight,
+            },
+          }],
         })),
         this.$createElement('div', {
           staticClass: 'v-input--switch__track',
-          ...this.switchData
+          ...this.switchData,
         }),
         this.$createElement('div', {
           staticClass: 'v-input--switch__thumb',
-          ...this.switchData
-        }, [this.genProgress()])
+          ...this.switchData,
+        }, [this.genProgress()]),
       ])
     },
     genProgress (): VNode {
@@ -102,9 +114,9 @@ export default Selectable.extend({
                 : this.loading,
               size: 16,
               width: 2,
-              indeterminate: true
-            }
-          })
+              indeterminate: true,
+            },
+          }),
       ])
     },
     onSwipeLeft () {
@@ -118,6 +130,6 @@ export default Selectable.extend({
         (e.keyCode === keyCodes.left && this.isActive) ||
         (e.keyCode === keyCodes.right && !this.isActive)
       ) this.onChange()
-    }
-  }
+    },
+  },
 })

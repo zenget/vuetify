@@ -1,10 +1,16 @@
+import Vue from 'vue'
 import VTimePickerTitle from '../VTimePickerTitle'
 import { SelectingTimes } from '../VTimePicker'
+import { Lang } from '../../../services/lang'
 import {
   mount,
   Wrapper,
-  MountOptions
+  MountOptions,
 } from '@vue/test-utils'
+
+Vue.prototype.$vuetify = {
+  lang: new Lang(),
+}
 
 describe('VTimePickerTitle.ts', () => {
   type Instance = InstanceType<typeof VTimePickerTitle>
@@ -25,8 +31,8 @@ describe('VTimePickerTitle.ts', () => {
           second: 25,
           period: 'pm',
           ampm: false,
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -40,8 +46,8 @@ describe('VTimePickerTitle.ts', () => {
           minute: 13,
           period: 'pm',
           ampm: true,
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -55,8 +61,8 @@ describe('VTimePickerTitle.ts', () => {
           second: 25,
           period: 'pm',
           ampm: true,
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -70,8 +76,8 @@ describe('VTimePickerTitle.ts', () => {
           second: 25,
           period: 'pm',
           selecting: SelectingTimes.Hour,
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -85,8 +91,8 @@ describe('VTimePickerTitle.ts', () => {
           second: 25,
           period: 'pm',
           ampm: true,
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       const period = jest.fn()
@@ -101,7 +107,7 @@ describe('VTimePickerTitle.ts', () => {
         hour: 2,
         minute: 13,
         second: 35,
-        period: 'am'
+        period: 'am',
       })
       wrapper.find('.v-time-picker-title__ampm .v-picker__title__btn:not(.v-picker__title__btn--active)').trigger('click')
       expect(period).toHaveBeenCalledWith('pm')
@@ -116,8 +122,8 @@ describe('VTimePickerTitle.ts', () => {
           period: 'pm',
           ampm: true,
           readonly: true,
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       const period = jest.fn()
@@ -134,24 +140,24 @@ describe('VTimePickerTitle.ts', () => {
           minute: 13,
           second: 25,
           period: 'pm',
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       const selecting = jest.fn()
       wrapper.vm.$on('update:selecting', selecting)
 
-      wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').wrappers[1].trigger('click')
+      wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').at(1).trigger('click')
       expect(selecting).toHaveBeenCalledWith(SelectingTimes.Minute)
-      wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').wrappers[0].trigger('click')
+      wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').at(0).trigger('click')
       expect(selecting).toHaveBeenCalledWith(SelectingTimes.Hour)
       if (useSecondsValue) {
-        wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').wrappers[2].trigger('click')
+        wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').at(2).trigger('click')
         expect(selecting).toHaveBeenCalledWith(SelectingTimes.Second)
       }
       wrapper.setProps({ selecting: SelectingTimes.Hour })
       await wrapper.vm.$nextTick()
-      wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').wrappers[1].trigger('click')
+      wrapper.findAll('.v-time-picker-title__time .v-picker__title__btn').at(1).trigger('click')
       expect(selecting).toHaveBeenCalledWith(SelectingTimes.Minute)
     })
 
@@ -162,8 +168,8 @@ describe('VTimePickerTitle.ts', () => {
           minute: 13,
           period: 'pm',
           readonly: true,
-          useSeconds: useSecondsValue
-        }
+          useSeconds: useSecondsValue,
+        },
       })
 
       const selecting = jest.fn()

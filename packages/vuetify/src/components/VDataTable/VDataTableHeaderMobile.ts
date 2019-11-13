@@ -3,9 +3,17 @@ import mixins from '../../util/mixins'
 import VSelect from '../VSelect/VSelect'
 import VChip from '../VChip'
 import header from './mixins/header'
+import { wrapInArray } from '../../util/helpers'
 
 export default mixins(header).extend({
   name: 'v-data-table-header-mobile',
+
+  props: {
+    sortByText: {
+      type: String,
+      default: '$vuetify.dataTable.sortBy',
+    },
+  },
 
   methods: {
     genSortChip (props: any) {
@@ -18,11 +26,11 @@ export default mixins(header).extend({
       children.push(this.$createElement('div', {
         staticClass: 'v-chip__close',
         class: {
-          'sortable': true,
-          'active': beingSorted,
-          'asc': beingSorted && !isDesc,
-          'desc': beingSorted && isDesc
-        }
+          sortable: true,
+          active: beingSorted,
+          asc: beingSorted && !isDesc,
+          desc: beingSorted && isDesc,
+        },
       }, [this.genSortIcon()]))
 
       return this.$createElement(VChip, {
@@ -31,50 +39,56 @@ export default mixins(header).extend({
           click: (e: MouseEvent) => {
             e.stopPropagation()
             this.$emit('sort', props.item.value)
-            // this.dataTable.resetExpanded()
-            // this.dataTable.sort(props.item.value)
-          }
-        }
+          },
+        },
       }, children)
     },
     genSortSelect () {
+      const sortHeaders = this.headers.filter(h => h.sortable !== false && h.value !== 'data-table-select')
+
       return this.$createElement(VSelect, {
         props: {
-          label: 'Sort by',
-          items: this.headers.filter(h => h.value !== 'dataTableSelect'),
+          label: this.$vuetify.lang.t(this.sortByText),
+          items: sortHeaders,
           hideDetails: true,
           multiple: this.options.multiSort,
-          value: this.options.multiSort ? this.options.sortBy : this.options.sortBy[0]
+          value: this.options.multiSort ? this.options.sortBy : this.options.sortBy[0],
+          disabled: sortHeaders.length === 0 || this.disableSort,
         },
         on: {
-          change: (v: string | string[]) => this.$emit('sort', v)
+          change: (v: string | string[]) => this.$emit('sort', v),
         },
         scopedSlots: {
-          selection: props => this.genSortChip(props) as any // TODO: whyyy?
-        }
+          selection: props => this.genSortChip(props) as any, // TODO: whyyy?
+        },
       })
-    }
+    },
   },
 
   render (h): VNode {
     const children: VNodeChildrenArrayContents = []
 
-    if (this.headers.find(header => header.value === 'dataTableSelect')) {
-      children.push(this.genSelectAll())
+    const header = this.headers.find(h => h.value === 'data-table-select')
+    if (header && !this.singleSelect) {
+      children.push(this.$createElement('div', {
+        class: [
+          'v-data-table-header-mobile__select',
+          ...wrapInArray(header.class),
+        ],
+        attrs: {
+          width: header.width,
+        },
+      }, [this.genSelectAll()]))
     }
 
     children.push(this.genSortSelect())
 
-    const th = h('th', {
-      attrs: {
-        colspan: this.headers.length
-      }
-    }, [h('div', { staticClass: 'v-data-table-header-mobile__wrapper' }, children)])
+    const th = h('th', [h('div', { staticClass: 'v-data-table-header-mobile__wrapper' }, children)])
 
     const tr = h('tr', [th])
 
     return h('thead', {
-      staticClass: 'v-data-table-header v-data-table-header-mobile'
+      staticClass: 'v-data-table-header v-data-table-header-mobile',
     }, [tr])
-  }
+  },
 })

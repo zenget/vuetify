@@ -1,7 +1,18 @@
 {
   "title": "header",
   "titleText": "headerText",
+  "file": "components/VBreadcrumb",
   "children": [
+    {
+      "type": "section",
+      "children": [
+        {
+          "type": "alert",
+          "lang": "headerAlert1",
+          "value": "info"
+        }
+      ]
+    },
     {
       "type": "section",
       "children": [
@@ -27,10 +38,21 @@
       "type": "section",
       "children": [
         {
+          "type": "playground",
+          "value": "playground"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "children": [
+        {
           "type": "examples",
           "value": [
-            "iconDividers",
-            "itemSlot"
+            "simple/large",
+            "simple/divider",
+            "intermediate/icon-dividers",
+            "intermediate/item-slot"
           ]
         }
       ]

@@ -1,6 +1,7 @@
 import './VDialog.sass'
 
 // Mixins
+import Activatable from '../../mixins/activatable'
 import Dependent from '../../mixins/dependent'
 import Detachable from '../../mixins/detachable'
 import Overlayable from '../../mixins/overlayable'
@@ -12,15 +13,16 @@ import Toggleable from '../../mixins/toggleable'
 import ClickOutside from '../../directives/click-outside'
 
 // Helpers
-import { convertToUnit, keyCodes, getSlotType } from '../../util/helpers'
+import { convertToUnit, keyCodes } from '../../util/helpers'
 import ThemeProvider from '../../util/ThemeProvider'
-import { consoleError } from '../../util/console'
 import mixins from '../../util/mixins'
+import { removed } from '../../util/console'
 
 // Types
 import { VNode } from 'vue'
 
 const baseMixins = mixins(
+  Activatable,
   Dependent,
   Detachable,
   Overlayable,
@@ -34,34 +36,37 @@ export default baseMixins.extend({
   name: 'v-dialog',
 
   directives: {
-    ClickOutside
+    ClickOutside,
   },
 
   props: {
-    disabled: Boolean,
-    persistent: Boolean,
-    fullscreen: Boolean,
-    fullWidth: Boolean,
-    noClickAnimation: Boolean,
-    light: Boolean,
     dark: Boolean,
+    disabled: Boolean,
+    fullscreen: Boolean,
+    light: Boolean,
     maxWidth: {
       type: [String, Number],
-      default: 'none'
+      default: 'none',
     },
+    noClickAnimation: Boolean,
     origin: {
       type: String,
-      default: 'center center'
+      default: 'center center',
     },
-    width: {
-      type: [String, Number],
-      default: 'auto'
+    persistent: Boolean,
+    retainFocus: {
+      type: Boolean,
+      default: true,
     },
     scrollable: Boolean,
     transition: {
       type: [String, Boolean],
-      default: 'dialog-transition'
-    }
+      default: 'dialog-transition',
+    },
+    width: {
+      type: [String, Number],
+      default: 'auto',
+    },
   },
 
   data () {
@@ -70,7 +75,7 @@ export default baseMixins.extend({
       animate: false,
       animateTimeout: -1,
       isActive: !!this.value,
-      stackMinZIndex: 200
+      stackMinZIndex: 200,
     }
   },
 
@@ -82,13 +87,13 @@ export default baseMixins.extend({
         'v-dialog--persistent': this.persistent,
         'v-dialog--fullscreen': this.fullscreen,
         'v-dialog--scrollable': this.scrollable,
-        'v-dialog--animated': this.animate
+        'v-dialog--animated': this.animate,
       }
     },
     contentClasses (): object {
       return {
         'v-dialog__content': true,
-        'v-dialog__content--active': this.isActive
+        'v-dialog__content--active': this.isActive,
       }
     },
     hasActivator (): boolean {
@@ -96,7 +101,7 @@ export default baseMixins.extend({
         !!this.$slots.activator ||
         !!this.$scopedSlots.activator
       )
-    }
+    },
   },
 
   watch: {
@@ -117,6 +122,13 @@ export default baseMixins.extend({
         this.showScroll()
         this.genOverlay()
       }
+    },
+  },
+
+  created () {
+    /* istanbul ignore next */
+    if (this.$attrs.hasOwnProperty('full-width')) {
+      removed('full-width', this)
     }
   },
 
@@ -125,12 +137,6 @@ export default baseMixins.extend({
       this.isBooted = this.isActive
       this.isActive && this.show()
     })
-  },
-
-  mounted () {
-    if (getSlotType(this, 'activator', true) === 'v-slot') {
-      consoleError(`v-dialog's activator slot must be bound, try '<template #activator="data"><v-btn v-on="data.on>'`, this)
-    }
   },
 
   beforeDestroy () {
@@ -152,8 +158,13 @@ export default baseMixins.extend({
       const target = e.target as HTMLElement
       // If the dialog content contains
       // the click event, or if the
-      // dialog is not active
-      if (!this.isActive || this.$refs.content.contains(target)) return false
+      // dialog is not active, or if the overlay
+      // is the same element as the target
+      if (this._isDestroyed ||
+        !this.isActive ||
+        this.$refs.content.contains(target) ||
+        (this.overlay && target && !this.overlay.$el.contains(target))
+      ) return false
 
       // If we made it here, the click is outside
       // and is active. If persistent, and the
@@ -161,9 +172,7 @@ export default baseMixins.extend({
       this.$emit('click:outside')
 
       if (this.persistent) {
-        if (!this.noClickAnimation &&
-          this.overlay === target
-        ) this.animateClick()
+        !this.noClickAnimation && this.animateClick()
 
         return false
       }
@@ -174,8 +183,10 @@ export default baseMixins.extend({
     },
     show () {
       !this.fullscreen && !this.hideOverlay && this.genOverlay()
-      this.$refs.content.focus()
-      this.bind()
+      this.$nextTick(() => {
+        this.$refs.content.focus()
+        this.bind()
+      })
     },
     bind () {
       window.addEventListener('focusin', this.onFocusin)
@@ -195,8 +206,10 @@ export default baseMixins.extend({
       }
       this.$emit('keydown', e)
     },
+    // On focus change, wrap focus to stay inside the dialog
+    // https://github.com/vuetifyjs/vuetify/issues/6892
     onFocusin (e: Event) {
-      if (!e) return
+      if (!e || !this.retainFocus) return
 
       const target = e.target as HTMLElement
 
@@ -217,65 +230,12 @@ export default baseMixins.extend({
         focusable.length && (focusable[0] as HTMLElement).focus()
       }
     },
-    getActivator (e?: Event) {
-      const activator = this.$refs.activator as HTMLElement
-
-      if (activator) {
-        return activator.children.length > 0
-          ? activator.children[0]
-          : activator
-      }
-
-      if (e) {
-        this.activatedBy = e.currentTarget || e.target
-      }
-
-      if (this.activatedBy) return this.activatedBy
-
-      if (this.activatorNode) {
-        const activator = Array.isArray(this.activatorNode) ? this.activatorNode[0] : this.activatorNode
-        const el = activator && activator.elm
-        if (el) return el
-      }
-
-      consoleError('No activator found')
-
-      return null
-    },
-    genActivator () {
-      if (!this.hasActivator) return null
-
-      const listeners = this.disabled ? undefined : {
-        click: (e: Event) => {
-          e.stopPropagation()
-          this.getActivator(e)
-          if (!this.disabled) this.isActive = !this.isActive
-        }
-      }
-
-      if (getSlotType(this, 'activator') === 'scoped') {
-        const activator = this.$scopedSlots.activator!({ on: listeners }) || null
-
-        this.activatorNode = activator
-
-        return activator
-      }
-
-      return this.$createElement('div', {
-        staticClass: 'v-dialog__activator',
-        class: {
-          'v-dialog__activator--disabled': this.disabled
-        },
-        ref: 'activator',
-        on: listeners
-      }, this.$slots.activator)
-    }
   },
 
   render (h): VNode {
     const children = []
     const data = {
-      'class': this.classes,
+      class: this.classes,
       ref: 'dialog',
       directives: [
         {
@@ -283,62 +243,67 @@ export default baseMixins.extend({
           value: () => { this.isActive = false },
           args: {
             closeConditional: this.closeConditional,
-            include: this.getOpenDependentElements
-          }
+            include: this.getOpenDependentElements,
+          },
         },
-        { name: 'show', value: this.isActive }
+        { name: 'show', value: this.isActive },
       ],
       on: {
-        click: (e: Event) => { e.stopPropagation() }
+        click: (e: Event) => { e.stopPropagation() },
       },
-      style: {}
+      style: {},
     }
 
     if (!this.fullscreen) {
       data.style = {
         maxWidth: this.maxWidth === 'none' ? undefined : convertToUnit(this.maxWidth),
-        width: this.width === 'auto' ? undefined : convertToUnit(this.width)
+        width: this.width === 'auto' ? undefined : convertToUnit(this.width),
       }
     }
 
     children.push(this.genActivator())
 
-    let dialog = h('div', data, this.showLazyContent(this.$slots.default))
+    let dialog = h('div', data, this.showLazyContent(this.getContentSlot()))
     if (this.transition) {
       dialog = h('transition', {
         props: {
           name: this.transition,
-          origin: this.origin
-        }
+          origin: this.origin,
+        },
       }, [dialog])
     }
 
     children.push(h('div', {
-      'class': this.contentClasses,
+      class: this.contentClasses,
       attrs: {
-        tabIndex: '-1',
-        ...this.getScopeIdAttrs()
+        role: 'document',
+        tabindex: this.isActive ? 0 : undefined,
+        ...this.getScopeIdAttrs(),
       },
       on: {
-        keydown: this.onKeydown
+        keydown: this.onKeydown,
       },
       style: { zIndex: this.activeZIndex },
-      ref: 'content'
+      ref: 'content',
     }, [
       this.$createElement(ThemeProvider, {
         props: {
           root: true,
           light: this.light,
-          dark: this.dark
-        }
-      }, [dialog])
+          dark: this.dark,
+        },
+      }, [dialog]),
     ]))
 
     return h('div', {
       staticClass: 'v-dialog__container',
-      style: {
-        display: (!this.hasActivator || this.fullWidth) ? 'block' : 'inline-block'
-      }
+      class: {
+        'v-dialog__container--attached':
+          this.attach === '' ||
+          this.attach === true ||
+          this.attach === 'attach',
+      },
+      attrs: { role: 'dialog' },
     }, children)
-  }
+  },
 })

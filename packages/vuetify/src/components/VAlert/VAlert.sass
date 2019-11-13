@@ -1,5 +1,4 @@
 // Imports
-@import '../../styles/styles.sass'
 @import './_variables.scss'
 
 // Theme
@@ -10,10 +9,15 @@
 
 // Block
 .v-alert
-  display: flex
+  display: block
   font-size: $alert-font-size
   margin-bottom: $alert-margin
   padding: $alert-padding
+  position: relative
+  +elevationTransition()
+
+  &:not(.v-sheet--tile)
+    border-radius: $alert-border-radius
 
   > .v-icon,
   > .v-alert__content
@@ -98,33 +102,33 @@
   flex: 1 1 auto
 
 .v-alert__dismissible
-  margin-top: -6px
-  margin-bottom: -6px
+  +ltr()
+    margin: -16px -8px -16px 8px
+
+  +rtl()
+    margin: -16px 8px -16px -8px
 
 .v-alert__icon
+  align-self: flex-start
   border-radius: 50%
   height: $alert-icon-size
+  margin-right: 16px
   min-width: $alert-icon-size
   position: relative
+
+  +rtl()
+    margin-right: 0
+    margin-left: 16px
 
   &.v-icon
     font-size: $alert-icon-size
 
+.v-alert__wrapper
+  align-items: center
+  border-radius: inherit
+  display: flex
+
 // Modifiers
-.v-alert--border
-  @each $direction in ['top', 'right', 'bottom', 'left']
-    &-#{$direction}
-      padding-#{$direction}: 1.5 * $alert-padding
-
-  +rtl()
-    &-left
-      padding-right: 1.5 * $alert-padding
-      padding-left: $alert-padding
-
-    &-right
-      padding-left: 1.5 * $alert-padding
-      padding-right: $alert-padding
-
 .v-alert--dense
   padding-top: $alert-padding / 2
   padding-bottom: $alert-padding / 2
@@ -132,7 +136,7 @@
   .v-alert__border
     border-width: $alert-dense-border-width
 
-.v-alert--outline
+.v-alert--outlined
   background: transparent !important
   border: $alert-outline !important
 
@@ -140,9 +144,8 @@
     color: inherit !important
 
 .v-alert--prominent
-  align-items: center
-
   .v-alert__icon
+    align-self: center
     height: $alert-promient-icon-size
     min-width: $alert-promient-icon-size
 
@@ -162,3 +165,15 @@
 
 .v-alert--text
   background: transparent !important
+
+  &:before
+    background-color: currentColor
+    border-radius: inherit
+    bottom: 0
+    content: ''
+    left: 0
+    opacity: 0.12
+    position: absolute
+    pointer-events: none
+    right: 0
+    top: 0

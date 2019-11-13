@@ -7,52 +7,55 @@
     }"
     :timeout="snackbar.timeout"
     bottom
-    right
   >
-    <v-layout
-      align-center
+    <v-row
+      align="center"
+      class="mx-0"
     >
       <v-icon
         v-if="computedIcon"
+        class="mr-4"
         dark
-        class="mr-3"
       >
         {{ computedIcon }}
       </v-icon>
-      <doc-markdown
+
+      <base-markdown
         :code="snackbar.msg"
         class="snack-markdown"
       />
+
       <v-spacer />
+
       <v-btn
-        :color="computedColor"
         :ripple="false"
-        v-bind="bind"
-        :text="snackbar.color !== 'store'"
-        dark
+        class="text--primary"
+        color="white"
         depressed
+        v-bind="bind"
         @click="onClick"
       >
         {{ snackbar.text }}
       </v-btn>
+
       <v-btn
         v-if="snackbar.close"
-        :ripple="false"
         :aria-label="$t('Vuetify.Snackbar.close')"
+        :ripple="false"
+        class="ml-4"
         icon
-        class="ml-3"
         @click="markViewed"
       >
-        <v-icon>clear</v-icon>
+        <v-icon>mdi-close</v-icon>
       </v-btn>
-    </v-layout>
+    </v-row>
   </v-snackbar>
 </template>
 
 <script>
   import {
     mapMutations,
-    mapState
+    mapState,
   } from 'vuex'
 
   export default {
@@ -64,7 +67,7 @@
           return {
             href: this.snackbar.href,
             target: '_blank',
-            rel: 'noopener'
+            rel: 'noopener',
           }
         }
 
@@ -80,10 +83,10 @@
       computedIcon () {
         switch (this.snackbar.color) {
           case 'store': return 'mdi-cart'
-          case 'success': return 'check'
-          case 'info': return 'info'
-          case 'warning': return 'warning'
-          case 'error': return 'error'
+          case 'success': return 'mdi-check'
+          case 'info': return 'mdi-information'
+          case 'warning': return 'mdi-alert'
+          case 'error': return 'mdi-alert-circle'
           default: return false
         }
       },
@@ -93,8 +96,8 @@
         },
         set (val) {
           this.setValue(val)
-        }
-      }
+        },
+      },
     },
 
     watch: {
@@ -105,7 +108,7 @@
         if (localStorage.getItem(this.snackbar.id)) return
 
         this.snack = true
-      }
+      },
     },
 
     async created () {
@@ -119,7 +122,7 @@
       //   }
       // }).then(res => res.json())
 
-      if (notify) this.setSnackbar(notify)
+      if (notify.href) this.setSnackbar(notify)
     },
 
     methods: {
@@ -137,8 +140,8 @@
 
         this.snackbar.handler &&
           this.snackbar.handler()
-      }
-    }
+      },
+    },
   }
 </script>
 

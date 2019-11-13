@@ -1,5 +1,5 @@
 <template>
-  <div class="text-xs-center">
+  <div class="text-center">
     <v-menu offset-y>
       <template v-slot:activator="{ on }">
         <v-btn
@@ -30,8 +30,8 @@
         { title: 'Click Me' },
         { title: 'Click Me' },
         { title: 'Click Me' },
-        { title: 'Click Me 2' }
-      ]
-    })
+        { title: 'Click Me 2' },
+      ],
+    }),
   }
 </script>

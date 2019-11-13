@@ -3,7 +3,7 @@ import { Lang } from '../../../services/lang'
 import {
   mount,
   MountOptions,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 
 describe('VDatePickerDateTable.ts', () => {
@@ -16,9 +16,9 @@ describe('VDatePickerDateTable.ts', () => {
         mocks: {
           $vuetify: {
             rtl: false,
-            lang: new Lang()
-          }
-        }
+            lang: new Lang(),
+          },
+        },
       })
     }
   })
@@ -28,8 +28,8 @@ describe('VDatePickerDateTable.ts', () => {
       propsData: {
         tableDate: '2005-05',
         current: '2005-07',
-        value: '2005-11-03'
-      }
+        value: '2005-11-03',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -41,8 +41,8 @@ describe('VDatePickerDateTable.ts', () => {
         tableDate: '2005-05',
         current: '2005-07',
         value: '2005-11-03',
-        readonly: true
-      }
+        readonly: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -54,8 +54,8 @@ describe('VDatePickerDateTable.ts', () => {
         tableDate: '2005-05',
         current: '2005-07',
         value: '2005-11-03',
-        disabled: true
-      }
+        disabled: true,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -68,8 +68,8 @@ describe('VDatePickerDateTable.ts', () => {
         current: '2005-07',
         value: null,
         firstDayOfWeek: 2,
-        showWeek: true
-      }
+        showWeek: true,
+      },
     })
     expect(wrapper.html()).toMatchSnapshot()
   })
@@ -81,8 +81,8 @@ describe('VDatePickerDateTable.ts', () => {
         current: '2005-07',
         multiple: true,
         selectedDates: ['2005-11-03', '2005-11-05', '2005-11-08'],
-        value: '2005-11-03'
-      }
+        value: '2005-11-03',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -95,8 +95,8 @@ describe('VDatePickerDateTable.ts', () => {
         current: '2005-07',
         value: '2005-11-03',
         events: ['2005-05-03'],
-        eventColor: 'red'
-      }
+        eventColor: 'red',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -109,8 +109,8 @@ describe('VDatePickerDateTable.ts', () => {
         current: '2005-07',
         value: '2005-11-03',
         events: date => date === '2005-05-03',
-        eventColor: 'red'
-      }
+        eventColor: 'red',
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -123,8 +123,8 @@ describe('VDatePickerDateTable.ts', () => {
         current: '2005-07',
         value: '2005-11-03',
         events: ['2005-05-03', '2005-05-04'],
-        eventColor: { '2005-05-03': 'red', '2005-05-04': 'blue lighten-1' }
-      }
+        eventColor: { '2005-05-03': 'red', '2005-05-04': 'blue lighten-1' },
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -137,8 +137,8 @@ describe('VDatePickerDateTable.ts', () => {
         current: '2005-07',
         value: '2005-11-03',
         events: ['2005-05-03', '2005-05-04'],
-        eventColor: date => ({ '2005-05-03': 'red' }[date])
-      }
+        eventColor: date => ({ '2005-05-03': 'red' }[date]),
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -150,45 +150,43 @@ describe('VDatePickerDateTable.ts', () => {
         tableDate: '2005-05',
         current: '2005-07',
         value: '2005-11-03',
-        firstDayOfWeek: 2
-      }
+        firstDayOfWeek: 2,
+      },
     })
 
     expect(wrapper.html()).toMatchSnapshot()
   })
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should watch tableDate value and run transition', async () => {
     const wrapper = mountFunction({
       propsData: {
         tableDate: '2005-05',
         current: '2005-07',
-        value: '2005-11-03'
-      }
+        value: '2005-11-03',
+      },
     })
 
     wrapper.setProps({
-      tableDate: '2005-06'
+      tableDate: '2005-06',
     })
     await wrapper.vm.$nextTick()
-    expect(wrapper.findAll('table').wrappers[0].element.className).toBe('tab-transition-enter tab-transition-enter-active')
+    expect(wrapper.findAll('table').at(0).element.className).toBe('tab-transition-enter tab-transition-enter-active')
   })
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should watch tableDate value and run reverse transition', async () => {
     const wrapper = mountFunction({
       propsData: {
         tableDate: '2005-05',
         current: '2005-07',
-        value: '2005-11-03'
-      }
+        value: '2005-11-03',
+      },
     })
 
     wrapper.setProps({
-      tableDate: '2005-04'
+      tableDate: '2005-04',
     })
     await wrapper.vm.$nextTick()
-    expect(wrapper.findAll('table').wrappers[0].element.className).toBe('tab-reverse-transition-enter tab-reverse-transition-enter-active')
+    expect(wrapper.findAll('table').at(0).element.className).toBe('tab-reverse-transition-enter tab-reverse-transition-enter-active')
   })
 
   it('should emit event when date button is clicked', () => {
@@ -196,14 +194,14 @@ describe('VDatePickerDateTable.ts', () => {
       propsData: {
         tableDate: '2005-05',
         current: '2005-07',
-        value: '2005-11-03'
-      }
+        value: '2005-11-03',
+      },
     })
 
     const input = jest.fn()
     wrapper.vm.$on('input', input)
 
-    wrapper.findAll('tbody button').wrappers[0].trigger('click')
+    wrapper.findAll('tbody button').at(0).trigger('click')
     expect(input).toHaveBeenCalledWith('2005-05-01')
   })
 
@@ -213,14 +211,14 @@ describe('VDatePickerDateTable.ts', () => {
         tableDate: '2005-05',
         current: '2005-07',
         value: '2005-11-03',
-        allowedDates: () => false
-      }
+        allowedDates: () => false,
+      },
     })
 
     const input = jest.fn()
     wrapper.vm.$on('input', input)
 
-    wrapper.findAll('tbody button').wrappers[0].trigger('click')
+    wrapper.findAll('tbody button').at(0).trigger('click')
     expect(input).not.toHaveBeenCalled()
   })
 
@@ -228,12 +226,12 @@ describe('VDatePickerDateTable.ts', () => {
     const wrapper = mountFunction({
       propsData: {
         tableDate: '2005-05',
-        scrollable: true
-      }
+        scrollable: true,
+      },
     })
 
     const tableDate = jest.fn()
-    wrapper.vm.$on('tableDate', tableDate)
+    wrapper.vm.$on('update:table-date', tableDate)
 
     wrapper.trigger('wheel')
     expect(tableDate).toHaveBeenCalledWith('2005-06')
@@ -242,28 +240,27 @@ describe('VDatePickerDateTable.ts', () => {
   it('should not emit tableDate event when scrolled and not scrollable', () => {
     const wrapper = mountFunction({
       propsData: {
-        tableDate: '2005-05'
-      }
+        tableDate: '2005-05',
+      },
     })
 
     const tableDate = jest.fn()
-    wrapper.vm.$on('tableDate', tableDate)
+    wrapper.vm.$on('update:table-date', tableDate)
 
     wrapper.trigger('wheel')
     expect(tableDate).not.toHaveBeenCalled()
   })
 
   // TODO
-  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should emit tableDate event when swiped', () => {
     const wrapper = mountFunction({
       propsData: {
-        tableDate: '2005-05'
-      }
+        tableDate: '2005-05',
+      },
     })
 
     const tableDate = jest.fn()
-    wrapper.vm.$on('tableDate', tableDate)
+    wrapper.vm.$on('update:table-date', tableDate)
 
     wrapper.trigger('touchstart')
     wrapper.trigger('touchend')
@@ -273,12 +270,12 @@ describe('VDatePickerDateTable.ts', () => {
   it('should change tableDate when touch is called', () => {
     const wrapper = mountFunction({
       propsData: {
-        tableDate: '2005-05'
-      }
+        tableDate: '2005-05',
+      },
     })
 
     const tableDate = jest.fn()
-    wrapper.vm.$on('tableDate', tableDate)
+    wrapper.vm.$on('update:table-date', tableDate)
 
     wrapper.vm.touch(1, wrapper.vm.calculateTableDate)
     expect(tableDate).toHaveBeenCalledWith('2005-06')

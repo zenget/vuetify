@@ -28,10 +28,11 @@ const baseMixins = mixins(
   Applicationable('top', [
     'clippedLeft',
     'clippedRight',
+    'computedHeight',
     'invertedScroll',
     'isExtended',
     'isProminent',
-    'value'
+    'value',
   ])
 )
 
@@ -45,21 +46,21 @@ export default baseMixins.extend({
     clippedLeft: Boolean,
     clippedRight: Boolean,
     collapseOnScroll: Boolean,
-    fadeImgOnScroll: Boolean,
     elevateOnScroll: Boolean,
+    fadeImgOnScroll: Boolean,
     hideOnScroll: Boolean,
     invertedScroll: Boolean,
     scrollOffScreen: Boolean,
     shrinkOnScroll: Boolean,
     value: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
 
   data () {
     return {
-      isActive: this.value
+      isActive: this.value,
     }
   },
 
@@ -94,7 +95,7 @@ export default baseMixins.extend({
         'v-app-bar--fixed': !this.absolute && (this.app || this.fixed),
         'v-app-bar--hide-shadow': this.hideShadow,
         'v-app-bar--is-scrolled': this.currentScroll > 0,
-        'v-app-bar--shrink-on-scroll': this.shrinkOnScroll
+        'v-app-bar--shrink-on-scroll': this.shrinkOnScroll,
       }
     },
     computedContentHeight (): number {
@@ -158,16 +159,22 @@ export default baseMixins.extend({
     computedTransform (): number {
       if (
         !this.canScroll ||
-        (this.elevateOnScroll && this.currentScroll === 0)
+        (this.elevateOnScroll && this.currentScroll === 0 && this.isActive)
       ) return 0
 
       if (this.isActive) return 0
 
-      return this.scrollOffScreen
-        ? -this.computedHeight
-        : -this.computedContentHeight
+      const scrollOffScreen = this.scrollOffScreen
+        ? this.computedHeight
+        : this.computedContentHeight
+
+      return this.bottom ? scrollOffScreen : -scrollOffScreen
     },
     hideShadow (): boolean {
+      if (this.elevateOnScroll && this.isExtended) {
+        return this.currentScroll < this.computedScrollThreshold
+      }
+
       if (this.elevateOnScroll) {
         return this.currentScroll === 0 ||
           this.computedTransform < 0
@@ -198,16 +205,30 @@ export default baseMixins.extend({
         marginTop: convertToUnit(this.computedMarginTop),
         transform: `translateY(${convertToUnit(this.computedTransform)})`,
         left: convertToUnit(this.computedLeft),
-        right: convertToUnit(this.computedRight)
+        right: convertToUnit(this.computedRight),
       }
-    }
+    },
   },
 
   watch: {
     canScroll: 'onScroll',
+    computedTransform () {
+      // Normally we do not want the v-app-bar
+      // to update the application top value
+      // to avoid screen jump. However, in
+      // this situation, we must so that
+      // the clipped drawer can update
+      // its top value when scrolled
+      if (
+        !this.canScroll ||
+        (!this.clippedLeft && !this.clippedRight)
+      ) return
+
+      this.callUpdate()
+    },
     invertedScroll (val: boolean) {
       this.isActive = !val
-    }
+    },
   },
 
   created () {
@@ -219,7 +240,7 @@ export default baseMixins.extend({
       const render = VToolbar.options.methods.genBackground.call(this)
 
       render.data = this._b(render.data || {}, render.tag!, {
-        style: { opacity: this.computedOpacity }
+        style: { opacity: this.computedOpacity },
       })
 
       return render
@@ -227,7 +248,7 @@ export default baseMixins.extend({
     updateApplication (): number {
       return this.invertedScroll
         ? 0
-        : this.$el ? this.$el.clientHeight : 0
+        : this.computedHeight + this.computedTransform
     },
     thresholdMet () {
       if (this.invertedScroll) {
@@ -242,7 +263,7 @@ export default baseMixins.extend({
       }
 
       this.savedScroll = this.currentScroll
-    }
+    },
   },
 
   render (h): VNode {
@@ -255,10 +276,10 @@ export default baseMixins.extend({
       render.data.directives.push({
         arg: this.scrollTarget,
         name: 'scroll',
-        value: this.onScroll
+        value: this.onScroll,
       })
     }
 
     return render
-  }
+  },
 })

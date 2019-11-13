@@ -11,14 +11,13 @@ import VChipGroup from '../VChipGroup'
 import {
   createLocalVue,
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
 
 describe('VChipGroup.ts', () => {
   let mountFunction: (options?: object) => Wrapper<Vue>
   let router: Router
   let localVue: typeof Vue
-  (global as any).requestAnimationFrame = cb => cb()
 
   beforeEach(() => {
     router = new Router()
@@ -31,10 +30,10 @@ describe('VChipGroup.ts', () => {
         router,
         mocks: {
           $vuetify: {
-            breakpoint: {}
-          }
+            breakpoint: {},
+          },
         },
-        ...options
+        ...options,
       })
     }
   })
@@ -49,8 +48,8 @@ describe('VChipGroup.ts', () => {
   it('should render column', () => {
     const wrapper = mountFunction({
       propsData: {
-        column: true
-      }
+        column: true,
+      },
     })
 
     expect(wrapper.classes()).toContain('v-chip-group--column')
@@ -64,7 +63,7 @@ describe('VChipGroup.ts', () => {
     expect(wrapper.html()).toMatchSnapshot()
 
     wrapper.setProps({
-      column: true
+      column: true,
     })
 
     expect(wrapper.classes()).toContain('v-chip-group--column')

@@ -5,16 +5,15 @@ import Vue from 'vue'
 import VStepperContent from '../VStepperContent'
 import {
   VTabTransition,
-  VTabReverseTransition
+  VTabReverseTransition,
 } from '../../transitions'
 
 // Utilities
 import {
   createLocalVue,
   mount,
-  Wrapper
+  Wrapper,
 } from '@vue/test-utils'
-import { rafPolyfill } from '../../../../test'
 
 const tip = '[Vuetify] The v-stepper-content component must be used inside a v-stepper'
 
@@ -23,15 +22,18 @@ describe('VStepperContent.ts', () => {
   let mountFunction: (options?: object) => Wrapper<Instance>
   let localVue: typeof Vue
 
-  rafPolyfill(window)
-
   beforeEach(() => {
     localVue = createLocalVue()
 
     mountFunction = (options = {}) => {
       return mount(VStepperContent, {
         localVue,
-        ...options
+        mocks: {
+          $vuetify: {
+            rtl: false,
+          },
+        },
+        ...options,
       })
     }
   })
@@ -44,9 +46,9 @@ describe('VStepperContent.ts', () => {
         isVertical: false,
         stepper: {
           register: () => {},
-          unregister: () => {}
-        }
-      }
+          unregister: () => {},
+        },
+      },
     })
 
     expect(wrapper.vm.isActive).toBeNull()
@@ -65,9 +67,9 @@ describe('VStepperContent.ts', () => {
         isVertical: false,
         stepper: {
           register: () => {},
-          unregister: () => {}
-        }
-      }
+          unregister: () => {},
+        },
+      },
     })
     expect(wrapper.vm.computedTransition).toBe(VTabTransition)
 
@@ -75,30 +77,52 @@ describe('VStepperContent.ts', () => {
     expect(wrapper.vm.computedTransition).toBe(VTabReverseTransition)
   })
 
+  it('should use opposite of reverse transition in rtl', () => {
+    const wrapper = mountFunction({
+      mocks: {
+        $vuetify: {
+          rtl: true,
+        },
+      },
+      propsData: { step: 1 },
+      provide: {
+        isVertical: false,
+        stepper: {
+          register: () => {},
+          unregister: () => {},
+        },
+      },
+    })
+    expect(wrapper.vm.computedTransition).toBe(VTabReverseTransition)
+
+    wrapper.setData({ isReverse: true })
+    expect(wrapper.vm.computedTransition).toBe(VTabTransition)
+  })
+
   it('should accept a custom height', async () => {
     const wrapper = mountFunction({
       attachToDocument: true,
       propsData: {
-        step: 1
+        step: 1,
       },
       provide: {
         isVertical: false,
         stepper: {
           register: () => {},
-          unregister: () => {}
-        }
-      }
+          unregister: () => {},
+        },
+      },
     })
 
     const enter = jest.fn()
     const leave = jest.fn()
     wrapper.setMethods({
       enter,
-      leave
+      leave,
     })
     wrapper.setData({
       isActive: true,
-      isVertical: true
+      isVertical: true,
     })
     await wrapper.vm.$nextTick()
 
@@ -122,7 +146,7 @@ describe('VStepperContent.ts', () => {
     // setting vertical and isActive at the same time causes
     // isActive watcher to fire enter/leave methods
     wrapper.setData({
-      isVertical: false
+      isVertical: false,
     })
     await wrapper.vm.$nextTick()
     wrapper.setData({ isActive: false })
@@ -140,9 +164,9 @@ describe('VStepperContent.ts', () => {
         isVertical: false,
         stepper: {
           register: () => {},
-          unregister: () => {}
-        }
-      }
+          unregister: () => {},
+        },
+      },
     })
 
     wrapper.vm.toggle(1, false)
@@ -169,9 +193,9 @@ describe('VStepperContent.ts', () => {
         isVertical: false,
         stepper: {
           register: () => {},
-          unregister: () => {}
-        }
-      }
+          unregister: () => {},
+        },
+      },
     })
 
     wrapper.setData({ isActive: false, isVertical: true })
@@ -202,9 +226,9 @@ describe('VStepperContent.ts', () => {
         isVertical: false,
         stepper: {
           register: () => {},
-          unregister: () => {}
-        }
-      }
+          unregister: () => {},
+        },
+      },
     })
 
     wrapper.setData({ isActive: false, isVertical: true })
@@ -230,9 +254,9 @@ describe('VStepperContent.ts', () => {
         isVertical: false,
         stepper: {
           register: () => {},
-          unregister: () => {}
-        }
-      }
+          unregister: () => {},
+        },
+      },
     })
 
     const onTransition = jest.fn()
@@ -260,12 +284,13 @@ describe('VStepperContent.ts', () => {
 
     wrapper.destroy()
   })
+
   it('should tip when not used with v-stepper', () => {
     const wrapper = mountFunction({
       propsData: { step: 1 },
       provide: {
-        isVertical: false
-      }
+        isVertical: false,
+      },
     })
     expect(tip).toHaveBeenTipped()
   })
