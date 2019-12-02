@@ -25,4 +25,5 @@ export interface GoToOptions {
   offset?: number
   easing?: VuetifyGoToEasing
   appOffset?: boolean
+  scrollBehavior?: boolean
 }

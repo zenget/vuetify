@@ -5,7 +5,6 @@ import VueAnalytics from 'vue-analytics'
 
 // Settings
 import redirects from './301.json'
-import scrollBehavior from './scroll-behavior'
 
 // Utilities
 import {
@@ -38,7 +37,6 @@ export function createRouter () {
     base: __dirname,
     mode: 'history',
     routes,
-    scrollBehavior,
   })
 
   Vue.use(VueAnalytics, {

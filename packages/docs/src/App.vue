@@ -9,7 +9,7 @@
   import Meta from '@/mixins/meta'
 
   // Utilities
-  import { waitForReadystate } from '@/util/helpers'
+  // import { waitForReadystate } from '@/util/helpers'
 
   // Data
   import languages from '@/data/i18n/languages.json'
@@ -47,12 +47,12 @@
     },
 
     async mounted () {
-      if (!this.$route.hash) return
+      // if (!this.$route.hash) return
 
-      await this.$nextTick()
-      await waitForReadystate()
+      // await this.$nextTick()
+      // await waitForReadystate()
 
-      this.$vuetify.goTo(this.$route.hash)
+      // this.$vuetify.goTo(this.$route.hash)
     },
   }
 </script>

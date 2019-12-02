@@ -7,6 +7,9 @@ Vue.use(Vuetify)
 export function createVuetify (ssrContext) {
   const vuetify = new Vuetify({
     ssr: Boolean(ssrContext),
+    goto: {
+      scrollBehavior: true,
+    },
     theme: {
       themes: {
         light: {

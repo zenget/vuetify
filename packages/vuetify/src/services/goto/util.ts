@@ -32,6 +32,25 @@ export function getContainer (container: any): HTMLElement {
     : new TypeError(`Container must be a Selector/HTMLElement/VueComponent, received ${type(container)} instead.`)
 }
 
+export function waitForReadystate () {
+  if (
+    typeof document !== 'undefined' &&
+    typeof window !== 'undefined' &&
+    document.readyState !== 'complete'
+  ) {
+    return new Promise(resolve => {
+      const cb = () => {
+        window.requestAnimationFrame(resolve)
+        window.removeEventListener('load', cb)
+      }
+
+      window.addEventListener('load', cb)
+    })
+  }
+
+  return Promise.resolve()
+}
+
 function type (el: any) {
   return el == null ? el : el.constructor.name
 }

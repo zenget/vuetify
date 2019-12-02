@@ -33,7 +33,6 @@
             <a
               :href="`#${item.id}`"
               class="d-block"
-              @click.stop.prevent="goTo(`#${item.id}`)"
               v-html="item.text"
             />
           </li>
