@@ -45,7 +45,6 @@ export default mixins<options &
   },
 
   data: () => ({
-    activatorNode: null as null | VNode | VNode[],
     hasDetached: false,
   }),
 

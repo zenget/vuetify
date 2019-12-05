@@ -2,14 +2,11 @@
 
 // Block
 .v-dialog
-  border-radius: $dialog-border-radius
   margin: 24px
-  overflow-y: auto
   pointer-events: auto
   transition: .3s map-get($transition, 'fast-in-fast-out')
   width: 100%
   z-index: inherit
-  +elevation(24)
 
   &:not(.v-dialog--fullscreen)
     max-height: 90%
@@ -17,7 +14,11 @@
   > *
     width: 100%
 
-  > .v-card
+  > .v-card,
+  > form > .v-card
+    border-radius: $dialog-border-radius
+    +elevation(24)
+
     > .v-card__title
       font-size: map-deep-get($headings, 'h6', 'size')
       font-weight: map-deep-get($headings, 'h6', 'weight')
@@ -44,12 +45,6 @@
   width: 100%
   z-index: 6
   outline: none
-
-.v-dialog__container
-  display: none
-
-  &--attached
-    display: inline
 
 // Modifier
 .v-dialog--animated

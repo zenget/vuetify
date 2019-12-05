@@ -1,4 +1,4 @@
-import VDialog from './VDialog'
+import VDialog from './VDialogActivator'
 
 export { VDialog }
 export default VDialog

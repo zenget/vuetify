@@ -84,6 +84,7 @@ declare module 'vue/types/vnode' {
 
 declare module 'vue/types/options' {
   interface ComponentOptions<V extends Vue> {
+    abstract?: true
     head?: MetaInfo | (() => MetaInfo)
   }
 }

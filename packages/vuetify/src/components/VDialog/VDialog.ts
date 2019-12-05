@@ -5,7 +5,6 @@ import './VDialog.sass'
 import { VThemeProvider } from '../VThemeProvider'
 
 // Mixins
-import Activatable from '../../mixins/activatable'
 import Dependent from '../../mixins/dependent'
 import Detachable from '../../mixins/detachable'
 import Overlayable from '../../mixins/overlayable'
@@ -22,13 +21,13 @@ import { removed } from '../../util/console'
 import {
   convertToUnit,
   keyCodes,
+  getSlot,
 } from '../../util/helpers'
 
 // Types
 import { VNode } from 'vue'
 
 const baseMixins = mixins(
-  Activatable,
   Dependent,
   Detachable,
   Overlayable,
@@ -99,12 +98,6 @@ export default baseMixins.extend({
         'v-dialog__content': true,
         'v-dialog__content--active': this.isActive,
       }
-    },
-    hasActivator (): boolean {
-      return Boolean(
-        !!this.$slots.activator ||
-        !!this.$scopedSlots.activator
-      )
     },
   },
 
@@ -268,9 +261,7 @@ export default baseMixins.extend({
       }
     }
 
-    children.push(this.genActivator())
-
-    let dialog = h('div', data, this.showLazyContent(this.getContentSlot()))
+    let dialog = h('div', data, this.showLazyContent(getSlot(this)))
     if (this.transition) {
       dialog = h('transition', {
         props: {
@@ -280,7 +271,7 @@ export default baseMixins.extend({
       }, [dialog])
     }
 
-    children.push(h('div', {
+    return h('div', {
       class: this.contentClasses,
       attrs: {
         role: 'document',
@@ -300,17 +291,6 @@ export default baseMixins.extend({
           dark: this.dark,
         },
       }, [dialog]),
-    ]))
-
-    return h('div', {
-      staticClass: 'v-dialog__container',
-      class: {
-        'v-dialog__container--attached':
-          this.attach === '' ||
-          this.attach === true ||
-          this.attach === 'attach',
-      },
-      attrs: { role: 'dialog' },
-    }, children)
+    ])
   },
 })

@@ -5,7 +5,7 @@ import Toggleable from '../toggleable'
 // Utilities
 import mixins from '../../util/mixins'
 import { getSlot, getSlotType } from '../../util/helpers'
-import { consoleError } from '../../util/console'
+import { consoleError, consoleWarn } from '../../util/console'
 
 // Types
 import { VNode, PropType } from 'vue'
@@ -27,14 +27,13 @@ export default baseMixins.extend({
       },
     },
     disabled: Boolean,
-    internalActivator: Boolean,
     openOnHover: Boolean,
   },
 
   data: () => ({
     // Do not use this directly, call getActivator() instead
     activatorElement: null as HTMLElement | null,
-    activatorNode: [] as VNode[],
+    activatorNode: null as VNode | null,
     events: ['click', 'mouseenter', 'mouseleave'],
     listeners: {} as Record<string, (e: MouseEvent & KeyboardEvent) => void>,
   }),
@@ -45,12 +44,6 @@ export default baseMixins.extend({
   },
 
   mounted () {
-    const slotType = getSlotType(this, 'activator', true)
-
-    if (slotType && ['v-slot', 'normal'].includes(slotType)) {
-      consoleError(`The activator slot must be bound, try '<template v-slot:activator="{ on }"><v-btn v-on="on">'`, this)
-    }
-
     this.addActivatorEvents()
   },
 
@@ -61,9 +54,9 @@ export default baseMixins.extend({
   methods: {
     addActivatorEvents () {
       if (
-        !this.activator ||
         this.disabled ||
-        !this.getActivator()
+        !this.getActivator() ||
+        getSlotType(this, 'activator', true) === 'scoped'
       ) return
 
       this.listeners = this.genActivatorListeners()
@@ -79,9 +72,13 @@ export default baseMixins.extend({
         attrs: this.genActivatorAttributes(),
       })) || []
 
-      this.activatorNode = node
+      if (node.length > 1) {
+        consoleWarn('The activator slot should only contain a single element', this)
+      }
 
-      return node
+      this.activatorNode = node[0]
+
+      return node[0]
     },
     genActivatorAttributes () {
       return {
@@ -122,11 +119,9 @@ export default baseMixins.extend({
       let activator = null
 
       if (this.activator) {
-        const target = this.internalActivator ? this.$el : document
-
         if (typeof this.activator === 'string') {
           // Selector
-          activator = target.querySelector(this.activator)
+          activator = document.querySelector(this.activator)
         } else if ((this.activator as any).$el) {
           // Component (ref)
           activator = (this.activator as any).$el
@@ -134,11 +129,9 @@ export default baseMixins.extend({
           // HTMLElement | Element
           activator = this.activator
         }
-      } else if (this.activatorNode.length === 1 || (this.activatorNode.length && !e)) {
+      } else if (this.activatorNode && !e) {
         // Use the contents of the activator slot
-        // There's either only one element in it or we
-        // don't have a click event to use as a last resort
-        const vm = this.activatorNode[0].componentInstance
+        const vm = this.activatorNode.componentInstance
         if (
           vm &&
           vm.$options.mixins && //                         Activatable is indirectly used via Menuable
@@ -147,7 +140,7 @@ export default baseMixins.extend({
           // Activator is actually another activatible component, use its activator (#8846)
           activator = (vm as any).getActivator()
         } else {
-          activator = this.activatorNode[0].elm as HTMLElement
+          activator = this.activatorNode.elm as HTMLElement
         }
       } else if (e) {
         // Activated by a click event
