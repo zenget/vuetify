@@ -56,52 +56,8 @@ export default mixins<options &
     hasContent: 'initDetach',
   },
 
-  beforeMount () {
-    this.$nextTick(() => {
-      if (this.activatorNode) {
-        const activator = Array.isArray(this.activatorNode) ? this.activatorNode : [this.activatorNode]
-
-        activator.forEach(node => {
-          if (!node.elm) return
-          if (!this.$el.parentNode) return
-
-          const target = this.$el === this.$el.parentNode.firstChild
-            ? this.$el
-            : this.$el.nextSibling
-
-          this.$el.parentNode.insertBefore(node.elm, target)
-        })
-      }
-    })
-  },
-
-  mounted () {
-    this.hasContent && this.initDetach()
-  },
-
   deactivated () {
     this.isActive = false
-  },
-
-  beforeDestroy () {
-    // IE11 Fix
-    try {
-      if (
-        this.$refs.content &&
-        this.$refs.content.parentNode
-      ) {
-        this.$refs.content.parentNode.removeChild(this.$refs.content)
-      }
-
-      if (this.activatorNode) {
-        const activator = Array.isArray(this.activatorNode) ? this.activatorNode : [this.activatorNode]
-        activator.forEach(node => {
-          node.elm &&
-            node.elm.parentNode &&
-            node.elm.parentNode.removeChild(node.elm)
-        })
-      }
-    } catch (e) { console.log(e) }
   },
 
   methods: {

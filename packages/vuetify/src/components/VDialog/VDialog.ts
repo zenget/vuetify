@@ -36,11 +36,17 @@ const baseMixins = mixins(
   Toggleable
 )
 
+export const activator = Symbol('DialogActivator')
+
 /* @vue/component */
 export default baseMixins.extend({
   name: 'v-dialog',
 
   directives: { ClickOutside },
+
+  inject: {
+    activator,
+  },
 
   props: {
     dark: Boolean,

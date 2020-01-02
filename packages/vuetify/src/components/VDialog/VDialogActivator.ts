@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import VDialog from './VDialog'
+import VDialog, { activator } from './VDialog'
 
 import Activatable from '../../mixins/activatable'
 import BindsAttrs from '../../mixins/binds-attrs'
@@ -11,6 +10,14 @@ export default mixins(
   BindsAttrs,
   /* @vue/component */
 ).extend({
+  name: 'VDialogActivator',
+
+  provide (): object {
+    return {
+      [activator]: this,
+    }
+  },
+
   data: () => ({
     instance: null as InstanceType<typeof VDialog> | null,
   }),
@@ -21,25 +28,24 @@ export default mixins(
         this.createContent()
       }
       if (this.instance) {
-        this.instance.$refs.dialog.isActive = val
+        this.instance.isActive = val
       }
     },
   },
 
   methods: {
     createContent () {
-      const vm = this
-      const instance = this.instance = new Vue({
-        abstract: true,
+      const instance = this.instance = new VDialog({
         parent: this,
-        render (h) {
-          return h(VDialog, {
-            attrs: vm.attrs$,
-            scopedSlots: vm.$scopedSlots,
-            ref: 'dialog',
-          })
-        },
+        propsData: this.attrs$,
       })
+      ;(instance as any).$scopedSlots = this.$scopedSlots
+      instance.$on('input', (val: boolean) => {
+        this.isActive = val
+      })
+      for (const listener in this.listeners$) {
+        instance.$on(listener, (val: any) => this.$emit(listener, val))
+      }
 
       instance.$mount()
 
