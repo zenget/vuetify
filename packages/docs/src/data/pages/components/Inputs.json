@@ -7,8 +7,25 @@
       "type": "section",
       "children": [
         {
-          "type": "usage",
-          "value": "usage"
+          "type": "usage-new",
+          "value": {
+            "booleans": [
+              "success",
+              "error",
+              "hideDetails",
+              "persistentHint"
+            ],
+            "sliders": [
+              {
+                "prop": "error-count",
+                "label": "Max errors",
+                "attrs": {
+                  "min": 0,
+                  "max": 4
+                }
+              }
+            ]
+          }
         },
         {
           "type": "alert",
@@ -23,15 +40,6 @@
         {
           "type": "api",
           "value": ["v-input"]
-        }
-      ]
-    },
-    {
-      "type": "section",
-      "children": [
-        {
-          "type": "playground",
-          "value": "playground"
         }
       ]
     },
