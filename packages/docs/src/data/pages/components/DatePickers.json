@@ -11,8 +11,19 @@
       "type": "section",
       "children": [
         {
-          "type": "usage",
-          "value": "usage"
+          "type": "usage-new",
+          "value": {
+            "booleans": [
+              "full-width",
+              "landscape",
+              "no-title",
+              "reactive",
+              "readonly",
+              "scrollable",
+              "show-current",
+              "show-week"
+            ]
+          }
         }
       ]
     },

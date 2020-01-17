@@ -11,8 +11,15 @@
       "type": "section",
       "children": [
         {
-          "type": "usage",
-          "value": "usage"
+          "type": "usage-new",
+          "value": {
+            "booleans": [
+              "calculate-widths",
+              "dense",
+              "disable-pagination",
+              "fixed-header"
+            ]
+          }
         }
       ]
     },

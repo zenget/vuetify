@@ -11,8 +11,21 @@
       "type": "section",
       "children": [
         {
-          "type": "usage",
-          "value": "usage"
+          "type": "usage-new",
+          "value": {
+            "booleans": [
+              "accordion",
+              "popout",
+              "inset",
+              "multiple",
+              "disabled",
+              "readonly",
+              "focusable",
+              "flat",
+              "hover",
+              "tile"
+            ]
+          }
         }
       ]
     },

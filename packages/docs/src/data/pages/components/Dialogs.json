@@ -11,8 +11,16 @@
       "type": "section",
       "children": [
         {
-          "type": "usage",
-          "value": "usage"
+          "type": "usage-new",
+          "value": {
+            "booleans": [
+              "eager",
+              "fullscreen",
+              "hide-overlay",
+              "no-click-animation",
+              "persistent"
+            ]
+          }
         }
       ]
     },
