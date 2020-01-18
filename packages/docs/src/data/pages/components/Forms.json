@@ -9,7 +9,10 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "lazy-validation",
+              "value"
+            ]
           }
         }
       ]
