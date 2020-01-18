@@ -1,5 +1,7 @@
 <template>
-  <v-footer v-bind="attrs" />
+  <v-footer v-bind="attrs">
+    Footer content
+  </v-footer>
 </template>
 
 <script>
