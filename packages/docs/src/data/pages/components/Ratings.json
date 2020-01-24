@@ -9,7 +9,17 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "dense",
+              "half-increments",
+              "hover",
+              "large",
+              "readonly",
+              "ripple",
+              "small",
+              "x-large",
+              "x-small"
+            ]
           }
         }
       ]

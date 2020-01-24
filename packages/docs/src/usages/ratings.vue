@@ -1,5 +1,5 @@
 <template>
-  <v-calendar v-bind="attrs" />
+  <v-rating v-model="rating" v-bind="attrs" />
 </template>
 
 <script>
@@ -7,5 +7,8 @@
 
   export default {
     mixins: [Usage],
+    data: () => ({
+      rating: 2,
+    }),
   }
 </script>
