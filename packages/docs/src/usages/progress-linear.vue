@@ -1,5 +1,5 @@
 <template>
-  <v-calendar v-bind="attrs" />
+  <v-progress-linear :value="100" v-bind="attrs" />
 </template>
 
 <script>

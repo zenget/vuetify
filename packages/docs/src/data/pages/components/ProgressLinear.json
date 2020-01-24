@@ -13,7 +13,18 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "absolute",
+              "active",
+              "bottom",
+              "fixed",
+              "indeterminate",
+              "query",
+              "rounded",
+              "stream",
+              "striped",
+              "top"
+            ]
           }
         }
       ]
