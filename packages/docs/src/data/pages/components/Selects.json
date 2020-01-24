@@ -9,7 +9,38 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "autofocus",
+              "cache-items",
+              "chips",
+              "clearable",
+              "counter",
+              "deletable-chips",
+              "dense",
+              "disable-lookup",
+              "disabled",
+              "eager",
+              "error",
+              "filled",
+              "flat",
+              "full-width",
+              "hide-details",
+              "hide-selected",
+              "loading",
+              "multiple",
+              "open-on-clear",
+              "outlined",
+              "persistent-hint",
+              "readonly",
+              "reverse",
+              "rounded",
+              "shaped",
+              "single-line",
+              "small-chips",
+              "solo",
+              "solo-inverted",
+              "success"
+            ]
           }
         },
         {

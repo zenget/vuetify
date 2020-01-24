@@ -1,5 +1,9 @@
 <template>
-  <v-calendar v-bind="attrs" />
+  <v-select
+    v-model="model"
+    :items="items"
+    v-bind="attrs"
+  />
 </template>
 
 <script>
@@ -7,5 +11,9 @@
 
   export default {
     mixins: [Usage],
+    data: () => ({
+      items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+      model: 'Foo',
+    }),
   }
 </script>
