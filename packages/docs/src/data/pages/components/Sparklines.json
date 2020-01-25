@@ -9,7 +9,12 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "auto-draw",
+              "auto-line-width",
+              "fill",
+              "smooth"
+            ]
           }
         }
       ]
