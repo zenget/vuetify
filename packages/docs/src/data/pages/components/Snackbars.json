@@ -13,7 +13,15 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "absolute",
+              "bottom",
+              "left",
+              "multi-line",
+              "right",
+              "top",
+              "vertical"
+            ]
           }
         }
       ]
