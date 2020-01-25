@@ -9,7 +9,12 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "center-active",
+              "mandatory",
+              "multiple",
+              "show-arrows"
+            ]
           }
         }
       ]
