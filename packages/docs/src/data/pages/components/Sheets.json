@@ -9,7 +9,9 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "tile"
+            ]
           }
         }
       ]
