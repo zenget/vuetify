@@ -9,11 +9,12 @@ import {
 } from './util'
 
 // Types
+import { ComponentInternalInstance } from 'vue'
 import { GoToOptions, VuetifyGoToTarget } from 'vuetify/types/services/goto'
-
 import { VuetifyServiceContract } from 'vuetify/types/services'
 
 function goTo (
+  this: ComponentInternalInstance,
   _target: VuetifyGoToTarget,
   _settings: Partial<GoToOptions> = {}
 ): Promise<number> {
@@ -26,6 +27,12 @@ function goTo (
     ..._settings,
   }
   const container = getContainer(settings.container)
+
+  if ((!this || !this.vnode || !this.vnode._isVNode) && settings.appOffset) {
+    return Promise.resolve(0)
+  }
+
+  this.provides.layout
 
   /* istanbul ignore else */
   if (settings.appOffset && goTo.framework.application) {

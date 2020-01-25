@@ -2,6 +2,7 @@ import {
   InjectionKey,
   inject,
   warn,
+  getCurrentInstance,
 } from 'vue'
 
 // Preset
@@ -66,6 +67,14 @@ export default class Vuetify {
     // will never be called by
     // the init process
     this.framework.rtl = Boolean(this.preset.rtl) as any
+
+    const goTo = this.framework.goTo
+    Object.defineProperty(this.framework, 'goTo', {
+      get () {
+        const vm = getCurrentInstance()
+        return vm ? goTo.bind(vm) : goTo
+      },
+    })
   }
 
   mergePreset ({ preset, ...userPreset }: VuetifyUserPreset) {

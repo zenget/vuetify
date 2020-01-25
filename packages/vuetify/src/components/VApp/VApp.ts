@@ -1,7 +1,14 @@
 // Styles
 import './VApp.sass'
 
-import { defineComponent, computed, h, mergeProps } from 'vue'
+import {
+  defineComponent,
+  computed,
+  h,
+  ref,
+  provide,
+  mergeProps,
+} from 'vue'
 
 export default defineComponent({
   name: 'VApp',
@@ -10,6 +17,12 @@ export default defineComponent({
     const classes = computed(() => ({
       'v-application': true,
     }))
+
+    const layout = ref({
+      top: 0,
+    })
+
+    provide('layout', layout)
 
     return () => (
       h('div', mergeProps(attrs, {
