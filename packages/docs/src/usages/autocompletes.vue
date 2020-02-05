@@ -8,8 +8,8 @@
         label="Test custom filters"
         :items="states"
         :filter="activeFilter"
-        filled
-        rounded
+        hint="Hint text"
+        v-bind="attrs"
       />
     </v-row>
   </v-container>
