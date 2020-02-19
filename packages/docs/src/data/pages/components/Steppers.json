@@ -13,7 +13,11 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "alt-labels",
+              "non-linear",
+              "vertical"
+            ]
           }
         }
       ]
