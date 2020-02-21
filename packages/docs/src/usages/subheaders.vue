@@ -1,5 +1,29 @@
 <template>
-  <v-calendar v-bind="attrs" />
+  <v-card>
+    <v-subheader v-bind="attrs">Subheader</v-subheader>
+
+    <v-list>
+      <template v-for="(item, index) in items">
+        <v-list-item
+          v-if="item.action"
+          :key="item.title"
+        >
+          <v-list-item-action>
+            <v-icon>{{ item.action }}</v-icon>
+          </v-list-item-action>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider
+          v-else-if="item.divider"
+          :key="index"
+        />
+      </template>
+    </v-list>
+  </v-card>
 </template>
 
 <script>
@@ -7,5 +31,27 @@
 
   export default {
     mixins: [Usage],
+    data: () => ({
+      items: [
+        {
+          action: 'inbox',
+          title: 'inbox',
+        },
+        {
+          divider: true,
+        },
+        {
+          action: 'send',
+          title: 'send',
+        },
+        {
+          divider: true,
+        },
+        {
+          action: 'delete',
+          title: 'trash',
+        },
+      ],
+    }),
   }
 </script>

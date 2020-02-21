@@ -13,7 +13,9 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "inset"
+            ]
           }
         }
       ]
