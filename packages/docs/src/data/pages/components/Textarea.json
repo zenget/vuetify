@@ -13,7 +13,16 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "autoGrow",
+              "clearable",
+              "flat",
+              "persistentHint",
+              "rounded",
+              "shaped",
+              "singleLine",
+              "solo"
+            ]
           }
         }
       ]

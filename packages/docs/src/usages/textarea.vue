@@ -1,5 +1,10 @@
 <template>
-  <v-calendar v-bind="attrs" />
+  <v-text-field
+    v-model="text"
+    label="Label"
+    :hint="hint"
+    v-bind="attrs"
+  />
 </template>
 
 <script>
@@ -7,5 +12,11 @@
 
   export default {
     mixins: [Usage],
+    data () {
+      return {
+        hint: 'hint',
+        text: '',
+      }
+    },
   }
 </script>
