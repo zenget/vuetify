@@ -13,7 +13,14 @@
         {
           "type": "usage-new",
           "value": {
-            "booleans": []
+            "booleans": [
+              "centered",
+              "grow",
+              "vertical",
+              "prevIcon",
+              "nextIcon",
+              "right"
+            ]
           }
         },
         {
