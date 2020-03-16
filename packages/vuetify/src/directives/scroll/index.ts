@@ -1,17 +1,20 @@
 import { VNodeDirective } from 'vue/types/vnode'
 import { DirectiveOptions } from 'vue'
+import { getContainer } from '../../services/goto/util'
 
-interface ScrollVNodeDirective extends VNodeDirective {
-  arg: string
-  value: EventListenerOrEventListenerObject
-  options?: boolean | AddEventListenerOptions
+interface ScrollVNodeDirective extends Omit<VNodeDirective, 'arg'> {
+  arg?: string | Element
+  value: EventListener | {
+    handler: EventListener
+    options?: boolean | AddEventListenerOptions
+  } | EventListenerObject & { options?: boolean | AddEventListenerOptions }
 }
 
 function inserted (el: HTMLElement, binding: ScrollVNodeDirective) {
-  const callback = binding.value
-  const options = binding.options || { passive: true }
-  const target = binding.arg ? document.querySelector(binding.arg) : window
-  if (!target) return
+  const value = binding.value
+  const options = (typeof value === 'object' && value.options) || { passive: true }
+  const callback = typeof value === 'function' || 'handleEvent' in value ? value : value.handler
+  const target = getContainer(binding.arg) || window
 
   target.addEventListener('scroll', callback, options)
 
