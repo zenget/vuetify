@@ -1,8 +1,7 @@
 <template>
-  <base-section
+  <base-new-section
     id="home-hero"
-    :class="$vuetify.theme.dark && 'theme--dark'"
-    class="white--text py-4 py-md-12"
+    dark
   >
     <v-responsive
       :max-width="1280 + 24"
@@ -103,7 +102,7 @@
         </v-row>
       </v-container>
     </v-responsive>
-  </base-section>
+  </base-new-section>
 </template>
 
 <script>

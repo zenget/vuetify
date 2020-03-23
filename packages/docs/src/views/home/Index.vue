@@ -1,8 +1,5 @@
 <template>
-  <section
-    id="home"
-    :class="!$vuetify.theme.dark && 'white'"
-  >
+  <section id="home">
     <home-hero />
 
     <home-tidelift />
